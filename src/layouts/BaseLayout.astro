@@ -1,0 +1,50 @@
+---
+import "@fontsource-variable/space-grotesk/wght.css";
+import "@fontsource-variable/manrope/wght.css";
+
+import "../styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+  lang?: string;
+}
+
+const {
+  title = "ARIXV — Digital Studio",
+
+  description =
+    "Diseñamos y desarrollamos experiencias digitales para marcas y negocios.",
+
+  lang = "es",
+} = Astro.props;
+---
+
+<!doctype html>
+
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1"
+    />
+
+    <meta
+      name="description"
+      content={description}
+    />
+
+    <meta
+      name="theme-color"
+      content="#080808"
+    />
+
+    <title>{title}</title>
+  </head>
+
+  <body>
+    <slot />
+  </body>
+</html>

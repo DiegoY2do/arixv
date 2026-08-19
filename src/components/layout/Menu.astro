@@ -1,0 +1,1145 @@
+---
+type Locale =
+  | "es"
+  | "en";
+
+interface Props {
+  lang?: Locale;
+}
+
+const {
+  lang: langProp,
+} = Astro.props;
+
+const currentPath =
+  Astro.url.pathname;
+
+const lang:
+  Locale =
+    currentPath === "/en" ||
+    currentPath.startsWith(
+      "/en/"
+    )
+      ? "en"
+      : currentPath === "/es" ||
+        currentPath.startsWith(
+          "/es/"
+        )
+        ? "es"
+        : langProp ?? "es";
+
+const isEs =
+  lang === "es";
+
+const localeHome =
+  `/${lang}/`;
+
+const onHome =
+  currentPath === localeHome;
+
+const sectionHref =
+  (id: string) =>
+    onHome
+      ? `#${id}`
+      : `${localeHome}#${id}`;
+
+const projectsHref =
+  isEs
+    ? "/es/proyectos/"
+    : "/en/projects/";
+
+const normalizedPath =
+  currentPath === "/"
+    ? "/"
+    : currentPath.replace(
+        /\/+$/,
+        ""
+      );
+
+const getLanguageHref =
+  (
+    target:
+      Locale
+  ) => {
+    /*
+     * HOME
+     */
+    if (
+      normalizedPath ===
+        "/es" ||
+      normalizedPath ===
+        "/en"
+    ) {
+      return `/${target}/`;
+    }
+
+    /*
+     * ARCHIVO DE PROYECTOS
+     */
+    if (
+      normalizedPath ===
+        "/es/proyectos" ||
+      normalizedPath ===
+        "/en/projects"
+    ) {
+      return target ===
+        "es"
+        ? "/es/proyectos/"
+        : "/en/projects/";
+    }
+
+    /*
+     * CASE STUDY
+     * Conserva el mismo slug.
+     */
+    if (
+      normalizedPath.startsWith(
+        "/es/proyectos/"
+      )
+    ) {
+      const slug =
+        normalizedPath.slice(
+          "/es/proyectos/"
+            .length
+        );
+
+      return target ===
+        "es"
+        ? `/es/proyectos/${slug}/`
+        : `/en/projects/${slug}/`;
+    }
+
+    if (
+      normalizedPath.startsWith(
+        "/en/projects/"
+      )
+    ) {
+      const slug =
+        normalizedPath.slice(
+          "/en/projects/"
+            .length
+        );
+
+      return target ===
+        "es"
+        ? `/es/proyectos/${slug}/`
+        : `/en/projects/${slug}/`;
+    }
+
+    /*
+     * LEGALES
+     */
+    if (
+      normalizedPath ===
+        "/es/aviso-de-privacidad" ||
+      normalizedPath ===
+        "/en/privacy"
+    ) {
+      return target ===
+        "es"
+        ? "/es/aviso-de-privacidad"
+        : "/en/privacy";
+    }
+
+    if (
+      normalizedPath ===
+        "/es/terminos-y-condiciones" ||
+      normalizedPath ===
+        "/en/terms"
+    ) {
+      return target ===
+        "es"
+        ? "/es/terminos-y-condiciones"
+        : "/en/terms";
+    }
+
+    /*
+     * Fallback seguro:
+     * si en el futuro aparece una ruta sin equivalente,
+     * manda al Home del idioma solicitado.
+     */
+    return `/${target}/`;
+  };
+
+const esLanguageHref =
+  getLanguageHref(
+    "es"
+  );
+
+const enLanguageHref =
+  getLanguageHref(
+    "en"
+  );
+
+const navItems =
+  isEs
+    ? [
+        {
+          number: "01",
+          label: "INICIO",
+          href: "/es/",
+          current:
+            currentPath === "/es/",
+        },
+        {
+          number: "02",
+          label: "PROYECTOS",
+          href: projectsHref,
+          current:
+            currentPath.startsWith(
+              "/es/proyectos"
+            ),
+        },
+        {
+          number: "03",
+          label: "SERVICIOS",
+          href: sectionHref(
+            "capabilities"
+          ),
+          current: false,
+        },
+        {
+          number: "04",
+          label: "PROCESO",
+          href: sectionHref(
+            "process"
+          ),
+          current: false,
+        },
+        {
+          number: "05",
+          label: "CONTACTO",
+          href: sectionHref(
+            "contact"
+          ),
+          current: false,
+        },
+      ]
+    : [
+        {
+          number: "01",
+          label: "HOME",
+          href: "/en/",
+          current:
+            currentPath === "/en/",
+        },
+        {
+          number: "02",
+          label: "PROJECTS",
+          href: projectsHref,
+          current:
+            currentPath.startsWith(
+              "/en/projects"
+            ),
+        },
+        {
+          number: "03",
+          label: "SERVICES",
+          href: sectionHref(
+            "capabilities"
+          ),
+          current: false,
+        },
+        {
+          number: "04",
+          label: "PROCESS",
+          href: sectionHref(
+            "process"
+          ),
+          current: false,
+        },
+        {
+          number: "05",
+          label: "CONTACT",
+          href: sectionHref(
+            "contact"
+          ),
+          current: false,
+        },
+      ];
+
+const labels =
+  isEs
+    ? {
+        studio:
+          "ARIXV / ESTUDIO DE DESARROLLO",
+        country:
+          "MÉXICO",
+        navAria:
+          "Navegación principal",
+        social:
+          "REDES",
+        language:
+          "IDIOMA",
+        availability:
+          "DISPONIBLES PARA PROYECTOS",
+      }
+    : {
+        studio:
+          "ARIXV / DEVELOPMENT STUDIO",
+        country:
+          "MEXICO",
+        navAria:
+          "Main navigation",
+        social:
+          "SOCIAL",
+        language:
+          "LANGUAGE",
+        availability:
+          "AVAILABLE FOR PROJECTS",
+      };
+
+const whatsappHref =
+  isEs
+    ? "https://wa.me/528140165334?text=Hola%2C%20quiero%20iniciar%20un%20proyecto%20con%20ARIXV.%20Me%20gustar%C3%ADa%20contarles%20lo%20que%20necesito%20y%20conocer%20el%20proceso%2C%20tiempos%20y%20costos."
+    : "https://wa.me/528140165334?text=Hello%2C%20I%27d%20like%20to%20start%20a%20project%20with%20ARIXV.%20I%27d%20like%20to%20tell%20you%20what%20I%20need%20and%20learn%20about%20the%20process%2C%20timelines%2C%20and%20costs.";
+---
+
+<div
+  class="menu"
+  data-menu
+  aria-hidden="true"
+>
+  <div class="menu__surface">
+    <div class="menu__top">
+      <span>
+        {labels.studio}
+      </span>
+
+      <span>
+        {labels.country}
+      </span>
+    </div>
+
+    <nav
+      class="menu__nav"
+      aria-label={labels.navAria}
+    >
+      {
+        navItems.map(
+          (item) => (
+            <a
+              href={item.href}
+              class="menu__link"
+              data-menu-link
+              aria-current={
+                item.current
+                  ? "page"
+                  : undefined
+              }
+            >
+              <span class="menu__number">
+                {item.number}
+              </span>
+
+              <span class="menu__label-wrap">
+                <span class="menu__label">
+                  {item.label}
+                </span>
+              </span>
+
+              <span
+                class="menu__arrow"
+                aria-hidden="true"
+              >
+                ↗
+              </span>
+            </a>
+          )
+        )
+      }
+    </nav>
+
+    <div class="menu__bottom">
+      <div>
+        <span class="menu__small-title">
+          {labels.social}
+        </span>
+
+        <div class="menu__social">
+          <a
+            href="https://www.instagram.com/arixv21/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            INSTAGRAM
+          </a>
+
+          <a
+            href={whatsappHref}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            WHATSAPP
+          </a>
+        </div>
+      </div>
+
+      <div>
+        <span class="menu__small-title">
+          {labels.language}
+        </span>
+
+        <div class="menu__languages">
+          <a
+            href={esLanguageHref}
+            data-language-link
+            class:list={{
+              "is-active":
+                lang === "es",
+            }}
+            aria-current={
+              lang === "es"
+                ? "page"
+                : undefined
+            }
+          >
+            ES
+          </a>
+
+          <span>/</span>
+
+          <a
+            href={enLanguageHref}
+            data-language-link
+            class:list={{
+              "is-active":
+                lang === "en",
+            }}
+            aria-current={
+              lang === "en"
+                ? "page"
+                : undefined
+            }
+          >
+            EN
+          </a>
+        </div>
+      </div>
+
+      <div class="menu__availability">
+        <span class="menu__status"></span>
+
+        {labels.availability}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import gsap from "gsap";
+
+  const menu =
+    document.querySelector<HTMLElement>(
+      "[data-menu]"
+    );
+
+  const toggle =
+    document.querySelector<HTMLButtonElement>(
+      "[data-menu-toggle]"
+    );
+
+  const label =
+    document.querySelector<HTMLElement>(
+      "[data-menu-toggle-label]"
+    );
+
+  const symbol =
+    document.querySelector<HTMLElement>(
+      "[data-menu-toggle-symbol]"
+    );
+
+  const menuLinks =
+    document.querySelectorAll<HTMLElement>(
+      "[data-menu-link]"
+    );
+
+  const reducedMotion =
+    window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+  /*
+   * ==========================================
+   * CAMBIO DE IDIOMA CONSERVANDO LA SECCIÓN
+   * ==========================================
+   *
+   * En el Home no dependemos del hash actual:
+   * detectamos qué bloque está realmente visible
+   * cuando el usuario pulsa ES / EN.
+   *
+   * No intentamos restaurar el píxel exacto del
+   * scroll porque varias escenas usan GSAP + pin.
+   * Cambiamos al mismo bloque semántico, que es
+   * mucho más estable.
+   */
+  const languageLinks =
+    document.querySelectorAll<HTMLAnchorElement>(
+      "[data-language-link]"
+    );
+
+  const HOME_SECTION_IDS =
+    [
+      "top",
+      "intro",
+      "work",
+      "capabilities",
+      "technology",
+      "process",
+      "testimonials",
+      "explorations",
+      "contact",
+    ] as const;
+
+  const getVisibleHomeSection =
+    () => {
+      const viewportCenter =
+        window.innerHeight *
+        0.5;
+
+      let bestId:
+        string | null =
+          null;
+
+      let bestDistance =
+        Number.POSITIVE_INFINITY;
+
+      HOME_SECTION_IDS.forEach(
+        (
+          id
+        ) => {
+          const element =
+            document.getElementById(
+              id
+            );
+
+          if (
+            !element
+          ) {
+            return;
+          }
+
+          const rect =
+            element.getBoundingClientRect();
+
+          /*
+           * Elementos completamente fuera del
+           * viewport no compiten mientras exista
+           * uno visible.
+           */
+          const isVisible =
+            rect.bottom > 0 &&
+            rect.top <
+              window.innerHeight;
+
+          const elementCenter =
+            (
+              Math.max(
+                rect.top,
+                0
+              ) +
+              Math.min(
+                rect.bottom,
+                window.innerHeight
+              )
+            ) /
+            2;
+
+          const distance =
+            Math.abs(
+              elementCenter -
+              viewportCenter
+            ) +
+            (
+              isVisible
+                ? 0
+                : window.innerHeight
+            );
+
+          if (
+            distance <
+            bestDistance
+          ) {
+            bestDistance =
+              distance;
+
+            bestId =
+              id;
+          }
+        }
+      );
+
+      /*
+       * Si estamos prácticamente al inicio,
+       * mantenemos el Home limpio sin #top.
+       */
+      if (
+        window.scrollY <
+        Math.max(
+          80,
+          window.innerHeight *
+            0.08
+        )
+      ) {
+        return null;
+      }
+
+      return bestId;
+    };
+
+  languageLinks.forEach(
+    (
+      languageLink
+    ) => {
+      languageLink.addEventListener(
+        "click",
+        (
+          event
+        ) => {
+          const current =
+            window.location.pathname;
+
+          const isHome =
+            current ===
+              "/es/" ||
+            current ===
+              "/en/" ||
+            current ===
+              "/es" ||
+            current ===
+              "/en";
+
+          if (
+            !isHome
+          ) {
+            /*
+             * En archivo de proyectos, case studies
+             * y legales se conserva la lógica de URL
+             * definida en getLanguageHref().
+             */
+            return;
+          }
+
+          event.preventDefault();
+
+          const target =
+            new URL(
+              languageLink.href,
+              window.location.origin
+            );
+
+          const visibleSection =
+            getVisibleHomeSection();
+
+          if (
+            visibleSection
+          ) {
+            target.hash =
+              `#${visibleSection}`;
+          } else {
+            target.hash =
+              "";
+          }
+
+          window.location.href =
+            `${target.pathname}${target.hash}`;
+        }
+      );
+    }
+  );
+
+  let isOpen = false;
+
+  if (
+    menu &&
+    toggle &&
+    label &&
+    symbol
+  ) {
+    const surface =
+      menu.querySelector<HTMLElement>(
+        ".menu__surface"
+      );
+
+    const navLabels =
+      menu.querySelectorAll<HTMLElement>(
+        ".menu__label"
+      );
+
+    const secondary =
+      menu.querySelectorAll<HTMLElement>(
+        ".menu__top, .menu__bottom"
+      );
+
+    const openLabel =
+      toggle.dataset
+        .menuOpenLabel ??
+      "MENU";
+
+    const closeLabel =
+      toggle.dataset
+        .menuCloseLabel ??
+      "CLOSE";
+
+    const openAria =
+      toggle.dataset
+        .menuOpenAria ??
+      "Open menu";
+
+    const closeAria =
+      toggle.dataset
+        .menuCloseAria ??
+      "Close menu";
+
+    gsap.set(menu, {
+      autoAlpha: 0,
+      pointerEvents: "none",
+    });
+
+    const openMenu = () => {
+      if (
+        isOpen ||
+        !surface
+      ) {
+        return;
+      }
+
+      isOpen = true;
+
+      document.body.classList.add(
+        "menu-open"
+      );
+
+      toggle.setAttribute(
+        "aria-expanded",
+        "true"
+      );
+
+      toggle.setAttribute(
+        "aria-label",
+        closeAria
+      );
+
+      menu.setAttribute(
+        "aria-hidden",
+        "false"
+      );
+
+      label.textContent =
+        closeLabel;
+
+      symbol.textContent =
+        "×";
+
+      if (reducedMotion) {
+        gsap.set(menu, {
+          autoAlpha: 1,
+          pointerEvents: "auto",
+        });
+
+        return;
+      }
+
+      gsap
+        .timeline()
+        .set(menu, {
+          autoAlpha: 1,
+          pointerEvents: "auto",
+        })
+        .fromTo(
+          surface,
+          {
+            yPercent: -100,
+          },
+          {
+            yPercent: 0,
+            duration: 0.85,
+            ease: "power4.inOut",
+          }
+        )
+        .fromTo(
+          navLabels,
+          {
+            yPercent: 120,
+          },
+          {
+            yPercent: 0,
+            duration: 0.8,
+            stagger: 0.06,
+            ease: "power4.out",
+          },
+          "-=0.4"
+        )
+        .fromTo(
+          secondary,
+          {
+            y: 20,
+            autoAlpha: 0,
+          },
+          {
+            y: 0,
+            autoAlpha: 1,
+            duration: 0.6,
+            stagger: 0.08,
+            ease: "power3.out",
+          },
+          "-=0.55"
+        );
+    };
+
+    const closeMenu = () => {
+      if (
+        !isOpen ||
+        !surface
+      ) {
+        return;
+      }
+
+      isOpen = false;
+
+      toggle.setAttribute(
+        "aria-expanded",
+        "false"
+      );
+
+      toggle.setAttribute(
+        "aria-label",
+        openAria
+      );
+
+      label.textContent =
+        openLabel;
+
+      symbol.textContent =
+        "+";
+
+      const finish = () => {
+        document.body.classList.remove(
+          "menu-open"
+        );
+
+        menu.setAttribute(
+          "aria-hidden",
+          "true"
+        );
+
+        gsap.set(menu, {
+          autoAlpha: 0,
+          pointerEvents: "none",
+        });
+      };
+
+      if (reducedMotion) {
+        finish();
+
+        return;
+      }
+
+      gsap
+        .timeline({
+          onComplete:
+            finish,
+        })
+        .to(
+          navLabels,
+          {
+            yPercent: -120,
+            duration: 0.4,
+            stagger: 0.025,
+            ease: "power3.in",
+          }
+        )
+        .to(
+          surface,
+          {
+            yPercent: -100,
+            duration: 0.7,
+            ease: "power4.inOut",
+          },
+          "-=0.2"
+        );
+    };
+
+    toggle.addEventListener(
+      "click",
+      () => {
+        if (isOpen) {
+          closeMenu();
+        } else {
+          openMenu();
+        }
+      }
+    );
+
+    menuLinks.forEach(
+      (link) => {
+        link.addEventListener(
+          "click",
+          closeMenu
+        );
+      }
+    );
+
+    window.addEventListener(
+      "keydown",
+      (event) => {
+        if (
+          event.key ===
+            "Escape" &&
+          isOpen
+        ) {
+          closeMenu();
+        }
+      }
+    );
+  }
+</script>
+
+<style>
+  .menu {
+    position: fixed;
+
+    z-index: 90;
+
+    inset: 0;
+
+    visibility: hidden;
+
+    width: 100%;
+    height: 100svh;
+
+    color: var(--color-black);
+  }
+
+  .menu__surface {
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
+    height: 100%;
+
+    padding:
+      1.5rem
+      var(--page-padding)
+      2rem;
+
+    background:
+      var(--color-white);
+  }
+
+  .menu__top {
+    display: flex;
+    justify-content: space-between;
+
+    padding-top: 4.5rem;
+
+    font-size: 0.65rem;
+    font-weight: 600;
+
+    letter-spacing: 0.1em;
+  }
+
+  .menu__nav {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .menu__link {
+    display: grid;
+
+    grid-template-columns:
+      3rem
+      1fr
+      auto;
+
+    align-items: center;
+
+    min-height: clamp(
+      3.75rem,
+      6.6vw,
+      6.75rem
+    );
+
+    border-bottom:
+      1px solid
+      var(--color-line-light);
+  }
+
+  .menu__link:first-child {
+    border-top:
+      1px solid
+      var(--color-line-light);
+  }
+
+  .menu__number {
+    align-self: start;
+
+    padding-top: 1.25rem;
+
+    font-size: 0.62rem;
+
+    color: var(--color-gray);
+  }
+
+  .menu__label-wrap {
+    overflow: hidden;
+  }
+
+  .menu__label {
+    display: block;
+
+    font-family:
+      var(--font-display);
+
+    font-size:
+      clamp(2.4rem, 5.6vw, 6rem);
+
+    font-weight: 500;
+
+    line-height: 0.9;
+
+    letter-spacing: -0.065em;
+
+    transition:
+      transform 500ms
+      var(--ease-out);
+  }
+
+  .menu__arrow {
+    font-size:
+      clamp(1.2rem, 2vw, 2rem);
+
+    transition:
+      transform 400ms
+      var(--ease-out);
+  }
+
+  .menu__link:hover
+  .menu__label {
+    transform:
+      translateX(1.25rem);
+  }
+
+  .menu__link:hover
+  .menu__arrow {
+    transform:
+      rotate(45deg);
+  }
+
+  .menu__bottom {
+    display: grid;
+
+    grid-template-columns:
+      1fr
+      1fr
+      auto;
+
+    align-items: end;
+
+    gap: 2rem;
+
+    padding-top: 1.5rem;
+  }
+
+  .menu__small-title {
+    display: block;
+
+    margin-bottom: 0.5rem;
+
+    color:
+      var(--color-gray);
+
+    font-size: 0.58rem;
+
+    letter-spacing: 0.1em;
+  }
+
+  .menu__social,
+  .menu__languages {
+    display: flex;
+
+    gap: 0.75rem;
+
+    font-size: 0.7rem;
+
+    letter-spacing: 0.06em;
+  }
+
+  .menu__languages a.is-active {
+    opacity: 1;
+    text-decoration: underline;
+    text-underline-offset: 0.28rem;
+  }
+
+  .menu__languages a:not(.is-active) {
+    opacity: 0.46;
+  }
+
+  .menu__availability {
+    display: flex;
+    align-items: center;
+
+    gap: 0.5rem;
+
+    font-size: 0.62rem;
+
+    letter-spacing: 0.08em;
+  }
+
+  .menu__status {
+    width: 0.45rem;
+    height: 0.45rem;
+
+    border-radius: 50%;
+
+    background:
+      var(--color-accent);
+  }
+
+  @media (max-width: 700px) {
+    .menu__surface {
+      padding-bottom: 1.4rem;
+    }
+
+    .menu__top {
+      padding-top: 4rem;
+    }
+
+    .menu__link {
+      grid-template-columns:
+        2rem
+        1fr
+        auto;
+    }
+
+    .menu__link {
+      min-height:
+        clamp(
+          3.6rem,
+          12vw,
+          4.8rem
+        );
+    }
+
+    .menu__label {
+      font-size:
+        clamp(
+          2.4rem,
+          10.5vw,
+          4rem
+        );
+    }
+
+    .menu__bottom {
+      grid-template-columns:
+        1fr
+        auto;
+    }
+
+    .menu__availability {
+      display: none;
+    }
+  }
+</style>

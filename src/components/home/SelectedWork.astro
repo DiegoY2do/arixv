@@ -1,0 +1,2667 @@
+---
+import {
+  homeContent,
+  type HomeLocale,
+} from "../../data/home";
+
+interface Props {
+  lang?: HomeLocale;
+}
+
+const {
+  lang = "es",
+} = Astro.props;
+
+const content =
+  homeContent[lang].selectedWork;
+
+const servicesContent =
+  homeContent[lang].services;
+---
+
+<section
+  class="work"
+  id="work"
+  data-work
+>
+  <!-- =========================================
+       DESKTOP: RECORRIDO HORIZONTAL
+  ========================================== -->
+  <div class="work__desktop">
+    <!--
+      SERVICES está debajo del track.
+      No se desplaza horizontalmente.
+      Se descubre cuando el último panel
+      de Selected Work sale hacia la izquierda.
+    -->
+    <div
+      class="work__services-underlay"
+      data-work-services-underlay
+    >
+      <div class="work__services-meta">
+        <span>
+          {servicesContent.meta.label}
+        </span>
+
+        <span>
+          {servicesContent.meta.number}
+        </span>
+      </div>
+
+      <div class="work__services-eyebrow">
+        {servicesContent.eyebrow}
+      </div>
+
+      <div class="work__services-words">
+        {
+          servicesContent.items.map(
+            (item) => (
+              <span>
+                {item}
+              </span>
+            )
+          )
+        }
+      </div>
+
+      <div class="work__services-bottom">
+        <p>
+          <span class="work__services-bullet"></span>
+
+          {servicesContent.tagline}
+        </p>
+
+        <a
+          href={servicesContent.cta.href}
+          class="work__services-cta"
+        >
+          <span>
+            {servicesContent.cta.label}
+          </span>
+
+          <span aria-hidden="true">
+            →
+          </span>
+        </a>
+      </div>
+    </div>
+
+    <div
+      class="work__track"
+      data-work-track
+    >
+      <!-- INTRO -->
+      <div class="work__intro-panel">
+        <div class="work__meta">
+          <span>
+            {content.meta.label}
+          </span>
+
+          <span>
+            {content.meta.number}
+          </span>
+        </div>
+
+        <div class="work__intro-content">
+          <h2 class="work__heading">
+            <span>
+              {content.heading.lineOne}
+            </span>
+
+            <span>
+              {content.heading.lineTwo}
+            </span>
+          </h2>
+
+          <a
+            href={content.viewAll.href}
+            class="work__all"
+          >
+            <span>
+              {content.viewAll.label}
+            </span>
+
+            <span aria-hidden="true">
+              →
+            </span>
+          </a>
+        </div>
+      </div>
+
+      <!-- PROYECTOS -->
+      {
+        content.projects.map(
+          (project) => (
+            <article
+              class:list={[
+                "project",
+                `project--${project.visual}`,
+              ]}
+              data-work-project
+              data-project-number={project.number}
+            >
+              <div class="project__inner">
+                <a
+                  href={project.href}
+                  class="project__visual"
+                  aria-label={`${project.cta}: ${project.title}`}
+                >
+                  <picture class="project__picture">
+                    {
+                      "mobileImage" in project &&
+                      project.mobileImage && (
+                        <source
+                          media="(max-width: 900px)"
+                          srcset={project.mobileImage}
+                        />
+                      )
+                    }
+
+                    <img
+                      src={project.image}
+                      alt=""
+                      loading="lazy"
+                      data-project-image
+                    />
+                  </picture>
+                </a>
+
+                <div class="project__info">
+                  <div class="project__copy">
+                    <h3>
+                      {project.title}
+                    </h3>
+
+                    <p>
+                      {project.description}
+                    </p>
+                  </div>
+
+                  <a
+                    href={project.href}
+                    class="project__link"
+                  >
+                    <span>
+                      {project.cta}
+                    </span>
+
+                    <span aria-hidden="true">
+                      →
+                    </span>
+                  </a>
+                </div>
+
+                <div class="project__meta">
+                  <span>
+                    {project.category}
+                  </span>
+
+                  <span>
+                    {project.year}
+                  </span>
+                </div>
+              </div>
+            </article>
+          )
+        )
+      }
+
+      <!--
+        CIERRE REAL DEL RECORRIDO HORIZONTAL.
+        Después de este panel termina el pin y
+        vuelve el scroll vertical normal.
+      -->
+      <div
+        class="work__collection"
+        data-work-collection
+      >
+        <div class="work__collection-inner">
+          <p>
+            {content.collection.title}
+          </p>
+
+          <a
+            href={content.collection.href}
+            class="work__collection-link"
+          >
+            <span>
+              {content.collection.cta}
+            </span>
+
+            <span aria-hidden="true">
+              →
+            </span>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =========================================
+       MOBILE: FLUJO VERTICAL NORMAL
+       Nada horizontal.
+  ========================================== -->
+  <div class="work__mobile container">
+    <div class="work__mobile-head">
+      <div class="work__meta">
+        <span>
+          {content.meta.label}
+        </span>
+
+        <span>
+          {content.meta.number}
+        </span>
+      </div>
+
+      <h2 class="work__mobile-title">
+        <span>
+          {content.heading.lineOne}
+        </span>
+
+        <span>
+          {content.heading.lineTwo}
+        </span>
+      </h2>
+
+      <a
+        href={content.viewAll.href}
+        class="work__all"
+      >
+        <span>
+          {content.viewAll.label}
+        </span>
+
+        <span aria-hidden="true">
+          →
+        </span>
+      </a>
+    </div>
+
+    <div class="work__mobile-projects">
+      {
+        content.projects.map(
+          (project) => (
+            <article
+              class:list={[
+                "mobile-project",
+                `project--${project.visual}`,
+              ]}
+              data-mobile-project
+            >
+              <a
+                href={project.href}
+                class="mobile-project__visual"
+              >
+                <img
+                  src={project.image}
+                  alt=""
+                  loading="lazy"
+                />
+              </a>
+
+              <div class="mobile-project__meta">
+                <span>
+                  {project.number}
+                </span>
+
+                <span>
+                  {project.category}
+                </span>
+
+                <span>
+                  {project.year}
+                </span>
+              </div>
+
+              <h3>
+                {project.title}
+              </h3>
+
+              <div class="mobile-project__bottom">
+                <p>
+                  {project.description}
+                </p>
+
+                <a
+                  href={project.href}
+                  class="project__link"
+                >
+                  <span>
+                    {project.cta}
+                  </span>
+
+                  <span aria-hidden="true">
+                    →
+                  </span>
+                </a>
+              </div>
+            </article>
+          )
+        )
+      }
+    </div>
+
+    <div class="work__mobile-collection">
+      <p>
+        {content.collection.title}
+      </p>
+
+      <a
+        href={content.collection.href}
+        class="work__collection-link"
+      >
+        <span>
+          {content.collection.cta}
+        </span>
+
+        <span aria-hidden="true">
+          →
+        </span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<script>
+  import {
+    gsap,
+    ScrollTrigger,
+    SplitText,
+  } from "../../scripts/gsap";
+
+  const section =
+    document.querySelector<HTMLElement>(
+      "[data-work]"
+    );
+
+  if (section) {
+    const track =
+      section.querySelector<HTMLElement>(
+        "[data-work-track]"
+      );
+
+    const projects =
+      section.querySelectorAll<HTMLElement>(
+        "[data-work-project]"
+      );
+
+
+    const mobileProjects =
+      section.querySelectorAll<HTMLElement>(
+        "[data-mobile-project]"
+      );
+
+    const introHeading =
+      section.querySelector<HTMLElement>(
+        ".work__heading"
+      );
+
+    const collection =
+      section.querySelector<HTMLElement>(
+        "[data-work-collection]"
+      );
+
+    const collectionText =
+      section.querySelector<HTMLElement>(
+        ".work__collection-inner > p"
+      );
+
+    const reducedMotion =
+      window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches;
+
+    const media =
+      gsap.matchMedia();
+
+    /*
+     * Una sola recalibración cuando fuentes/layout están listos.
+     * Evita medir el track con métricas tipográficas provisionales.
+     */
+    let layoutRefreshQueued =
+      false;
+
+    const refreshLayout =
+      () => {
+        if (
+          layoutRefreshQueued
+        ) {
+          return;
+        }
+
+        layoutRefreshQueued =
+          true;
+
+        requestAnimationFrame(
+          () => {
+            ScrollTrigger.refresh();
+          }
+        );
+      };
+
+    if (
+      "fonts" in document
+    ) {
+      document.fonts.ready.then(
+        refreshLayout
+      );
+    }
+
+    if (
+      document.readyState ===
+      "complete"
+    ) {
+      refreshLayout();
+    } else {
+      window.addEventListener(
+        "load",
+        refreshLayout,
+        {
+          once: true,
+        }
+      );
+    }
+
+    /*
+     * =====================================
+     * SPLITTEXT — WORDS
+     * =====================================
+     *
+     * La animación va ligada al scroll (scrub),
+     * para que se vea claramente al entrar cada panel.
+     *
+     * Solo animamos títulos/textos principales.
+     * Descripción, CTA y metadata NO se ocultan con GSAP.
+     */
+    const createWordsEffects =
+      (
+        horizontalTween:
+          gsap.core.Tween,
+        isMobile:
+          boolean
+      ) => {
+        const splits:
+          Array<{
+            revert:
+              () => void;
+          }> =
+            [];
+
+        const animateWordsOnHorizontal =
+          (
+            element:
+              HTMLElement,
+            trigger:
+              HTMLElement,
+            start:
+              string,
+            end:
+              string
+          ) => {
+            const split =
+              SplitText.create(
+                element,
+                {
+                  type:
+                    "words",
+                  mask:
+                    "words",
+                }
+              );
+
+            splits.push(
+              split
+            );
+
+            /*
+             * Primero colocamos las palabras fuera de su máscara.
+             * Después mostramos el título padre.
+             * Así no existe ningún frame donde se vea completo
+             * antes de comenzar el efecto Words.
+             */
+            gsap.set(
+              split.words,
+              {
+                yPercent:
+                  125,
+              }
+            );
+
+            gsap.set(
+              element,
+              {
+                visibility:
+                  "visible",
+              }
+            );
+
+            gsap.to(
+              split.words,
+              {
+                yPercent:
+                  0,
+
+                stagger:
+                  isMobile
+                    ? 0.07
+                    : 0.1,
+
+                ease:
+                  "power4.out",
+
+                scrollTrigger: {
+                  trigger,
+
+                  containerAnimation:
+                    horizontalTween,
+
+                  start,
+                  end,
+
+                  scrub:
+                    isMobile
+                      ? 0.28
+                      : 0.38,
+
+                  invalidateOnRefresh:
+                    true,
+                },
+              }
+            );
+          };
+
+        /*
+         * Intro: PROYECTOS DESTACADOS.
+         * Entra una sola vez al llegar a la sección.
+         */
+        if (
+          introHeading
+        ) {
+          const split =
+            SplitText.create(
+              introHeading,
+              {
+                type:
+                  "words",
+                mask:
+                  "words",
+              }
+            );
+
+          splits.push(
+            split
+          );
+
+          gsap.set(
+            split.words,
+            {
+              yPercent:
+                125,
+            }
+          );
+
+          gsap.set(
+            introHeading,
+            {
+              visibility:
+                "visible",
+            }
+          );
+
+          gsap.to(
+            split.words,
+            {
+              yPercent:
+                0,
+
+              duration:
+                isMobile
+                  ? 0.72
+                  : 0.88,
+
+              stagger:
+                isMobile
+                  ? 0.075
+                  : 0.1,
+
+              ease:
+                "power4.out",
+
+              scrollTrigger: {
+                trigger:
+                  section,
+
+                start:
+                  isMobile
+                    ? "top 90%"
+                    : "top 84%",
+
+                toggleActions:
+                  "play none none reverse",
+              },
+            }
+          );
+        }
+
+        /*
+         * AFTER HOUSE / FLOW SUPPLEMENTS / BOULDR.
+         * El efecto ocurre mientras cada panel entra.
+         */
+        projects.forEach(
+          (
+            project
+          ) => {
+            const title =
+              project.querySelector<HTMLElement>(
+                ".project__copy h3"
+              );
+
+            if (
+              title
+            ) {
+              animateWordsOnHorizontal(
+                title,
+                project,
+                isMobile
+                  ? "left 92%"
+                  : "left 88%",
+                isMobile
+                  ? "left 58%"
+                  : "left 56%"
+              );
+            }
+          }
+        );
+
+        /*
+         * Panel final.
+         */
+        if (
+          collection &&
+          collectionText
+        ) {
+          animateWordsOnHorizontal(
+            collectionText,
+            collection,
+            isMobile
+              ? "left 92%"
+              : "left 86%",
+            isMobile
+              ? "left 56%"
+              : "left 52%"
+          );
+        }
+
+        return () => {
+          splits.forEach(
+            (
+              split
+            ) =>
+              split.revert()
+          );
+
+          const projectTitles =
+            Array.from(
+              projects
+            )
+              .map(
+                (
+                  project
+                ) =>
+                  project.querySelector<HTMLElement>(
+                    ".project__copy h3"
+                  )
+              )
+              .filter(
+                (
+                  item
+                ): item is HTMLElement =>
+                  Boolean(
+                    item
+                  )
+              );
+
+          gsap.set(
+            [
+              ...(introHeading
+                ? [introHeading]
+                : []),
+              ...projectTitles,
+              ...(collectionText
+                ? [collectionText]
+                : []),
+            ],
+            {
+              visibility:
+                "visible",
+            }
+          );
+        };
+      };
+
+    if (
+      !reducedMotion &&
+      track
+    ) {
+      media.add(
+        "(min-width: 901px)",
+        () => {
+          /*
+           * Recorrido completo:
+           * añadimos el último viewport al desplazamiento
+           * para que el panel "Descubre..." también salga
+           * totalmente hacia la izquierda y revele Services.
+           */
+          const getDistance = () =>
+            Math.max(
+              0,
+              track.scrollWidth
+            );
+
+          const horizontalTween =
+            gsap.to(
+              track,
+              {
+                x: () =>
+                  -getDistance(),
+
+                ease: "none",
+
+                scrollTrigger: {
+                  trigger: section,
+
+                  start:
+                    "top top",
+
+                  end: () =>
+                    `+=${getDistance()}`,
+
+                  pin: true,
+
+                  /*
+                   * El track principal debe seguir al scroll
+                   * de forma exacta. El scrub con retraso era
+                   * el que podía dejar Services visible mientras
+                   * el horizontal todavía "alcanzaba" al scroll.
+                   */
+                  scrub: true,
+
+                  anticipatePin: 1,
+
+                  refreshPriority:
+                    100,
+
+                  invalidateOnRefresh:
+                    true,
+                },
+              }
+            );
+
+          const cleanupWordsEffects =
+            createWordsEffects(
+              horizontalTween,
+              false
+            );
+
+          /*
+           * Los proyectos siguientes llegan
+           * desde abajo mientras el track
+           * avanza horizontalmente.
+           */
+          projects.forEach(
+            (project, index) => {
+              const inner =
+                project.querySelector<HTMLElement>(
+                  ".project__inner"
+                );
+
+              const image =
+                project.querySelector<HTMLElement>(
+                  "[data-project-image]"
+                );
+
+              if (
+                inner &&
+                index > 0
+              ) {
+                gsap.fromTo(
+                  inner,
+                  {
+                    yPercent: 28,
+
+                    autoAlpha: 0.82,
+                  },
+                  {
+                    yPercent: 0,
+
+                    autoAlpha: 1,
+
+                    ease: "none",
+
+                    scrollTrigger: {
+                      trigger: project,
+
+                      containerAnimation:
+                        horizontalTween,
+
+                      start:
+                        "left 96%",
+
+                      end:
+                        "left 58%",
+
+                      scrub: 0.24,
+                    },
+                  }
+                );
+              }
+
+              if (image) {
+                gsap.fromTo(
+                  image,
+                  {
+                    xPercent: -2.5,
+
+                    scale: 1.045,
+                  },
+                  {
+                    xPercent: 2.5,
+
+                    scale: 1,
+
+                    ease: "none",
+
+                    scrollTrigger: {
+                      trigger: project,
+
+                      containerAnimation:
+                        horizontalTween,
+
+                      start:
+                        "left right",
+
+                      end:
+                        "right left",
+
+                      scrub: true,
+                    },
+                  }
+                );
+              }
+            }
+          );
+
+          return () => {
+            cleanupWordsEffects();
+
+            horizontalTween.kill();
+          };
+        }
+      );
+
+      media.add(
+        "(max-width: 900px)",
+        () => {
+          /*
+           * MOBILE:
+           * mantenemos la misma narrativa de escritorio:
+           * scroll vertical -> track horizontal -> proyectos
+           * entran desde abajo -> panel final sale y revela
+           * Services debajo.
+           */
+          const getDistance = () =>
+            Math.max(
+              0,
+              track.scrollWidth
+            );
+
+          const horizontalTween =
+            gsap.to(
+              track,
+              {
+                x:
+                  () =>
+                    -getDistance(),
+
+                ease:
+                  "none",
+
+                scrollTrigger: {
+                  trigger:
+                    section,
+
+                  start:
+                    "top top",
+
+                  end:
+                    () =>
+                      `+=${getDistance()}`,
+
+                  pin:
+                    true,
+
+                  scrub:
+                    true,
+
+                  anticipatePin:
+                    1,
+
+                  refreshPriority:
+                    90,
+
+                  invalidateOnRefresh:
+                    true,
+                },
+              }
+            );
+
+          const cleanupWordsEffects =
+            createWordsEffects(
+              horizontalTween,
+              true
+            );
+
+          projects.forEach(
+            (
+              project,
+              index
+            ) => {
+              const inner =
+                project.querySelector<HTMLElement>(
+                  ".project__inner"
+                );
+
+              const image =
+                project.querySelector<HTMLElement>(
+                  "[data-project-image]"
+                );
+
+              if (
+                inner &&
+                index >
+                  0
+              ) {
+                gsap.fromTo(
+                  inner,
+                  {
+                    yPercent:
+                      22,
+
+                    autoAlpha:
+                      0.84,
+                  },
+                  {
+                    yPercent:
+                      0,
+
+                    autoAlpha:
+                      1,
+
+                    ease:
+                      "none",
+
+                    scrollTrigger: {
+                      trigger:
+                        project,
+
+                      containerAnimation:
+                        horizontalTween,
+
+                      start:
+                        "left 102%",
+
+                      end:
+                        "left 54%",
+
+                      scrub:
+                        0.18,
+                    },
+                  }
+                );
+              }
+
+              if (
+                image
+              ) {
+                gsap.fromTo(
+                  image,
+                  {
+                    xPercent:
+                      -2,
+
+                    scale:
+                      1.035,
+                  },
+                  {
+                    xPercent:
+                      2,
+
+                    scale:
+                      1,
+
+                    ease:
+                      "none",
+
+                    scrollTrigger: {
+                      trigger:
+                        project,
+
+                      containerAnimation:
+                        horizontalTween,
+
+                      start:
+                        "left right",
+
+                      end:
+                        "right left",
+
+                      scrub:
+                        true,
+                    },
+                  }
+                );
+              }
+            }
+          );
+
+          return () => {
+            cleanupWordsEffects();
+
+            horizontalTween.kill();
+          };
+        }
+      );
+    }
+  }
+</script>
+
+<style>
+  .work {
+    position: relative;
+
+    width: 100%;
+
+    overflow:
+      clip;
+
+    background:
+      var(--color-white);
+
+    color:
+      var(--color-black);
+  }
+
+  /*
+   * =====================================
+   * DESKTOP / HORIZONTAL
+   * =====================================
+   */
+
+  .work__desktop {
+    position: relative;
+
+    width: 100%;
+    height: 100svh;
+
+    overflow:
+      hidden;
+
+    background:
+      var(--color-white);
+
+    border-top:
+      1px solid
+      var(--color-line-light);
+  }
+
+  .work__track {
+    position: relative;
+
+    z-index: 2;
+
+    display: flex;
+
+    width:
+      max-content;
+
+    height: 100%;
+
+    /*
+     * El gris pertenece al track que se mueve.
+     * Así tapa Services hasta que su borde
+     * derecho empieza a salir del viewport.
+     */
+    background-color:
+      #ffffff;
+
+    background-image:
+      linear-gradient(
+        180deg,
+        #d8d8d880 0%,
+        #d8d8d8bf 55%,
+        #d8d8d8eb 100%
+      );
+
+    will-change:
+      transform;
+  }
+
+  .work__intro-panel,
+  .project,
+  .work__collection {
+    background:
+      transparent;
+  }
+
+  /*
+   * =====================================
+   * SERVICES DEBAJO DEL HORIZONTAL
+   * =====================================
+   */
+
+  .work__services-underlay {
+    position: absolute;
+
+    z-index: 1;
+
+    inset: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    width: 100%;
+    height: 100%;
+
+    padding:
+      clamp(
+        5rem,
+        7vw,
+        6.5rem
+      )
+      var(--page-padding)
+      clamp(
+        2rem,
+        3vw,
+        3rem
+      );
+
+    background:
+      var(--color-white);
+
+    color:
+      var(--color-black);
+  }
+
+  .work__services-meta {
+    display: flex;
+
+    justify-content:
+      space-between;
+
+    gap: 1rem;
+
+    font-size:
+      0.52rem;
+
+    font-weight:
+      600;
+
+    letter-spacing:
+      0.11em;
+
+    text-transform:
+      uppercase;
+  }
+
+  .work__services-eyebrow {
+    position: absolute;
+
+    top:
+      clamp(
+        6rem,
+        8vw,
+        8rem
+      );
+
+    left: 50%;
+
+    transform:
+      translateX(-50%);
+
+    font-size:
+      0.62rem;
+
+    font-weight:
+      600;
+
+    text-transform:
+      uppercase;
+  }
+
+  .work__services-words {
+    display: flex;
+
+    flex: 1;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding-top:
+      3rem;
+
+    overflow: hidden;
+  }
+
+  .work__services-words
+  span {
+    display: block;
+
+    font-family:
+      var(--font-display);
+
+    font-size:
+      clamp(
+        5rem,
+        9vw,
+        10.5rem
+      );
+
+    font-weight:
+      500;
+
+    line-height:
+      0.72;
+
+    letter-spacing:
+      -0.075em;
+
+    white-space:
+      nowrap;
+  }
+
+  .work__services-words
+  span:nth-child(1) {
+    margin-right:
+      14vw;
+  }
+
+  .work__services-words
+  span:nth-child(2) {
+    margin-left:
+      8vw;
+  }
+
+  .work__services-words
+  span:nth-child(3) {
+    margin-right:
+      4vw;
+  }
+
+  .work__services-words
+  span:nth-child(4) {
+    margin-left:
+      11vw;
+  }
+
+  .work__services-bottom {
+    display: flex;
+
+    align-items:
+      flex-end;
+
+    justify-content:
+      space-between;
+
+    gap: 3rem;
+  }
+
+  .work__services-bottom
+  p {
+    display: flex;
+
+    align-items: center;
+
+    gap:
+      0.6rem;
+
+    max-width:
+      32rem;
+
+    margin: 0;
+
+    font-size:
+      0.62rem;
+
+    font-weight:
+      600;
+
+    text-transform:
+      uppercase;
+  }
+
+  .work__services-bullet {
+    display: block;
+
+    flex:
+      0 0
+      auto;
+
+    width:
+      0.45rem;
+
+    height:
+      0.45rem;
+
+    border-radius:
+      50%;
+
+    background:
+      var(--color-accent);
+  }
+
+  .work__services-cta {
+    display:
+      inline-grid;
+
+    grid-template-columns:
+      1fr
+      auto;
+
+    gap:
+      2rem;
+
+    width:
+      min(
+        100%,
+        12rem
+      );
+
+    padding-bottom:
+      0.72rem;
+
+    border-bottom:
+      1px solid
+      currentColor;
+
+    color:
+      inherit;
+
+    font-size:
+      0.55rem;
+
+    font-weight:
+      600;
+
+    letter-spacing:
+      0.1em;
+
+    text-decoration:
+      none;
+
+    text-transform:
+      uppercase;
+  }
+
+  .work__intro-panel {
+    position: relative;
+
+    display: flex;
+
+    flex:
+      0 0
+      50vw;
+
+    flex-direction:
+      column;
+
+    width: 50vw;
+    height: 100%;
+
+    padding:
+      clamp(
+        5rem,
+        7vw,
+        6.5rem
+      )
+      var(--page-padding)
+      clamp(
+        2rem,
+        3vw,
+        3rem
+      );
+
+    border-right:
+      1px solid
+      var(--color-line-light);
+  }
+
+  .work__meta {
+    display: flex;
+
+    justify-content:
+      space-between;
+
+    gap: 1rem;
+
+    font-size:
+      0.52rem;
+
+    font-weight:
+      600;
+
+    letter-spacing:
+      0.11em;
+
+    text-transform:
+      uppercase;
+  }
+
+  .work__intro-content {
+    display: flex;
+
+    flex: 1;
+
+    flex-direction:
+      column;
+
+    justify-content:
+      center;
+
+    align-items:
+      flex-start;
+
+    padding-left:
+      clamp(
+        0rem,
+        7vw,
+        7rem
+      );
+  }
+
+  .work__heading,
+  .project__copy h3,
+  .work__collection-inner p {
+    visibility:
+      hidden;
+  }
+
+  .work__heading {
+    display: flex;
+
+    flex-direction:
+      column;
+
+    margin: 0;
+
+    font-family:
+      var(--font-display);
+
+    font-size:
+      clamp(
+        3.7rem,
+        5vw,
+        6rem
+      );
+
+    font-weight:
+      500;
+
+    line-height:
+      0.96;
+
+    letter-spacing:
+      -0.06em;
+  }
+
+  .work__heading
+  span:last-child {
+    font-weight:
+      400;
+  }
+
+  .work__all,
+  .work__collection-link,
+  .project__link {
+    display:
+      inline-grid;
+
+    grid-template-columns:
+      1fr
+      auto;
+
+    gap: 2rem;
+
+    padding-bottom:
+      0.72rem;
+
+    border-bottom:
+      1px solid
+      currentColor;
+
+    color:
+      inherit;
+
+    font-size:
+      0.52rem;
+
+    font-weight:
+      600;
+
+    letter-spacing:
+      0.1em;
+
+    text-decoration:
+      none;
+
+    text-transform:
+      uppercase;
+  }
+
+  .work__all,
+  .work__collection-link {
+    width:
+      min(
+        100%,
+        13rem
+      );
+  }
+
+  .work__all {
+    margin-top:
+      clamp(
+        3rem,
+        5vw,
+        5rem
+      );
+  }
+
+  /*
+   * Proyectos.
+   */
+
+  .project {
+    position: relative;
+
+    flex:
+      0 0
+      min(
+        58vw,
+        66rem
+      );
+
+    width:
+      min(
+        58vw,
+        66rem
+      );
+
+    height:
+      100%;
+
+    border-right:
+      1px solid
+      var(--color-line-light);
+  }
+
+  .project__inner {
+    display: flex;
+
+    flex-direction:
+      column;
+
+    width: 100%;
+    height: 100%;
+
+    padding:
+      clamp(
+        7rem,
+        9vw,
+        9rem
+      )
+      clamp(
+        2rem,
+        3vw,
+        3.5rem
+      )
+      clamp(
+        2rem,
+        3vw,
+        3rem
+      );
+
+    will-change:
+      transform,
+      opacity;
+  }
+
+  .project__visual {
+    position: relative;
+
+    display: block;
+
+    flex: 1;
+
+    min-height: 0;
+
+    overflow:
+      hidden;
+
+    background:
+      var(--color-black);
+
+    color:
+      var(--color-white);
+
+    text-decoration:
+      none;
+  }
+
+  .project__picture {
+    display:
+      block;
+
+    width:
+      100%;
+
+    height:
+      100%;
+  }
+
+  .project__visual
+  img,
+  .project__placeholder {
+    width: 100%;
+    height: 100%;
+
+    object-fit:
+      cover;
+
+    will-change:
+      transform;
+  }
+
+  .project__placeholder {
+    position: relative;
+
+    overflow:
+      hidden;
+
+    background:
+      #0b0b0b;
+  }
+
+  .project--commerce
+  .project__placeholder {
+    background:
+      radial-gradient(
+        circle at 72% 32%,
+        rgba(
+          255,
+          61,
+          46,
+          0.22
+        ),
+        transparent 30%
+      ),
+      linear-gradient(
+        135deg,
+        #090909,
+        #1b1110
+      );
+  }
+
+  .project--brand
+  .project__placeholder {
+    color:
+      var(--color-black);
+
+    background:
+      linear-gradient(
+        135deg,
+        #e7e4db,
+        #f4f2ed
+      );
+  }
+
+  .project--product
+  .project__placeholder {
+    background:
+      radial-gradient(
+        circle at 25% 70%,
+        rgba(
+          255,
+          61,
+          46,
+          0.17
+        ),
+        transparent 30%
+      ),
+      #090909;
+  }
+
+  .project__grid {
+    position: absolute;
+
+    inset: 0;
+
+    opacity: 0.7;
+
+    background-image:
+      linear-gradient(
+        rgba(
+          255,
+          255,
+          255,
+          0.045
+        ) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        90deg,
+        rgba(
+          255,
+          255,
+          255,
+          0.045
+        ) 1px,
+        transparent 1px
+      );
+
+    background-size:
+      12.5%
+      12.5%;
+  }
+
+  .project--brand
+  .project__grid {
+    background-image:
+      linear-gradient(
+        rgba(
+          8,
+          8,
+          8,
+          0.055
+        ) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        90deg,
+        rgba(
+          8,
+          8,
+          8,
+          0.055
+        ) 1px,
+        transparent 1px
+      );
+  }
+
+  .project__eyebrow {
+    position: absolute;
+
+    top: 8%;
+    left: 8%;
+
+    font-size:
+      0.5rem;
+
+    font-weight:
+      600;
+
+    letter-spacing:
+      0.12em;
+
+    opacity:
+      0.5;
+  }
+
+  .project__mockup {
+    position: absolute;
+
+    top: 50%;
+    left: 50%;
+
+    width: 74%;
+
+    aspect-ratio:
+      16 / 10;
+
+    border:
+      1px solid
+      rgba(
+        255,
+        255,
+        255,
+        0.16
+      );
+
+    background:
+      rgba(
+        8,
+        8,
+        8,
+        0.58
+      );
+
+    transform:
+      translate(
+        -50%,
+        -50%
+      )
+      rotate(
+        -2.4deg
+      );
+
+    box-shadow:
+      0
+      2.5rem
+      7rem
+      rgba(
+        0,
+        0,
+        0,
+        0.3
+      );
+
+    backdrop-filter:
+      blur(
+        7px
+      );
+  }
+
+  .project--brand
+  .project__mockup {
+    border-color:
+      rgba(
+        8,
+        8,
+        8,
+        0.16
+      );
+
+    background:
+      rgba(
+        242,
+        240,
+        234,
+        0.72
+      );
+
+    transform:
+      translate(
+        -50%,
+        -50%
+      )
+      rotate(
+        2.4deg
+      );
+  }
+
+  .project__mockup-bar {
+    display: flex;
+
+    justify-content:
+      space-between;
+
+    padding:
+      0.9rem;
+
+    border-bottom:
+      1px solid
+      rgba(
+        255,
+        255,
+        255,
+        0.1
+      );
+  }
+
+  .project--brand
+  .project__mockup-bar {
+    border-color:
+      rgba(
+        8,
+        8,
+        8,
+        0.1
+      );
+  }
+
+  .project__mockup-bar
+  span {
+    width: 2rem;
+    height: 1px;
+
+    background:
+      currentColor;
+
+    opacity:
+      0.4;
+  }
+
+  .project__mockup-copy {
+    display: flex;
+
+    flex-direction:
+      column;
+
+    justify-content:
+      space-between;
+
+    height:
+      calc(
+        100% - 2.8rem
+      );
+
+    padding:
+      clamp(
+        1.5rem,
+        3vw,
+        3rem
+      );
+  }
+
+  .project__mockup-copy
+  small {
+    font-size:
+      0.48rem;
+
+    letter-spacing:
+      0.11em;
+
+    text-transform:
+      uppercase;
+
+    opacity:
+      0.5;
+  }
+
+  .project__mockup-copy
+  strong {
+    max-width:
+      7ch;
+
+    font-family:
+      var(--font-display);
+
+    font-size:
+      clamp(
+        2.5rem,
+        5vw,
+        5rem
+      );
+
+    font-weight:
+      500;
+
+    line-height:
+      0.86;
+
+    letter-spacing:
+      -0.06em;
+  }
+
+  .project__ghost {
+    position: absolute;
+
+    right: 3%;
+    bottom: 0;
+
+    font-family:
+      var(--font-display);
+
+    font-size:
+      clamp(
+        8rem,
+        15vw,
+        15rem
+      );
+
+    line-height:
+      0.7;
+
+    letter-spacing:
+      -0.08em;
+
+    opacity:
+      0.06;
+  }
+
+  .project__info {
+    display: grid;
+
+    grid-template-columns:
+      minmax(
+        0,
+        1fr
+      )
+      auto;
+
+    gap: 2rem;
+
+    align-items:
+      end;
+
+    padding-top:
+      clamp(
+        1.2rem,
+        2vw,
+        2rem
+      );
+  }
+
+  .project__copy
+  h3 {
+    margin:
+      0
+      0
+      0.5rem;
+
+    font-family:
+      var(--font-display);
+
+    font-size:
+      clamp(
+        1.6rem,
+        2vw,
+        2.3rem
+      );
+
+    font-weight:
+      500;
+
+    line-height:
+      1;
+
+    letter-spacing:
+      -0.045em;
+  }
+
+  .project__copy
+  p {
+    max-width:
+      28rem;
+
+    margin: 0;
+
+    font-size:
+      clamp(
+        0.75rem,
+        0.82vw,
+        0.9rem
+      );
+
+    line-height:
+      1.45;
+
+    opacity:
+      0.58;
+  }
+
+  .project__meta {
+    display: flex;
+
+    justify-content:
+      space-between;
+
+    margin-top:
+      1rem;
+
+    padding-top:
+      0.75rem;
+
+    border-top:
+      1px solid
+      var(--color-line-light);
+
+    font-size:
+      0.48rem;
+
+    letter-spacing:
+      0.1em;
+
+    text-transform:
+      uppercase;
+
+    opacity:
+      0.44;
+  }
+
+  /*
+   * Cierre Collection.
+   */
+
+  .work__collection {
+    position: relative;
+
+    display: grid;
+
+    flex:
+      0 0
+      100vw;
+
+    width: 100vw;
+    height: 100%;
+
+    place-items:
+      center;
+
+    padding:
+      clamp(
+        5rem,
+        8vw,
+        8rem
+      )
+      var(--page-padding);
+
+    border-right:
+      1px solid
+      var(--color-line-light);
+
+    background:
+      transparent;
+  }
+
+  .work__collection-inner {
+    display: flex;
+
+    flex-direction:
+      column;
+
+    align-items:
+      center;
+
+    width:
+      min(
+        100%,
+        40rem
+      );
+
+    text-align:
+      center;
+  }
+
+  .work__collection-inner
+  p,
+  .work__mobile-collection
+  p {
+    margin: 0;
+
+    font-family:
+      var(--font-display);
+
+    font-size:
+      clamp(
+        2rem,
+        3.1vw,
+        3.8rem
+      );
+
+    font-weight:
+      500;
+
+    line-height:
+      1.05;
+
+    letter-spacing:
+      -0.05em;
+  }
+
+  .work__collection-link {
+    margin-top:
+      clamp(
+        2.5rem,
+        4vw,
+        4rem
+      );
+  }
+
+  /*
+   * =====================================
+   * MOBILE
+   * =====================================
+   */
+
+  .work__mobile {
+    display:
+      none;
+  }
+
+  @media (
+    max-width: 900px
+  ) {
+    .work {
+      overflow:
+        clip;
+    }
+
+    /*
+     * En móvil usamos el MISMO track horizontal.
+     * La versión vertical queda como fallback de markup,
+     * pero no se muestra.
+     */
+    .work__mobile {
+      display:
+        none !important;
+    }
+
+    .work__desktop {
+      display:
+        block;
+
+      width:
+        100%;
+
+      /*
+       * No usamos svh aquí. En Android Chrome, cuando la
+       * navegación inferior/superior desaparece, svh sigue
+       * midiendo el viewport pequeño y deja ver la sección
+       * siguiente debajo del horizontal.
+       *
+       * lvh mantiene una altura estable y llena también el
+       * viewport cuando la UI del navegador se contrae.
+       */
+      height:
+        100vh;
+
+      height:
+        100lvh;
+
+      min-height:
+        100lvh;
+
+      overflow:
+        hidden;
+    }
+
+    .work__services-underlay {
+      display:
+        flex !important;
+
+      padding:
+        4.75rem
+        1.25rem
+        1.5rem;
+    }
+
+    .work__track {
+      display:
+        flex !important;
+
+      height:
+        100%;
+
+      transform:
+        none;
+    }
+
+    /*
+     * El intro deja de ser 50/50 en una pantalla angosta.
+     * Ocupa un viewport completo antes de los proyectos.
+     */
+    .work__intro-panel {
+      flex:
+        0 0
+        100vw;
+
+      width:
+        100vw;
+
+      padding:
+        4.75rem
+        1.25rem
+        1.5rem;
+    }
+
+    .work__intro-content {
+      padding-left:
+        0;
+    }
+
+    .work__heading {
+      font-size:
+        clamp(
+          3.2rem,
+          14vw,
+          5.4rem
+        );
+
+      line-height:
+        0.9;
+    }
+
+    .work__all {
+      margin-top:
+        2.5rem;
+    }
+
+    /*
+     * Cada proyecto ocupa el viewport completo.
+     * Ya no mostramos una franja del siguiente proyecto:
+     * ganamos ancho real para imagen, título y CTA.
+     */
+    .project {
+      flex:
+        0 0
+        100vw;
+
+      width:
+        100vw;
+    }
+
+    .project__inner {
+      position:
+        relative;
+
+      z-index:
+        1;
+
+      padding:
+        4.55rem
+        1rem
+        1rem;
+    }
+
+    .project__visual {
+      flex:
+        0 0 auto;
+
+      width:
+        100%;
+
+      height:
+        auto;
+
+      aspect-ratio:
+        4 / 5;
+
+      min-height:
+        0;
+
+      overflow:
+        hidden;
+
+      background:
+        #0b0b0b;
+    }
+
+    .project__picture {
+      width:
+        100%;
+
+      height:
+        100%;
+    }
+
+    .project__visual
+    img {
+      width:
+        100%;
+
+      height:
+        100%;
+
+      object-fit:
+        cover;
+
+      object-position:
+        center;
+    }
+
+    /*
+     * En móvil el título y "ver proyecto" ya no compiten
+     * por la misma fila. Esto evita que nombres largos
+     * como FLOW SUPPLEMENTS invadan el CTA.
+     */
+    .project__info {
+      grid-template-columns:
+        minmax(
+          0,
+          1fr
+        );
+
+      gap:
+        0.85rem;
+
+      align-items:
+        start;
+
+      padding-top:
+        0.95rem;
+    }
+
+    .project__copy {
+      min-width:
+        0;
+    }
+
+    .project__copy
+    h3 {
+      max-width:
+        100%;
+
+      margin-bottom:
+        0;
+
+      font-size:
+        clamp(
+          1.9rem,
+          7.6vw,
+          2.9rem
+        );
+
+      line-height:
+        0.9;
+
+      overflow-wrap:
+        normal;
+
+      word-break:
+        normal;
+    }
+
+    .project__copy
+    p {
+      display:
+        block;
+
+      max-width:
+        21rem;
+
+      margin-top:
+        0.55rem;
+
+      font-size:
+        clamp(
+          0.7rem,
+          2.9vw,
+          0.8rem
+        );
+
+      line-height:
+        1.42;
+
+      opacity:
+        0.58;
+    }
+
+    .project__meta {
+      position:
+        relative;
+
+      z-index:
+        2;
+
+      margin-top:
+        auto;
+
+      padding-top:
+        0.8rem;
+
+      font-size:
+        0.4rem;
+    }
+
+    .project__link {
+      width:
+        100%;
+
+      margin-top:
+        0;
+
+      /*
+       * El CTA vive en una línea propia debajo del título.
+       */
+      max-width:
+        none;
+    }
+
+    /*
+     * El panel de colección vuelve a ocupar un viewport
+     * completo y es el que finalmente sale a la izquierda.
+     */
+    .work__collection {
+      flex:
+        0 0
+        100vw;
+
+      width:
+        100vw;
+
+      padding:
+        4.75rem
+        1.25rem
+        1.5rem;
+    }
+
+    .work__collection
+    p {
+      max-width:
+        9ch;
+
+      font-size:
+        clamp(
+          3rem,
+          13vw,
+          5rem
+        );
+
+      line-height:
+        0.9;
+    }
+
+    /*
+     * Services se mantiene debajo, igual que en desktop.
+     * Ajustamos únicamente escala/espaciado.
+     */
+    .work__services-meta {
+      font-size:
+        0.44rem;
+    }
+
+    .work__services-eyebrow {
+      top:
+        5.4rem;
+
+      font-size:
+        0.48rem;
+    }
+
+    .work__services-words {
+      padding-top:
+        3.5rem;
+    }
+
+    .work__services-words
+    span {
+      font-size:
+        clamp(
+          3.15rem,
+          14vw,
+          5.25rem
+        );
+
+      line-height:
+        0.77;
+    }
+
+    .work__services-words
+    span:nth-child(1) {
+      margin-right:
+        8vw;
+    }
+
+    .work__services-words
+    span:nth-child(2) {
+      margin-left:
+        5vw;
+    }
+
+    .work__services-words
+    span:nth-child(3) {
+      margin-right:
+        2vw;
+    }
+
+    .work__services-words
+    span:nth-child(4) {
+      margin-left:
+        6vw;
+    }
+
+    .work__services-bottom {
+      flex-direction:
+        column;
+
+      align-items:
+        stretch;
+
+      gap:
+        1.25rem;
+    }
+
+    .work__services-bottom
+    p {
+      max-width:
+        22rem;
+
+      font-size:
+        0.48rem;
+
+      line-height:
+        1.45;
+    }
+
+    .work__services-cta {
+      width:
+        100%;
+    }
+
+    .project__mockup {
+      width:
+        84%;
+    }
+  }
+
+  @media (
+    prefers-reduced-motion:
+    reduce
+  ) {
+    .work__heading,
+    .project__copy h3,
+    .work__collection-inner p {
+      visibility:
+        visible !important;
+    }
+
+    .work__track {
+      transform:
+        none !important;
+    }
+  }
+</style>

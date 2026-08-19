@@ -1,0 +1,3863 @@
+---
+import {
+  getCaseStudyContent,
+  type CaseStudyProject,
+  type ProjectsLocale,
+} from "../../data/projects";
+
+interface Props {
+  project: CaseStudyProject;
+  lang?: ProjectsLocale;
+}
+
+const {
+  project,
+  lang = "es",
+} = Astro.props;
+
+const content =
+  getCaseStudyContent(
+    project,
+    lang
+  );
+
+const isEs =
+  lang === "es";
+
+const labels =
+  isEs
+    ? {
+        meta:
+          "ARIXV / CASO DE ESTUDIO",
+        caseStudy:
+          "CASO DE ESTUDIO",
+        heroAlt:
+          "Página principal de",
+        allProjects:
+          "← TODOS LOS PROYECTOS",
+      }
+    : {
+        meta:
+          "ARIXV / CASE STUDY",
+        caseStudy:
+          "CASE STUDY",
+        heroAlt:
+          "Homepage of",
+        allProjects:
+          "← ALL PROJECTS",
+      };
+
+const projectsBase =
+  isEs
+    ? "/es/proyectos/"
+    : "/en/projects/";
+
+const projectHost =
+  (() => {
+    try {
+      return new URL(
+        project.siteUrl
+      ).hostname.replace(
+        /^www\./,
+        ""
+      );
+    } catch {
+      return project.siteUrl
+        .replace(
+          /^https?:\/\//,
+          ""
+        )
+        .replace(
+          /\/.*$/,
+          ""
+        );
+    }
+  })();
+---
+
+<article
+  class="case"
+  data-case-study
+>
+  <section
+    class="case-hero"
+    data-header-theme="dark"
+  >
+    <div class="case-hero__inner container">
+      <div
+        class="case-hero__meta"
+        data-case-hero-meta
+      >
+        <span>
+          {labels.meta}
+        </span>
+
+        <span>
+          {project.number}
+        </span>
+      </div>
+
+      <div
+        class="case-hero__ambient"
+        data-case-hero-ambient
+        aria-hidden="true"
+      >
+        <span class="case-hero__ambient-index">
+          01
+        </span>
+
+        <span class="case-hero__ambient-line"></span>
+
+        <span class="case-hero__ambient-dot"></span>
+
+        <span class="case-hero__ambient-label">
+          {content.categoryLabel} / {labels.caseStudy}
+        </span>
+      </div>
+
+      <div class="case-hero__main">
+        <div
+          class="case-hero__title"
+          data-case-hero-title
+        >
+          <span>
+            {project.title}
+          </span>
+        </div>
+
+        <p
+          class="case-hero__intro"
+          data-case-hero-intro
+        >
+          {content.intro}
+        </p>
+      </div>
+
+      <div
+        class="case-hero__metrics"
+        data-case-metrics
+      >
+        {
+          content.metrics.map(
+            (
+              metric,
+              index
+            ) => (
+              <div class="case-metric">
+                <span>
+                  {metric.label}
+                </span>
+
+                {
+                  index ===
+                    content.metrics.length -
+                      1 ? (
+                    <a
+                      href={project.siteUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {metric.value}
+                    </a>
+                  ) : (
+                    <strong>
+                      {metric.value}
+                    </strong>
+                  )
+                }
+              </div>
+            )
+          )
+        }
+      </div>
+    </div>
+  </section>
+
+  <section
+    class="case-showcase"
+    data-header-theme="light"
+  >
+    <div class="case-showcase__inner container">
+      <figure
+        class="browser-frame"
+        data-case-browser
+      >
+        <div class="browser-frame__bar">
+          <span></span>
+          <span></span>
+          <span></span>
+
+          <div class="browser-frame__url">
+            {projectHost}
+          </div>
+        </div>
+
+        <div class="browser-frame__image">
+          <img
+            src={project.heroImage}
+            alt={`${labels.heroAlt} ${project.title}`}
+            width="1600"
+            height="1000"
+            loading="eager"
+            decoding="async"
+          />
+        </div>
+      </figure>
+    </div>
+  </section>
+
+  <section
+    class="case-section case-context"
+    data-header-theme="light"
+  >
+    <div class="case-two-column container">
+      <div
+        class="case-copy-block"
+        data-case-text-block
+      >
+        <span class="case-eyebrow">
+          {content.overview.eyebrow}
+        </span>
+
+        <h2>
+          {content.overview.title}
+        </h2>
+      </div>
+
+      <p
+        class="case-body-copy"
+        data-case-body-text
+      >
+        {content.overview.text}
+      </p>
+    </div>
+  </section>
+
+  <section
+    class="case-scope"
+    data-header-theme="light"
+  >
+    <div class="case-scope__inner container">
+      <div
+        class="case-scope__heading"
+        data-case-text-block
+      >
+        <span class="case-eyebrow">
+          {content.scope.eyebrow}
+        </span>
+
+        <h2>
+          {content.scope.title}
+        </h2>
+
+        <p>
+          {content.scope.intro}
+        </p>
+      </div>
+
+      <div class="case-scope__list">
+        {
+          content.scope.items.map(
+            (
+              item,
+              index
+            ) => (
+              <div
+                class="case-scope__item"
+                data-case-list-item
+              >
+                <span>
+                  {
+                    String(
+                      index + 1
+                    ).padStart(
+                      2,
+                      "0"
+                    )
+                  }
+                </span>
+
+                <strong>
+                  {item}
+                </strong>
+              </div>
+            )
+          )
+        }
+      </div>
+    </div>
+  </section>
+
+  <section
+    class="case-statement"
+    data-header-theme="dark"
+    data-case-statement
+  >
+    <div class="case-statement__inner">
+      <span>
+        {content.statement.lineOne}
+      </span>
+
+      <span>
+        {content.statement.lineTwo}
+      </span>
+
+      <span>
+        {content.statement.lineThree}
+      </span>
+    </div>
+  </section>
+
+  <section
+    class="case-section case-challenge"
+    data-header-theme="light"
+  >
+    <div class="case-two-column container">
+      <div
+        class="case-copy-block"
+        data-case-text-block
+      >
+        <span class="case-eyebrow">
+          {content.challenge.eyebrow}
+        </span>
+
+        <h2>
+          {content.challenge.title}
+        </h2>
+      </div>
+
+      <p
+        class="case-body-copy"
+        data-case-body-text
+      >
+        {content.challenge.text}
+      </p>
+    </div>
+  </section>
+
+  <section
+    class="case-decisions"
+    data-header-theme="light"
+  >
+    <div class="case-decisions__inner container">
+      <div
+        class="case-decisions__heading"
+        data-case-text-block
+      >
+        <span class="case-eyebrow">
+          {content.decisions.eyebrow}
+        </span>
+
+        <h2>
+          {content.decisions.title}
+        </h2>
+      </div>
+
+      <div class="case-decisions__list">
+        {
+          content.decisions.items.map(
+            (
+              item
+            ) => (
+              <article
+                class="case-decision"
+                data-case-list-item
+              >
+                <span>
+                  {item.number}
+                </span>
+
+                <h3>
+                  {item.title}
+                </h3>
+
+                <p>
+                  {item.text}
+                </p>
+              </article>
+            )
+          )
+        }
+      </div>
+    </div>
+  </section>
+
+  <section
+    class="case-gallery"
+    data-header-theme="light"
+  >
+    <div class="case-gallery__grid container">
+      {
+        content.gallery.map(
+          (
+            image,
+            index
+          ) => (
+            <figure
+              class:list={[
+                "case-shot",
+                `case-shot--${image.variant ?? "wide"}`,
+                {
+                  "case-shot--first":
+                    index === 0,
+                },
+              ]}
+              data-case-shot
+            >
+              <div class="case-shot__media">
+                <img
+                  src={image.src}
+                  alt={image.alt}
+                  width={
+                    image.variant ===
+                    "portrait"
+                      ? "1000"
+                      : "1200"
+                  }
+                  height={
+                    image.variant ===
+                    "portrait"
+                      ? "1200"
+                      : "900"
+                  }
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+
+              <figcaption>
+                <span>
+                  0{index + 1}
+                </span>
+
+                <span>
+                  {image.label}
+                </span>
+              </figcaption>
+            </figure>
+          )
+        )
+      }
+    </div>
+  </section>
+
+  <section
+    class="case-system"
+    data-header-theme="dark"
+  >
+    <div class="case-system__inner container">
+      <div
+        class="case-system__heading"
+        data-case-text-block
+      >
+        <span class="case-eyebrow">
+          05 / SISTEMA
+        </span>
+
+        <h2>
+          LO QUE
+          <br />
+          CONSTRUYE
+          <br />
+          LA EXPERIENCIA.
+        </h2>
+      </div>
+
+      <div class="case-features">
+        {
+          content.features.map(
+            (
+              feature
+            ) => (
+              <article
+                class="case-feature"
+                data-case-feature
+              >
+                <span>
+                  {feature.number}
+                </span>
+
+                <h3>
+                  {feature.title}
+                </h3>
+
+                <p>
+                  {feature.text}
+                </p>
+
+                <i
+                  aria-hidden="true"
+                ></i>
+              </article>
+            )
+          )
+        }
+      </div>
+    </div>
+  </section>
+
+  <section
+    class="case-outcome"
+    data-header-theme="light"
+  >
+    <div class="case-outcome__inner container">
+      <div
+        class="case-outcome__heading"
+        data-case-text-block
+      >
+        <span class="case-eyebrow">
+          {content.outcome.eyebrow}
+        </span>
+
+        <h2>
+          {content.outcome.title}
+        </h2>
+      </div>
+
+      <div
+        class="case-outcome__content"
+        data-case-body-text
+      >
+        <p>
+          {content.outcome.text}
+        </p>
+
+        <div class="case-outcome__items">
+          {
+            content.outcome.items.map(
+              (
+                item
+              ) => (
+                <span>
+                  <i
+                    aria-hidden="true"
+                  ></i>
+
+                  {item}
+                </span>
+              )
+            )
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section
+    class="case-next"
+    data-header-theme="light"
+    data-case-next
+  >
+    <div class="case-next__inner container">
+      <div class="case-next__meta">
+        <span>
+          {content.nextLabel}
+        </span>
+
+        <span>
+          {project.next.number}
+        </span>
+      </div>
+
+      <a
+        href={`${projectsBase}${project.next.slug}/`}
+        class="case-next__link"
+      >
+        <span>
+          {project.next.title}
+        </span>
+
+        <i aria-hidden="true">
+          ↗
+        </i>
+      </a>
+
+      <a
+        href={projectsBase}
+        class="case-next__back"
+      >
+        {labels.allProjects}
+      </a>
+    </div>
+  </section>
+</article>
+
+<script>
+  import {
+    gsap,
+    ScrollTrigger,
+  } from "../../scripts/gsap";
+
+  const caseStudy =
+    document.querySelector<HTMLElement>(
+      "[data-case-study]"
+    );
+
+  if (
+    caseStudy
+  ) {
+    const reducedMotion =
+      window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches;
+
+    const title =
+      caseStudy.querySelector<HTMLElement>(
+        "[data-case-hero-title]"
+      );
+
+    const meta =
+      caseStudy.querySelector<HTMLElement>(
+        "[data-case-hero-meta]"
+      );
+
+    const intro =
+      caseStudy.querySelector<HTMLElement>(
+        "[data-case-hero-intro]"
+      );
+
+    const ambient =
+      caseStudy.querySelector<HTMLElement>(
+        "[data-case-hero-ambient]"
+      );
+
+    const metrics =
+      caseStudy.querySelector<HTMLElement>(
+        "[data-case-metrics]"
+      );
+
+    const browser =
+      caseStudy.querySelector<HTMLElement>(
+        "[data-case-browser]"
+      );
+
+    const statement =
+      caseStudy.querySelector<HTMLElement>(
+        "[data-case-statement]"
+      );
+
+    const textBlocks =
+      Array.from(
+        caseStudy.querySelectorAll<HTMLElement>(
+          "[data-case-text-block]"
+        )
+      );
+
+    const bodyTexts =
+      Array.from(
+        caseStudy.querySelectorAll<HTMLElement>(
+          "[data-case-body-text]"
+        )
+      );
+
+    const listItems =
+      Array.from(
+        caseStudy.querySelectorAll<HTMLElement>(
+          "[data-case-list-item]"
+        )
+      );
+
+    const shots =
+      Array.from(
+        caseStudy.querySelectorAll<HTMLElement>(
+          "[data-case-shot]"
+        )
+      );
+
+    const features =
+      Array.from(
+        caseStudy.querySelectorAll<HTMLElement>(
+          "[data-case-feature]"
+        )
+      );
+
+    const next =
+      caseStudy.querySelector<HTMLElement>(
+        "[data-case-next]"
+      );
+
+    const media =
+      gsap.matchMedia();
+
+    if (
+      !reducedMotion
+    ) {
+      const introTl =
+        gsap.timeline({
+          defaults: {
+            ease:
+              "power4.out",
+          },
+        });
+
+      if (
+        meta
+      ) {
+        introTl.fromTo(
+          meta,
+          {
+            y:
+              10,
+
+            autoAlpha:
+              0,
+          },
+          {
+            y:
+              0,
+
+            autoAlpha:
+              1,
+
+            duration:
+              0.5,
+          },
+          0
+        );
+      }
+
+      if (
+        title
+      ) {
+        introTl.fromTo(
+          title.children,
+          {
+            yPercent:
+              110,
+          },
+          {
+            yPercent:
+              0,
+
+            duration:
+              0.95,
+          },
+          0.08
+        );
+      }
+
+      if (
+        ambient
+      ) {
+        const ambientIndex =
+          ambient.querySelector<HTMLElement>(
+            ".case-hero__ambient-index"
+          );
+
+        const ambientLine =
+          ambient.querySelector<HTMLElement>(
+            ".case-hero__ambient-line"
+          );
+
+        const ambientDot =
+          ambient.querySelector<HTMLElement>(
+            ".case-hero__ambient-dot"
+          );
+
+        const ambientLabel =
+          ambient.querySelector<HTMLElement>(
+            ".case-hero__ambient-label"
+          );
+
+        if (
+          ambientIndex
+        ) {
+          introTl.fromTo(
+            ambientIndex,
+            {
+              y:
+                24,
+
+              autoAlpha:
+                0,
+            },
+            {
+              y:
+                0,
+
+              autoAlpha:
+                0.09,
+
+              duration:
+                0.9,
+
+              ease:
+                "power4.out",
+            },
+            0.18
+          );
+        }
+
+        if (
+          ambientLine
+        ) {
+          introTl.fromTo(
+            ambientLine,
+            {
+              scaleY:
+                0,
+            },
+            {
+              scaleY:
+                1,
+
+              duration:
+                0.72,
+
+              ease:
+                "power4.inOut",
+            },
+            0.26
+          );
+        }
+
+        if (
+          ambientDot
+        ) {
+          introTl.fromTo(
+            ambientDot,
+            {
+              scale:
+                0,
+
+              autoAlpha:
+                0,
+            },
+            {
+              scale:
+                1,
+
+              autoAlpha:
+                1,
+
+              duration:
+                0.42,
+
+              ease:
+                "power3.out",
+            },
+            0.58
+          );
+        }
+
+        if (
+          ambientLabel
+        ) {
+          introTl.fromTo(
+            ambientLabel,
+            {
+              x:
+                -10,
+
+              autoAlpha:
+                0,
+            },
+            {
+              x:
+                0,
+
+              autoAlpha:
+                0.42,
+
+              duration:
+                0.5,
+
+              ease:
+                "power3.out",
+            },
+            0.52
+          );
+        }
+
+        gsap.to(
+          ambient,
+          {
+            yPercent:
+              -10,
+
+            ease:
+              "none",
+
+            scrollTrigger: {
+              trigger:
+                caseStudy,
+
+              start:
+                "top top",
+
+              end:
+                "70vh top",
+
+              scrub:
+                0.2,
+            },
+          }
+        );
+      }
+
+      if (
+        intro
+      ) {
+        introTl.fromTo(
+          intro,
+          {
+            y:
+              16,
+
+            autoAlpha:
+              0,
+          },
+          {
+            y:
+              0,
+
+            autoAlpha:
+              1,
+
+            duration:
+              0.62,
+          },
+          0.3
+        );
+      }
+
+      if (
+        metrics
+      ) {
+        introTl.fromTo(
+          metrics.children,
+          {
+            y:
+              12,
+
+            autoAlpha:
+              0,
+          },
+          {
+            y:
+              0,
+
+            autoAlpha:
+              1,
+
+            duration:
+              0.46,
+
+            stagger:
+              0.045,
+          },
+          0.42
+        );
+      }
+
+      if (
+        browser
+      ) {
+        gsap.fromTo(
+          browser,
+          {
+            clipPath:
+              "inset(0 0 16% 0)",
+
+            y:
+              48,
+          },
+          {
+            clipPath:
+              "inset(0 0 0% 0)",
+
+            y:
+              0,
+
+            duration:
+              0.95,
+
+            ease:
+              "power4.inOut",
+
+            scrollTrigger: {
+              trigger:
+                browser,
+
+              start:
+                "top 90%",
+
+              once:
+                true,
+            },
+          }
+        );
+
+        media.add(
+          "(min-width: 901px)",
+          () => {
+            const image =
+              browser.querySelector<HTMLImageElement>(
+                "img"
+              );
+
+            if (
+              !image
+            ) {
+              return;
+            }
+
+            const tween =
+              gsap.fromTo(
+                image,
+                {
+                  yPercent:
+                    -2,
+                },
+                {
+                  yPercent:
+                    3,
+
+                  ease:
+                    "none",
+
+                  scrollTrigger: {
+                    trigger:
+                      browser,
+
+                    start:
+                      "top bottom",
+
+                    end:
+                      "bottom top",
+
+                    scrub:
+                      0.16,
+                  },
+                }
+              );
+
+            return () => {
+              tween.kill();
+            };
+          }
+        );
+      }
+
+      /*
+       * TEXT REVEALS
+       *
+       * Los títulos entran palabra por palabra desde una máscara.
+       * Los párrafos entran después como una capa secundaria.
+       * No hay scrub: cada bloque resuelve una sola vez y rápido,
+       * para conservar el ritmo editorial del case study.
+       */
+      const splitIntoWords =
+        (
+          element:
+            HTMLElement
+        ) => {
+          if (
+            element.dataset
+              .splitReady ===
+            "true"
+          ) {
+            return Array.from(
+              element.querySelectorAll<HTMLElement>(
+                ".case-word__inner"
+              )
+            );
+          }
+
+          const originalText =
+            element.textContent
+              ?.replace(
+                /\s+/g,
+                " "
+              )
+              .trim() ??
+            "";
+
+          if (
+            !originalText
+          ) {
+            return [];
+          }
+
+          element.dataset
+            .splitReady =
+            "true";
+
+          element.setAttribute(
+            "aria-label",
+            originalText
+          );
+
+          const words =
+            originalText.split(
+              " "
+            );
+
+          element.innerHTML =
+            words
+              .map(
+                (
+                  word
+                ) =>
+                  `<span class="case-word" aria-hidden="true"><span class="case-word__inner">${word}</span></span>`
+              )
+              .join(
+                " "
+              );
+
+          return Array.from(
+            element.querySelectorAll<HTMLElement>(
+              ".case-word__inner"
+            )
+          );
+        };
+
+      textBlocks.forEach(
+        (
+          block
+        ) => {
+          const eyebrow =
+            block.querySelector<HTMLElement>(
+              ".case-eyebrow"
+            );
+
+          const heading =
+            block.querySelector<HTMLElement>(
+              "h2"
+            );
+
+          const supporting =
+            block.querySelector<HTMLElement>(
+              "p"
+            );
+
+          const headingWords =
+            heading
+              ? splitIntoWords(
+                  heading
+                )
+              : [];
+
+          const tl =
+            gsap.timeline({
+              scrollTrigger: {
+                trigger:
+                  block,
+
+                start:
+                  "top 84%",
+
+                once:
+                  true,
+              },
+            });
+
+          if (
+            eyebrow
+          ) {
+            tl.fromTo(
+              eyebrow,
+              {
+                x:
+                  -18,
+
+                autoAlpha:
+                  0,
+              },
+              {
+                x:
+                  0,
+
+                autoAlpha:
+                  0.48,
+
+                duration:
+                  0.42,
+
+                ease:
+                  "power3.out",
+              },
+              0
+            );
+          }
+
+          if (
+            headingWords.length
+          ) {
+            tl.fromTo(
+              headingWords,
+              {
+                yPercent:
+                  112,
+
+                rotate:
+                  1.2,
+              },
+              {
+                yPercent:
+                  0,
+
+                rotate:
+                  0,
+
+                duration:
+                  0.72,
+
+                stagger: {
+                  each:
+                    0.028,
+
+                  from:
+                    "start",
+                },
+
+                ease:
+                  "power4.out",
+              },
+              0.08
+            );
+          }
+
+          if (
+            supporting
+          ) {
+            tl.fromTo(
+              supporting,
+              {
+                y:
+                  16,
+
+                autoAlpha:
+                  0,
+
+                clipPath:
+                  "inset(0 0 22% 0)",
+              },
+              {
+                y:
+                  0,
+
+                autoAlpha:
+                  1,
+
+                clipPath:
+                  "inset(0 0 0% 0)",
+
+                duration:
+                  0.62,
+
+                ease:
+                  "power3.out",
+              },
+              0.28
+            );
+          }
+        }
+      );
+
+      bodyTexts.forEach(
+        (
+          block
+        ) => {
+          const paragraphs =
+            Array.from(
+              block.matches(
+                "p"
+              )
+                ? [
+                    block,
+                  ]
+                : block.querySelectorAll<HTMLElement>(
+                    "p"
+                  )
+            );
+
+          const outcomeItems =
+            Array.from(
+              block.querySelectorAll<HTMLElement>(
+                ".case-outcome__items span"
+              )
+            );
+
+          if (
+            !paragraphs.length &&
+            !outcomeItems.length
+          ) {
+            return;
+          }
+
+          const tl =
+            gsap.timeline({
+              scrollTrigger: {
+                trigger:
+                  block,
+
+                start:
+                  "top 86%",
+
+                once:
+                  true,
+              },
+            });
+
+          if (
+            paragraphs.length
+          ) {
+            tl.fromTo(
+              paragraphs,
+              {
+                y:
+                  18,
+
+                autoAlpha:
+                  0,
+
+                clipPath:
+                  "inset(0 0 18% 0)",
+              },
+              {
+                y:
+                  0,
+
+                autoAlpha:
+                  1,
+
+                clipPath:
+                  "inset(0 0 0% 0)",
+
+                duration:
+                  0.68,
+
+                stagger:
+                  0.06,
+
+                ease:
+                  "power3.out",
+              },
+              0
+            );
+          }
+
+          if (
+            outcomeItems.length
+          ) {
+            tl.fromTo(
+              outcomeItems,
+              {
+                x:
+                  -12,
+
+                autoAlpha:
+                  0,
+              },
+              {
+                x:
+                  0,
+
+                autoAlpha:
+                  1,
+
+                duration:
+                  0.42,
+
+                stagger:
+                  0.055,
+
+                ease:
+                  "power3.out",
+              },
+              0.2
+            );
+          }
+        }
+      );
+
+      listItems.forEach(
+        (
+          item,
+          index
+        ) => {
+          const itemTitle =
+            item.querySelector<HTMLElement>(
+              "h3, strong"
+            );
+
+          const itemCopy =
+            item.querySelector<HTMLElement>(
+              "p"
+            );
+
+          const tl =
+            gsap.timeline({
+              scrollTrigger: {
+                trigger:
+                  item,
+
+                start:
+                  "top 91%",
+
+                once:
+                  true,
+              },
+            });
+
+          tl.fromTo(
+            item,
+            {
+              y:
+                18,
+
+              autoAlpha:
+                0,
+            },
+            {
+              y:
+                0,
+
+              autoAlpha:
+                1,
+
+              duration:
+                0.48,
+
+              delay:
+                Math.min(
+                  index *
+                    0.018,
+                  0.12
+                ),
+
+              ease:
+                "power3.out",
+            }
+          );
+
+          if (
+            itemTitle
+          ) {
+            tl.fromTo(
+              itemTitle,
+              {
+                x:
+                  -10,
+
+                autoAlpha:
+                  0,
+              },
+              {
+                x:
+                  0,
+
+                autoAlpha:
+                  1,
+
+                duration:
+                  0.36,
+
+                ease:
+                  "power3.out",
+              },
+              0.08
+            );
+          }
+
+          if (
+            itemCopy
+          ) {
+            tl.fromTo(
+              itemCopy,
+              {
+                y:
+                  8,
+
+                autoAlpha:
+                  0,
+              },
+              {
+                y:
+                  0,
+
+                autoAlpha:
+                  1,
+
+                duration:
+                  0.4,
+
+                ease:
+                  "power3.out",
+              },
+              0.16
+            );
+          }
+        }
+      );
+
+      if (
+        statement
+      ) {
+        const lines =
+          statement.querySelectorAll(
+            ".case-statement__inner > span"
+          );
+
+        gsap.fromTo(
+          lines,
+          {
+            xPercent:
+              (
+                index
+              ) =>
+                index %
+                  2 ===
+                0
+                  ? -8
+                  : 8,
+
+            autoAlpha:
+              0.25,
+          },
+          {
+            xPercent:
+              0,
+
+            autoAlpha:
+              1,
+
+            stagger:
+              0.025,
+
+            ease:
+              "none",
+
+            scrollTrigger: {
+              trigger:
+                statement,
+
+              start:
+                "top bottom",
+
+              end:
+                "bottom top",
+
+              scrub:
+                0.18,
+            },
+          }
+        );
+      }
+
+      shots.forEach(
+        (
+          shot
+        ) => {
+          const shotMedia =
+            shot.querySelector<HTMLElement>(
+              ".case-shot__media"
+            );
+
+          const image =
+            shot.querySelector<HTMLImageElement>(
+              "img"
+            );
+
+          const tl =
+            gsap.timeline({
+              scrollTrigger: {
+                trigger:
+                  shot,
+
+                start:
+                  "top 89%",
+
+                once:
+                  true,
+              },
+            });
+
+          tl.fromTo(
+            shot,
+            {
+              y:
+                38,
+
+              autoAlpha:
+                0,
+            },
+            {
+              y:
+                0,
+
+              autoAlpha:
+                1,
+
+              duration:
+                0.7,
+
+              ease:
+                "power4.out",
+            }
+          );
+
+          if (
+            shotMedia
+          ) {
+            tl.fromTo(
+              shotMedia,
+              {
+                clipPath:
+                  "inset(0 0 14% 0)",
+              },
+              {
+                clipPath:
+                  "inset(0 0 0% 0)",
+
+                duration:
+                  0.78,
+
+                ease:
+                  "power4.inOut",
+              },
+              0.02
+            );
+          }
+
+          media.add(
+            "(min-width: 901px)",
+            () => {
+              if (
+                !image
+              ) {
+                return;
+              }
+
+              const tween =
+                gsap.fromTo(
+                  image,
+                  {
+                    yPercent:
+                      -2,
+                  },
+                  {
+                    yPercent:
+                      2.5,
+
+                    ease:
+                      "none",
+
+                    scrollTrigger: {
+                      trigger:
+                        shot,
+
+                      start:
+                        "top bottom",
+
+                      end:
+                        "bottom top",
+
+                      scrub:
+                        0.14,
+                    },
+                  }
+                );
+
+              return () => {
+                tween.kill();
+              };
+            }
+          );
+        }
+      );
+
+      features.forEach(
+        (
+          feature,
+          index
+        ) => {
+          const line =
+            feature.querySelector<HTMLElement>(
+              "i"
+            );
+
+          const featureTitle =
+            feature.querySelector<HTMLElement>(
+              "h3"
+            );
+
+          const featureCopy =
+            feature.querySelector<HTMLElement>(
+              "p"
+            );
+
+          const tl =
+            gsap.timeline({
+              scrollTrigger: {
+                trigger:
+                  feature,
+
+                start:
+                  "top 90%",
+
+                once:
+                  true,
+              },
+            });
+
+          tl.fromTo(
+            feature,
+            {
+              y:
+                22,
+
+              autoAlpha:
+                0,
+            },
+            {
+              y:
+                0,
+
+              autoAlpha:
+                1,
+
+              duration:
+                0.52,
+
+              delay:
+                index *
+                0.02,
+
+              ease:
+                "power3.out",
+            }
+          );
+
+          if (
+            featureTitle
+          ) {
+            tl.fromTo(
+              featureTitle,
+              {
+                x:
+                  -12,
+
+                autoAlpha:
+                  0,
+              },
+              {
+                x:
+                  0,
+
+                autoAlpha:
+                  1,
+
+                duration:
+                  0.38,
+
+                ease:
+                  "power3.out",
+              },
+              0.08
+            );
+          }
+
+          if (
+            featureCopy
+          ) {
+            tl.fromTo(
+              featureCopy,
+              {
+                y:
+                  8,
+
+                autoAlpha:
+                  0,
+              },
+              {
+                y:
+                  0,
+
+                autoAlpha:
+                  0.68,
+
+                duration:
+                  0.4,
+
+                ease:
+                  "power3.out",
+              },
+              0.14
+            );
+          }
+
+          if (
+            line
+          ) {
+            tl.fromTo(
+              line,
+              {
+                scaleX:
+                  0,
+              },
+              {
+                scaleX:
+                  1,
+
+                duration:
+                  0.58,
+
+                ease:
+                  "power4.inOut",
+              },
+              0.04
+            );
+          }
+        }
+      );
+
+      if (
+        next
+      ) {
+        gsap.fromTo(
+          next,
+          {
+            y:
+              38,
+
+            autoAlpha:
+              0,
+          },
+          {
+            y:
+              0,
+
+            autoAlpha:
+              1,
+
+            duration:
+              0.75,
+
+            ease:
+              "power4.out",
+
+            scrollTrigger: {
+              trigger:
+                next,
+
+              start:
+                "top 90%",
+
+              once:
+                true,
+            },
+          }
+        );
+      }
+    }
+  }
+</script>
+
+<style>
+  .case {
+    --black:
+      #080808;
+
+    --paper:
+      #f2f0ea;
+
+    --accent:
+      #ff3d2e;
+
+    overflow:
+      clip;
+
+    background:
+      var(--paper);
+
+    color:
+      var(--black);
+  }
+
+  .case-hero {
+    position:
+      relative;
+
+    min-height:
+      72lvh;
+
+    background:
+      var(--black);
+
+    color:
+      var(--paper);
+  }
+
+  .case-hero__inner {
+    display:
+      grid;
+
+    min-height:
+      72lvh;
+
+    grid-template-rows:
+      auto
+      1fr
+      auto;
+
+    padding-top:
+      clamp(
+        6.2rem,
+        8vh,
+        7.2rem
+      );
+
+    padding-bottom:
+      1.7rem;
+  }
+
+  .case-hero__meta,
+  .case-next__meta {
+    display:
+      flex;
+
+    justify-content:
+      space-between;
+
+    gap:
+      2rem;
+
+    font-size:
+      0.42rem;
+
+    font-weight:
+      650;
+
+    letter-spacing:
+      0.1em;
+
+    opacity:
+      0.48;
+
+    text-transform:
+      uppercase;
+  }
+
+  .case-hero__ambient {
+    position:
+      absolute;
+
+    top:
+      19%;
+
+    left:
+      50%;
+
+    width:
+      min(
+        28vw,
+        29rem
+      );
+
+    height:
+      18rem;
+
+    transform:
+      translateX(
+        -50%
+      );
+
+    pointer-events:
+      none;
+
+    user-select:
+      none;
+  }
+
+  .case-hero__ambient-index {
+    position:
+      absolute;
+
+    top:
+      0;
+
+    left:
+      50%;
+
+    transform:
+      translateX(
+        -50%
+      );
+
+    color:
+      transparent;
+
+    font-family:
+      var(--font-display);
+
+    font-size:
+      clamp(
+        7rem,
+        12vw,
+        13rem
+      );
+
+    font-weight:
+      500;
+
+    line-height:
+      0.8;
+
+    letter-spacing:
+      -0.08em;
+
+    -webkit-text-stroke:
+      1px
+      rgba(
+        242,
+        240,
+        234,
+        0.42
+      );
+
+    opacity:
+      0.09;
+  }
+
+  .case-hero__ambient-line {
+    position:
+      absolute;
+
+    top:
+      8.5rem;
+
+    bottom:
+      1.6rem;
+
+    left:
+      50%;
+
+    width:
+      1px;
+
+    transform-origin:
+      top center;
+
+    background:
+      rgba(
+        242,
+        240,
+        234,
+        0.18
+      );
+  }
+
+  .case-hero__ambient-dot {
+    position:
+      absolute;
+
+    bottom:
+      1.15rem;
+
+    left:
+      50%;
+
+    width:
+      0.38rem;
+
+    aspect-ratio:
+      1;
+
+    transform:
+      translateX(
+        -50%
+      );
+
+    border-radius:
+      50%;
+
+    background:
+      var(--accent);
+  }
+
+  .case-hero__ambient-label {
+    position:
+      absolute;
+
+    right:
+      calc(
+        50% +
+        0.9rem
+      );
+
+    bottom:
+      0;
+
+    font-size:
+      0.36rem;
+
+    font-weight:
+      650;
+
+    letter-spacing:
+      0.1em;
+
+    white-space:
+      nowrap;
+
+    opacity:
+      0.42;
+  }
+
+  .case-hero__main {
+    display:
+      grid;
+
+    grid-template-columns:
+      minmax(
+        0,
+        1.35fr
+      )
+      minmax(
+        18rem,
+        0.65fr
+      );
+
+    align-items:
+      end;
+
+    gap:
+      clamp(
+        1.5rem,
+        3.8vw,
+        4rem
+      );
+
+    padding:
+      2.8rem
+      0;
+  }
+
+  .case-hero__title {
+    overflow:
+      hidden;
+
+    font-family:
+      var(--font-display);
+
+    font-size:
+      clamp(
+        4.2rem,
+        8.8vw,
+        10rem
+      );
+
+    font-weight:
+      500;
+
+    line-height:
+      0.8;
+
+    letter-spacing:
+      -0.072em;
+  }
+
+  .case-hero__title
+  span {
+    display:
+      block;
+  }
+
+  .case-hero__intro {
+    max-width:
+      29rem;
+
+    margin:
+      0;
+
+    font-size:
+      clamp(
+        0.8rem,
+        0.88vw,
+        0.92rem
+      );
+
+    line-height:
+      1.58;
+
+    letter-spacing:
+      -0.015em;
+
+    opacity:
+      0.8;
+  }
+
+  .case-hero__metrics {
+    display:
+      grid;
+
+    grid-template-columns:
+      repeat(
+        4,
+        minmax(
+          0,
+          1fr
+        )
+      );
+
+    border-top:
+      1px solid
+      rgba(
+        242,
+        240,
+        234,
+        0.18
+      );
+  }
+
+  .case-metric {
+    position:
+      relative;
+
+    display:
+      flex;
+
+    min-height:
+      4.4rem;
+
+    flex-direction:
+      column;
+
+    justify-content:
+      space-between;
+
+    gap:
+      0.8rem;
+
+    padding:
+      0.9rem
+      clamp(
+        1.2rem,
+        1.8vw,
+        2rem
+      )
+      0;
+
+    /*
+     * Quitamos el border directamente del item.
+     * La línea ahora tiene aire arriba/abajo y no queda
+     * pegada al contenido de la siguiente columna.
+     */
+    border-right:
+      0;
+  }
+
+  .case-metric::after {
+    content:
+      "";
+
+    position:
+      absolute;
+
+    top:
+      0.75rem;
+
+    right:
+      0;
+
+    bottom:
+      0.35rem;
+
+    width:
+      1px;
+
+    background:
+      rgba(
+        242,
+        240,
+        234,
+        0.14
+      );
+  }
+
+  .case-metric:first-child {
+    padding-left:
+      0;
+  }
+
+  .case-metric:last-child {
+    padding-right:
+      0;
+  }
+
+  .case-metric:last-child::after {
+    display:
+      none;
+  }
+
+  .case-metric
+  span {
+    font-size:
+      0.39rem;
+
+    font-weight:
+      650;
+
+    letter-spacing:
+      0.08em;
+
+    opacity:
+      0.42;
+  }
+
+  .case-metric
+  strong,
+  .case-metric
+  a {
+    color:
+      inherit;
+
+    font-family:
+      var(--font-display);
+
+    font-size:
+      clamp(
+        0.88rem,
+        1.12vw,
+        1.15rem
+      );
+
+    font-weight:
+      550;
+
+    letter-spacing:
+      -0.035em;
+
+    text-decoration:
+      none;
+  }
+
+  .case-showcase {
+    padding:
+      clamp(
+        3rem,
+        5vw,
+        5.5rem
+      )
+      0;
+  }
+
+  .browser-frame {
+    margin:
+      0;
+
+    border:
+      1px solid
+      rgba(
+        8,
+        8,
+        8,
+        0.16
+      );
+
+    background:
+      #d5d4cf;
+  }
+
+  .browser-frame__bar {
+    display:
+      flex;
+
+    min-height:
+      2.4rem;
+
+    align-items:
+      center;
+
+    gap:
+      0.38rem;
+
+    padding:
+      0
+      0.8rem;
+
+    border-bottom:
+      1px solid
+      rgba(
+        8,
+        8,
+        8,
+        0.14
+      );
+
+    background:
+      var(--paper);
+  }
+
+  .browser-frame__bar
+  > span {
+    width:
+      0.38rem;
+
+    aspect-ratio:
+      1;
+
+    border:
+      1px solid
+      rgba(
+        8,
+        8,
+        8,
+        0.4
+      );
+
+    border-radius:
+      50%;
+  }
+
+  .browser-frame__url {
+    margin-left:
+      auto;
+
+    font-size:
+      0.4rem;
+
+    font-weight:
+      650;
+
+    letter-spacing:
+      0.07em;
+
+    opacity:
+      0.45;
+  }
+
+  .browser-frame__image {
+    overflow:
+      hidden;
+
+    aspect-ratio:
+      16 / 9;
+  }
+
+  .browser-frame__image
+  img,
+  .case-shot__media
+  img {
+    display:
+      block;
+
+    width:
+      100%;
+
+    height:
+      106%;
+
+    object-fit:
+      cover;
+
+    object-position:
+      top
+      center;
+  }
+
+  .case-section {
+    padding:
+      clamp(
+        5.5rem,
+        9vw,
+        9rem
+      )
+      0;
+  }
+
+  .case-two-column,
+  .case-outcome__inner {
+    display:
+      grid;
+
+    grid-template-columns:
+      minmax(
+        0,
+        1.35fr
+      )
+      minmax(
+        17rem,
+        0.65fr
+      );
+
+    gap:
+      clamp(
+        3rem,
+        6vw,
+        7rem
+      );
+
+    align-items:
+      end;
+  }
+
+  .case-eyebrow {
+    display:
+      block;
+
+    margin-bottom:
+      1.2rem;
+
+    font-size:
+      0.42rem;
+
+    font-weight:
+      650;
+
+    letter-spacing:
+      0.09em;
+
+    opacity:
+      0.48;
+
+    text-transform:
+      uppercase;
+  }
+
+  /*
+   * Máscara de entrada para títulos.
+   * Cada palabra conserva su sitio en el flujo; sólo se anima
+   * el interior, así no cambia el layout durante el reveal.
+   */
+  .case-word {
+    display:
+      inline-block;
+
+    overflow:
+      hidden;
+
+    vertical-align:
+      bottom;
+  }
+
+  .case-word__inner {
+    display:
+      inline-block;
+
+    will-change:
+      transform;
+  }
+
+  .case-copy-block
+  h2,
+  .case-scope__heading
+  h2,
+  .case-decisions__heading
+  h2,
+  .case-outcome__heading
+  h2,
+  .case-system__heading
+  h2 {
+    max-width:
+      14ch;
+
+    margin:
+      0;
+
+    font-family:
+      var(--font-display);
+
+    font-size:
+      clamp(
+        2.5rem,
+        4.9vw,
+        5.6rem
+      );
+
+    font-weight:
+      500;
+
+    line-height:
+      0.88;
+
+    letter-spacing:
+      -0.062em;
+
+    text-transform:
+      uppercase;
+  }
+
+  .case-body-copy,
+  .case-scope__heading
+  p,
+  .case-outcome__content
+  > p {
+    max-width:
+      31rem;
+
+    margin:
+      0;
+
+    font-size:
+      clamp(
+        0.84rem,
+        0.96vw,
+        0.98rem
+      );
+
+    line-height:
+      1.65;
+
+    letter-spacing:
+      -0.016em;
+  }
+
+  .case-scope {
+    padding:
+      1rem
+      0
+      clamp(
+        6rem,
+        9vw,
+        9rem
+      );
+  }
+
+  .case-scope__inner {
+    display:
+      grid;
+
+    grid-template-columns:
+      minmax(
+        0,
+        0.9fr
+      )
+      minmax(
+        0,
+        1.1fr
+      );
+
+    gap:
+      clamp(
+        3rem,
+        7vw,
+        8rem
+      );
+
+    align-items:
+      start;
+
+    padding-top:
+      3rem;
+
+    border-top:
+      1px solid
+      rgba(
+        8,
+        8,
+        8,
+        0.16
+      );
+  }
+
+  .case-scope__heading
+  h2 {
+    font-size:
+      clamp(
+        2.2rem,
+        3.7vw,
+        4.3rem
+      );
+  }
+
+  .case-scope__heading
+  p {
+    margin-top:
+      1.6rem;
+  }
+
+  .case-scope__list {
+    border-top:
+      1px solid
+      rgba(
+        8,
+        8,
+        8,
+        0.15
+      );
+  }
+
+  .case-scope__item {
+    display:
+      grid;
+
+    grid-template-columns:
+      2.5rem
+      minmax(
+        0,
+        1fr
+      );
+
+    align-items:
+      center;
+
+    min-height:
+      3.5rem;
+
+    border-bottom:
+      1px solid
+      rgba(
+        8,
+        8,
+        8,
+        0.13
+      );
+  }
+
+  .case-scope__item
+  span {
+    font-size:
+      0.38rem;
+
+    opacity:
+      0.42;
+  }
+
+  .case-scope__item
+  strong {
+    font-size:
+      clamp(
+        0.68rem,
+        0.82vw,
+        0.82rem
+      );
+
+    font-weight:
+      650;
+
+    letter-spacing:
+      0.04em;
+  }
+
+  .case-statement {
+    display:
+      flex;
+
+    min-height:
+      56vh;
+
+    align-items:
+      center;
+
+    overflow:
+      hidden;
+
+    background:
+      var(--black);
+
+    color:
+      var(--paper);
+  }
+
+  .case-statement__inner {
+    display:
+      flex;
+
+    width:
+      100%;
+
+    flex-direction:
+      column;
+
+    padding:
+      4rem
+      var(--page-padding);
+
+    font-family:
+      var(--font-display);
+
+    font-size:
+      clamp(
+        3.8rem,
+        8.4vw,
+        9.2rem
+      );
+
+    font-weight:
+      500;
+
+    line-height:
+      0.76;
+
+    letter-spacing:
+      -0.073em;
+
+    text-transform:
+      uppercase;
+  }
+
+  .case-statement__inner
+  span:nth-child(2) {
+    align-self:
+      center;
+
+    color:
+      transparent;
+
+    -webkit-text-stroke:
+      1px
+      rgba(
+        242,
+        240,
+        234,
+        0.82
+      );
+  }
+
+  .case-statement__inner
+  span:nth-child(3) {
+    position:
+      relative;
+
+    align-self:
+      flex-end;
+  }
+
+  .case-statement__inner
+  span:nth-child(3)::after {
+    content:
+      "";
+
+    position:
+      absolute;
+
+    top:
+      50%;
+
+    left:
+      calc(
+        100% +
+        1rem
+      );
+
+    width:
+      clamp(
+        0.7rem,
+        1vw,
+        1rem
+      );
+
+    aspect-ratio:
+      1;
+
+    transform:
+      translateY(
+        -50%
+      );
+
+    border-radius:
+      50%;
+
+    background:
+      var(--accent);
+  }
+
+  .case-decisions {
+    padding:
+      1rem
+      0
+      clamp(
+        5.5rem,
+        8vw,
+        8rem
+      );
+  }
+
+  .case-decisions__inner {
+    display:
+      grid;
+
+    grid-template-columns:
+      minmax(
+        0,
+        0.82fr
+      )
+      minmax(
+        0,
+        1.18fr
+      );
+
+    gap:
+      clamp(
+        3rem,
+        7vw,
+        8rem
+      );
+
+    padding-top:
+      3rem;
+
+    border-top:
+      1px solid
+      rgba(
+        8,
+        8,
+        8,
+        0.16
+      );
+  }
+
+  .case-decisions__heading
+  h2 {
+    font-size:
+      clamp(
+        2.2rem,
+        3.7vw,
+        4.3rem
+      );
+  }
+
+  .case-decisions__list {
+    border-top:
+      1px solid
+      rgba(
+        8,
+        8,
+        8,
+        0.15
+      );
+  }
+
+  .case-decision {
+    display:
+      grid;
+
+    grid-template-columns:
+      2.7rem
+      minmax(
+        11rem,
+        0.8fr
+      )
+      minmax(
+        0,
+        1fr
+      );
+
+    gap:
+      1.2rem;
+
+    padding:
+      1.35rem
+      0
+      1.6rem;
+
+    border-bottom:
+      1px solid
+      rgba(
+        8,
+        8,
+        8,
+        0.13
+      );
+  }
+
+  .case-decision
+  > span {
+    font-size:
+      0.38rem;
+
+    opacity:
+      0.42;
+  }
+
+  .case-decision
+  h3 {
+    margin:
+      0;
+
+    font-family:
+      var(--font-display);
+
+    font-size:
+      clamp(
+        1.1rem,
+        1.55vw,
+        1.65rem
+      );
+
+    font-weight:
+      550;
+
+    line-height:
+      1;
+
+    letter-spacing:
+      -0.04em;
+  }
+
+  .case-decision
+  p {
+    max-width:
+      27rem;
+
+    margin:
+      0;
+
+    font-size:
+      0.78rem;
+
+    line-height:
+      1.6;
+
+    opacity:
+      0.7;
+  }
+
+  .case-gallery {
+    padding:
+      clamp(
+        2rem,
+        4vw,
+        4rem
+      )
+      0
+      clamp(
+        6rem,
+        9vw,
+        9rem
+      );
+  }
+
+  .case-gallery__grid {
+    display:
+      grid;
+
+    grid-template-columns:
+      repeat(
+        12,
+        minmax(
+          0,
+          1fr
+        )
+      );
+
+    gap:
+      clamp(
+        1.2rem,
+        2.2vw,
+        2.5rem
+      );
+
+    align-items:
+      end;
+  }
+
+  .case-shot {
+    margin:
+      0;
+  }
+
+  .case-shot--wide {
+    grid-column:
+      span 8;
+  }
+
+  .case-shot--portrait {
+    grid-column:
+      span 4;
+
+    margin-bottom:
+      clamp(
+        2rem,
+        5vw,
+        5rem
+      );
+  }
+
+  .case-shot--wide:nth-child(3n + 2) {
+    grid-column:
+      5 / 13;
+  }
+
+  .case-shot--portrait:nth-child(3n + 1) {
+    grid-column:
+      1 / 5;
+  }
+
+  .case-shot__media {
+    overflow:
+      hidden;
+
+    background:
+      #d5d4cf;
+  }
+
+  .case-shot--wide
+  .case-shot__media {
+    aspect-ratio:
+      16 / 10;
+  }
+
+  .case-shot--portrait
+  .case-shot__media {
+    aspect-ratio:
+      4 / 5;
+  }
+
+  .case-shot
+  figcaption {
+    display:
+      flex;
+
+    justify-content:
+      space-between;
+
+    gap:
+      1rem;
+
+    padding-top:
+      0.65rem;
+
+    border-top:
+      1px solid
+      rgba(
+        8,
+        8,
+        8,
+        0.12
+      );
+
+    font-size:
+      0.4rem;
+
+    font-weight:
+      650;
+
+    letter-spacing:
+      0.07em;
+
+    opacity:
+      0.52;
+
+    text-transform:
+      uppercase;
+  }
+
+  .case-system {
+    padding:
+      clamp(
+        5.5rem,
+        8vw,
+        8rem
+      )
+      0;
+
+    background:
+      var(--black);
+
+    color:
+      var(--paper);
+  }
+
+  .case-system__inner {
+    display:
+      grid;
+
+    grid-template-columns:
+      minmax(
+        0,
+        0.82fr
+      )
+      minmax(
+        0,
+        1.18fr
+      );
+
+    gap:
+      clamp(
+        4rem,
+        8vw,
+        8rem
+      );
+  }
+
+  .case-system__heading {
+    position:
+      sticky;
+
+    top:
+      calc(
+        var(
+          --site-header-visible-height,
+          0px
+        ) +
+        2rem
+      );
+
+    align-self:
+      start;
+  }
+
+  .case-system__heading
+  h2 {
+    font-size:
+      clamp(
+        2.5rem,
+        4.1vw,
+        4.8rem
+      );
+  }
+
+  .case-feature {
+    position:
+      relative;
+
+    display:
+      grid;
+
+    grid-template-columns:
+      2.6rem
+      minmax(
+        8rem,
+        0.72fr
+      )
+      minmax(
+        0,
+        1fr
+      );
+
+    gap:
+      1.3rem;
+
+    padding:
+      1.35rem
+      0
+      1.8rem;
+  }
+
+  .case-feature
+  > span {
+    font-size:
+      0.4rem;
+
+    opacity:
+      0.45;
+  }
+
+  .case-feature
+  h3 {
+    margin:
+      0;
+
+    font-family:
+      var(--font-display);
+
+    font-size:
+      clamp(
+        1.25rem,
+        1.75vw,
+        2rem
+      );
+
+    font-weight:
+      520;
+
+    letter-spacing:
+      -0.045em;
+  }
+
+  .case-feature
+  p {
+    max-width:
+      28rem;
+
+    margin:
+      0;
+
+    font-size:
+      0.8rem;
+
+    line-height:
+      1.6;
+
+    opacity:
+      0.68;
+  }
+
+  .case-feature
+  i {
+    position:
+      absolute;
+
+    right:
+      0;
+
+    bottom:
+      0;
+
+    left:
+      0;
+
+    height:
+      1px;
+
+    transform-origin:
+      left
+      center;
+
+    background:
+      rgba(
+        242,
+        240,
+        234,
+        0.2
+      );
+  }
+
+  .case-outcome {
+    padding:
+      clamp(
+        6rem,
+        10vw,
+        10rem
+      )
+      0;
+  }
+
+  .case-outcome__inner {
+    align-items:
+      start;
+  }
+
+  .case-outcome__heading
+  h2 {
+    max-width:
+      12ch;
+  }
+
+  .case-outcome__content
+  > p {
+    margin-bottom:
+      2rem;
+  }
+
+  .case-outcome__items {
+    border-top:
+      1px solid
+      rgba(
+        8,
+        8,
+        8,
+        0.15
+      );
+  }
+
+  .case-outcome__items
+  span {
+    display:
+      flex;
+
+    min-height:
+      3rem;
+
+    align-items:
+      center;
+
+    gap:
+      0.65rem;
+
+    border-bottom:
+      1px solid
+      rgba(
+        8,
+        8,
+        8,
+        0.12
+      );
+
+    font-size:
+      0.63rem;
+
+    font-weight:
+      650;
+
+    letter-spacing:
+      0.045em;
+  }
+
+  .case-outcome__items
+  i {
+    width:
+      0.38rem;
+
+    aspect-ratio:
+      1;
+
+    border-radius:
+      50%;
+
+    background:
+      var(--accent);
+  }
+
+  .case-next {
+    min-height:
+      56vh;
+  }
+
+  .case-next__inner {
+    display:
+      flex;
+
+    min-height:
+      56vh;
+
+    flex-direction:
+      column;
+
+    justify-content:
+      space-between;
+
+    padding-top:
+      4rem;
+
+    padding-bottom:
+      2.3rem;
+
+    border-top:
+      1px solid
+      rgba(
+        8,
+        8,
+        8,
+        0.16
+      );
+  }
+
+  .case-next__link {
+    display:
+      flex;
+
+    align-items:
+      center;
+
+    justify-content:
+      space-between;
+
+    gap:
+      2rem;
+
+    color:
+      inherit;
+
+    font-family:
+      var(--font-display);
+
+    font-size:
+      clamp(
+        3.4rem,
+        7.8vw,
+        8.5rem
+      );
+
+    font-weight:
+      500;
+
+    line-height:
+      0.84;
+
+    letter-spacing:
+      -0.07em;
+
+    text-decoration:
+      none;
+  }
+
+  .case-next__link
+  i {
+    font-size:
+      0.32em;
+
+    font-style:
+      normal;
+
+    transition:
+      transform
+      420ms
+      cubic-bezier(
+        0.16,
+        1,
+        0.3,
+        1
+      );
+  }
+
+  .case-next__link:hover
+  i {
+    transform:
+      translate(
+        0.4rem,
+        -0.4rem
+      );
+  }
+
+  .case-next__back {
+    width:
+      max-content;
+
+    padding-bottom:
+      0.3rem;
+
+    border-bottom:
+      1px solid
+      currentColor;
+
+    color:
+      inherit;
+
+    font-size:
+      0.46rem;
+
+    font-weight:
+      650;
+
+    letter-spacing:
+      0.07em;
+
+    text-decoration:
+      none;
+  }
+
+  @media (
+    max-width:
+      900px
+  ) {
+    .case-hero__ambient {
+      display:
+        none;
+    }
+
+    .case-hero,
+    .case-hero__inner {
+      min-height:
+        64lvh;
+    }
+
+    .case-hero__inner {
+      padding-top:
+        6rem;
+
+      padding-bottom:
+        1.2rem;
+    }
+
+    .case-hero__main {
+      grid-template-columns:
+        1fr;
+
+      gap:
+        1.3rem;
+
+      padding:
+        2.5rem
+        0;
+    }
+
+    .case-hero__title {
+      font-size:
+        clamp(
+          3.7rem,
+          18vw,
+          5.8rem
+        );
+    }
+
+    .case-hero__metrics {
+      grid-template-columns:
+        repeat(
+          2,
+          minmax(
+            0,
+            1fr
+          )
+        );
+    }
+
+    .case-metric {
+      min-height:
+        5rem;
+
+      gap:
+        0.95rem;
+
+      padding:
+        0.9rem
+        0.9rem
+        0.95rem;
+
+      border-bottom:
+        1px solid
+        rgba(
+          242,
+          240,
+          234,
+          0.14
+        );
+    }
+
+    .case-metric:nth-child(odd) {
+      padding-left:
+        0;
+    }
+
+    .case-metric:nth-child(even) {
+      padding-right:
+        0;
+    }
+
+    .case-metric
+    span {
+      line-height:
+        1;
+    }
+
+    .case-metric
+    strong,
+    .case-metric
+    a {
+      display:
+        inline-block;
+
+      line-height:
+        1.05;
+
+      margin-bottom:
+        0.05rem;
+    }
+
+    .case-showcase {
+      padding:
+        2.6rem
+        0;
+    }
+
+    .browser-frame__image {
+      aspect-ratio:
+        4 / 3;
+    }
+
+    .case-section {
+      padding:
+        5.5rem
+        0;
+    }
+
+    .case-two-column,
+    .case-scope__inner,
+    .case-decisions__inner,
+    .case-system__inner,
+    .case-outcome__inner {
+      grid-template-columns:
+        1fr;
+
+      gap:
+        2.5rem;
+    }
+
+    .case-copy-block
+    h2,
+    .case-scope__heading
+    h2,
+    .case-decisions__heading
+    h2,
+    .case-outcome__heading
+    h2,
+    .case-system__heading
+    h2 {
+      font-size:
+        clamp(
+          2.35rem,
+          10.5vw,
+          4rem
+        );
+    }
+
+    .case-scope,
+    .case-decisions {
+      padding-bottom:
+        5.5rem;
+    }
+
+    .case-scope__inner,
+    .case-decisions__inner {
+      padding-top:
+        2rem;
+    }
+
+    .case-statement {
+      min-height:
+        48lvh;
+    }
+
+    .case-statement__inner {
+      padding:
+        3.5rem
+        var(--page-padding);
+
+      font-size:
+        clamp(
+          2.9rem,
+          14vw,
+          5rem
+        );
+
+      line-height:
+        0.82;
+    }
+
+    .case-statement__inner
+    span:nth-child(2),
+    .case-statement__inner
+    span:nth-child(3) {
+      align-self:
+        flex-start;
+    }
+
+    .case-decision {
+      grid-template-columns:
+        2rem
+        1fr;
+    }
+
+    .case-decision
+    p {
+      grid-column:
+        2;
+    }
+
+    .case-gallery__grid {
+      display:
+        flex;
+
+      flex-direction:
+        column;
+
+      gap:
+        3.5rem;
+    }
+
+    .case-shot,
+    .case-shot--first,
+    .case-shot--portrait {
+      width:
+        100%;
+
+      margin:
+        0;
+    }
+
+    .case-shot--portrait {
+      width:
+        88%;
+
+      margin-left:
+        auto;
+    }
+
+    .case-system__heading {
+      position:
+        static;
+    }
+
+    .case-feature {
+      grid-template-columns:
+        2rem
+        1fr;
+    }
+
+    .case-feature
+    p {
+      grid-column:
+        2;
+    }
+
+    .case-outcome {
+      padding:
+        6rem
+        0;
+    }
+
+    .case-next,
+    .case-next__inner {
+      min-height:
+        48lvh;
+    }
+
+    .case-next__link {
+      font-size:
+        clamp(
+          2.8rem,
+          12vw,
+          4.8rem
+        );
+    }
+  }
+
+  @media (
+    prefers-reduced-motion:
+      reduce
+  ) {
+    [data-case-hero-meta],
+    [data-case-hero-title]
+    > span,
+    [data-case-hero-intro],
+    [data-case-hero-ambient],
+    [data-case-metrics]
+    > *,
+    [data-case-browser],
+    [data-case-text-block],
+    [data-case-body-text],
+    .case-word__inner,
+    [data-case-list-item],
+    [data-case-shot],
+    [data-case-feature],
+    [data-case-next] {
+      opacity:
+        1 !important;
+
+      transform:
+        none !important;
+
+      clip-path:
+        none !important;
+    }
+  }
+
+  /* CASE STUDY — showcase más compacto en desktop/laptop */
+@media (min-width: 901px) {
+  .case-showcase__inner {
+    display: flex;
+    justify-content: center;
+  }
+
+  .browser-frame {
+    width: min(82vw, 86rem);
+    max-width: 100%;
+    margin: 0 auto;
+  }
+}
+
+/* Móvil conserva el tamaño actual */
+@media (max-width: 900px) {
+  .browser-frame {
+    width: 100%;
+    margin: 0;
+  }
+
+@media (min-width: 901px) {
+  .browser-frame__image {
+    aspect-ratio: auto;
+  }
+
+  .browser-frame__image img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    object-position: top center;
+  }
+}}
+
+</style>

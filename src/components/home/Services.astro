@@ -1,0 +1,323 @@
+---
+import {
+  homeContent,
+  type HomeLocale,
+} from "../../data/home";
+
+interface Props {
+  lang?: HomeLocale;
+}
+
+const {
+  lang = "es",
+} = Astro.props;
+
+const content =
+  homeContent[lang].services;
+---
+
+<!--
+  En desktop, Services YA se muestra como el último
+  panel del recorrido horizontal de SelectedWork.
+
+  Este componente existe únicamente para móvil,
+  donde SelectedWork deja de ser horizontal.
+-->
+<section
+  class="services-mobile"
+  id="services"
+  data-services-mobile
+>
+  <div class="services-mobile__inner container">
+    <div class="services-mobile__meta">
+      <span>
+        {content.meta.label}
+      </span>
+
+      <span>
+        {content.meta.number}
+      </span>
+    </div>
+
+    <div class="services-mobile__eyebrow">
+      {content.eyebrow}
+    </div>
+
+    <div class="services-mobile__words">
+      {
+        content.items.map(
+          (item) => (
+            <span data-services-mobile-word>
+              {item}
+            </span>
+          )
+        )
+      }
+    </div>
+
+    <div class="services-mobile__bottom">
+      <p>
+        <span class="services-mobile__bullet"></span>
+
+        {content.tagline}
+      </p>
+
+      <a
+        href={content.cta.href}
+        class="services-mobile__cta"
+      >
+        <span>
+          {content.cta.label}
+        </span>
+
+        <span aria-hidden="true">
+          →
+        </span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<script>
+  import {
+    gsap,
+    ScrollTrigger,
+  } from "../../scripts/gsap";
+
+  const section =
+    document.querySelector<HTMLElement>(
+      "[data-services-mobile]"
+    );
+
+  if (
+    section &&
+    window.matchMedia(
+      "(max-width: 900px)"
+    ).matches &&
+    !window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches
+  ) {
+    const words =
+      section.querySelectorAll<HTMLElement>(
+        "[data-services-mobile-word]"
+      );
+
+    gsap.fromTo(
+      words,
+      {
+        y: 30,
+        autoAlpha: 0,
+      },
+      {
+        y: 0,
+        autoAlpha: 1,
+
+        duration: 0.8,
+
+        stagger: 0.07,
+
+        ease: "power3.out",
+
+        scrollTrigger: {
+          trigger: section,
+
+          start:
+            "top 76%",
+        },
+      }
+    );
+  }
+</script>
+
+<style>
+  /*
+   * IMPORTANTE:
+   * En escritorio se oculta por completo porque
+   * Services ya está integrado en SelectedWork.
+   */
+  .services-mobile {
+    display: none;
+  }
+
+  @media (
+    max-width: 900px
+  ) {
+    .services-mobile {
+      display: block;
+
+      width: 100%;
+
+      overflow-x: clip;
+
+      background:
+        var(--color-white);
+
+      color:
+        var(--color-black);
+    }
+
+    .services-mobile__inner {
+      display: flex;
+
+      min-height: 100svh;
+
+      flex-direction: column;
+
+      padding-top: 5rem;
+
+      padding-bottom: 2rem;
+    }
+
+    .services-mobile__meta {
+      display: flex;
+
+      justify-content: space-between;
+
+      gap: 1rem;
+
+      font-size: 0.48rem;
+
+      font-weight: 600;
+
+      letter-spacing: 0.1em;
+
+      text-transform: uppercase;
+    }
+
+    .services-mobile__eyebrow {
+      margin-top: 4rem;
+
+      font-size: 0.56rem;
+
+      font-weight: 600;
+
+      text-align: center;
+
+      text-transform: uppercase;
+    }
+
+    .services-mobile__words {
+      display: flex;
+
+      flex: 1;
+
+      flex-direction: column;
+
+      align-items: center;
+
+      justify-content: center;
+
+      width: 100%;
+
+      padding:
+        5rem
+        0;
+    }
+
+    .services-mobile__words
+    span {
+      display: block;
+
+      width: 100%;
+
+      font-family:
+        var(--font-display);
+
+      font-size:
+        clamp(
+          3rem,
+          15vw,
+          5.5rem
+        );
+
+      font-weight: 500;
+
+      line-height: 0.84;
+
+      letter-spacing:
+        -0.065em;
+
+      text-align: center;
+
+      overflow-wrap: anywhere;
+    }
+
+    .services-mobile__bottom {
+      display: flex;
+
+      flex-direction: column;
+
+      gap: 2rem;
+    }
+
+    .services-mobile__bottom
+    p {
+      display: flex;
+
+      align-items: center;
+
+      gap: 0.6rem;
+
+      max-width: 22rem;
+
+      margin: 0;
+
+      font-size: 0.7rem;
+
+      font-weight: 600;
+
+      line-height: 1.45;
+
+      text-transform: uppercase;
+    }
+
+    .services-mobile__bullet {
+      display: block;
+
+      flex: 0 0 auto;
+
+      width: 0.42rem;
+      height: 0.42rem;
+
+      border-radius: 50%;
+
+      background:
+        var(--color-accent);
+    }
+
+    .services-mobile__cta {
+      display: inline-grid;
+
+      grid-template-columns:
+        1fr
+        auto;
+
+      gap: 2rem;
+
+      width:
+        min(
+          100%,
+          16rem
+        );
+
+      padding-bottom: 0.72rem;
+
+      border-bottom:
+        1px solid
+        currentColor;
+
+      color: inherit;
+
+      font-size: 0.55rem;
+
+      font-weight: 600;
+
+      letter-spacing: 0.1em;
+
+      text-decoration: none;
+
+      text-transform: uppercase;
+    }
+  }
+</style>

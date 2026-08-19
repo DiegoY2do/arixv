@@ -1,0 +1,2474 @@
+---
+import {
+  archiveProjects,
+  getProjectContent,
+  getProjectHref,
+  projectsArchiveContent,
+  type ProjectsLocale,
+} from "../../data/projects";
+
+interface Props {
+  lang?: ProjectsLocale;
+}
+
+const {
+  lang = "es",
+} = Astro.props;
+
+const content =
+  projectsArchiveContent[lang];
+---
+
+<section
+  class="archive"
+  data-archive
+>
+  <header class="archive__hero">
+    <div class="archive__hero-inner container">
+      <div
+        class="archive__meta"
+        data-archive-meta
+      >
+        <span>{content.meta.label}</span>
+        <span>{content.hero.count}</span>
+      </div>
+
+      <div
+        class="archive__hero-middle"
+        data-archive-hero-middle
+        aria-hidden="true"
+      >
+        <span
+          class="archive__hero-rail"
+          data-archive-hero-rail
+        ></span>
+
+        <span
+          class="archive__hero-categories"
+          data-archive-hero-categories
+        >
+          {
+            lang === "es"
+              ? "WEB / E-COMMERCE / PRODUCTOS / SISTEMAS"
+              : "WEB / E-COMMERCE / PRODUCTS / SYSTEMS"
+          }
+        </span>
+      </div>
+
+      <div class="archive__hero-copy">
+        <h1 data-archive-title>
+          <span>{content.hero.lineOne}</span>
+          <span>{content.hero.lineTwo}</span>
+        </h1>
+
+        <p data-archive-description>
+          {content.hero.description}
+        </p>
+      </div>
+    </div>
+  </header>
+
+  <div class="archive__toolbar">
+    <div class="archive__toolbar-inner container">
+      <span class="archive__toolbar-label">
+        {content.toolbar.label}
+      </span>
+
+      <div
+        class="archive__filters"
+        role="group"
+        aria-label={content.toolbar.ariaLabel}
+      >
+        {
+          content.filters.map(
+            (
+              filter,
+              index
+            ) => (
+              <button
+                class:list={[
+                  "archive__filter",
+                  {
+                    "is-active":
+                      index === 0,
+                  },
+                ]}
+                type="button"
+                data-filter={filter.key}
+                aria-pressed={index === 0}
+              >
+                {filter.label}
+              </button>
+            )
+          )
+        }
+      </div>
+    </div>
+
+    <span
+      class="archive__progress"
+      data-archive-progress
+      aria-hidden="true"
+    ></span>
+  </div>
+
+  <main
+    class="archive__grid container"
+    data-project-grid
+  >
+    {
+      archiveProjects.map(
+        (
+          project,
+          index
+        ) => {
+          const projectContent =
+            getProjectContent(
+              project,
+              lang
+            );
+
+          return (
+          <>
+            {
+              index === 2 && (
+                <div
+                  class="archive__interlude"
+                  data-interlude
+                >
+                  <span>
+                    {
+                      content
+                        .statement
+                        .lineOne
+                    }
+                  </span>
+
+                  <span>
+                    {
+                      content
+                        .statement
+                        .lineTwo
+                    }
+                  </span>
+
+                  <span>
+                    {
+                      content
+                        .statement
+                        .lineThree
+                    }
+                  </span>
+                </div>
+              )
+            }
+
+            <article
+              class="archive-card"
+              data-project-card
+              data-category={project.category}
+            >
+              <a
+                href={getProjectHref(
+                  project,
+                  lang
+                )}
+                class="archive-card__link"
+                target={project.caseStudy ? undefined : "_blank"}
+                rel={project.caseStudy ? undefined : "noreferrer"}
+                aria-label={`${content.projectCta}: ${project.title}`}
+              >
+                <div
+                  class="archive-card__media"
+                  data-project-media
+                >
+                  <img
+                    src={project.image}
+                    alt={`${content.imageAltPrefix} ${project.title}`}
+                    width="1100"
+                    height="760"
+                    loading={index < 2 ? "eager" : "lazy"}
+                    decoding="async"
+                  />
+
+                  <span
+                    class="archive-card__arrow"
+                    aria-hidden="true"
+                  >
+                    ↗
+                  </span>
+                </div>
+
+                <div
+                  class="archive-card__content"
+                  data-project-content
+                >
+                  <div
+                    class="archive-card__top"
+                    data-project-title
+                  >
+                    <span class="archive-card__number">
+                      {project.number}
+                    </span>
+
+                    <h2>
+                      {project.title}
+                    </h2>
+                  </div>
+
+                  <div
+                    class="archive-card__bottom"
+                    data-project-meta
+                  >
+                    <span>
+                      {projectContent.categoryLabel}
+                    </span>
+
+                    <span>
+                      {project.year}
+                    </span>
+                  </div>
+                </div>
+              </a>
+            </article>
+          </>
+          );
+        }
+      )
+    }
+  </main>
+
+  <section
+    class="archive__final container"
+    data-archive-final
+  >
+    <div class="archive__final-copy">
+      <span>
+        {content.final.index}
+      </span>
+
+      <h2>
+        {content.final.lineOne}
+        <br />
+        {content.final.lineTwo}
+      </h2>
+    </div>
+
+    <a
+      href={content.final.href}
+      class="archive__final-link"
+      target="_blank"
+      rel="noreferrer"
+    >
+      <span>{content.final.cta}</span>
+      <span aria-hidden="true">↗</span>
+    </a>
+  </section>
+</section>
+
+<script>
+  import {
+    gsap,
+    ScrollTrigger,
+  } from "../../scripts/gsap";
+
+  const archive =
+    document.querySelector<HTMLElement>(
+      "[data-archive]"
+    );
+
+  if (archive) {
+    const reducedMotion =
+      window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches;
+
+    const title =
+      archive.querySelector<HTMLElement>(
+        "[data-archive-title]"
+      );
+
+    const heroMeta =
+      archive.querySelector<HTMLElement>(
+        "[data-archive-meta]"
+      );
+
+    const heroDescription =
+      archive.querySelector<HTMLElement>(
+        "[data-archive-description]"
+      );
+
+    const heroMiddle =
+      archive.querySelector<HTMLElement>(
+        "[data-archive-hero-middle]"
+      );
+
+    const heroRail =
+      archive.querySelector<HTMLElement>(
+        "[data-archive-hero-rail]"
+      );
+
+    const heroCategories =
+      archive.querySelector<HTMLElement>(
+        "[data-archive-hero-categories]"
+      );
+
+    const progress =
+      archive.querySelector<HTMLElement>(
+        "[data-archive-progress]"
+      );
+
+    const cards =
+      Array.from(
+        archive.querySelectorAll<HTMLElement>(
+          "[data-project-card]"
+        )
+      );
+
+    const filters =
+      Array.from(
+        archive.querySelectorAll<HTMLButtonElement>(
+          "[data-filter]"
+        )
+      );
+
+    const interlude =
+      archive.querySelector<HTMLElement>(
+        "[data-interlude]"
+      );
+
+    const final =
+      archive.querySelector<HTMLElement>(
+        "[data-archive-final]"
+      );
+
+    const media =
+      gsap.matchMedia();
+
+    if (
+      !reducedMotion
+    ) {
+      /*
+       * HERO
+       * Misma lógica editorial del home:
+       * información pequeña primero, tipografía protagonista,
+       * movimiento muy controlado al abandonar la portada.
+       */
+      const introTl =
+        gsap.timeline({
+          defaults: {
+            ease:
+              "power4.out",
+          },
+        });
+
+      if (
+        heroMeta
+      ) {
+        introTl.fromTo(
+          heroMeta,
+          {
+            y:
+              12,
+
+            autoAlpha:
+              0,
+          },
+          {
+            y:
+              0,
+
+            autoAlpha:
+              1,
+
+            duration:
+              0.6,
+          },
+          0
+        );
+      }
+
+      if (
+        title
+      ) {
+        introTl.fromTo(
+          title.children,
+          {
+            yPercent:
+              115,
+          },
+          {
+            yPercent:
+              0,
+
+            duration:
+              0.95,
+
+            stagger:
+              0.065,
+          },
+          0.08
+        );
+      }
+
+      if (
+        heroMiddle
+      ) {
+        introTl.fromTo(
+          heroMiddle,
+          {
+            autoAlpha:
+              0,
+          },
+          {
+            autoAlpha:
+              1,
+
+            duration:
+              0.7,
+          },
+          0.16
+        );
+      }
+
+      if (
+        heroRail
+      ) {
+        introTl.fromTo(
+          heroRail,
+          {
+            scaleX:
+              0,
+
+            transformOrigin:
+              "left center",
+          },
+          {
+            scaleX:
+              1,
+
+            duration:
+              1,
+
+            ease:
+              "power3.out",
+          },
+          0.18
+        );
+      }
+
+      if (
+        heroCategories
+      ) {
+        introTl.fromTo(
+          heroCategories,
+          {
+            x:
+              14,
+
+            autoAlpha:
+              0,
+          },
+          {
+            x:
+              0,
+
+            autoAlpha:
+              0.44,
+
+            duration:
+              0.65,
+          },
+          0.32
+        );
+      }
+
+      if (
+        heroDescription
+      ) {
+        introTl.fromTo(
+          heroDescription,
+          {
+            y:
+              18,
+
+            autoAlpha:
+              0,
+          },
+          {
+            y:
+              0,
+
+            autoAlpha:
+              0.78,
+
+            duration:
+              0.65,
+          },
+          0.34
+        );
+      }
+
+      if (
+        title
+      ) {
+        gsap.to(
+          title,
+          {
+            yPercent:
+              -8,
+
+            ease:
+              "none",
+
+            scrollTrigger: {
+              trigger:
+                archive,
+
+              start:
+                "top top",
+
+              end:
+                "65vh top",
+
+              scrub:
+                true,
+            },
+          }
+        );
+      }
+
+      /*
+       * Línea coral mínima que marca cuánto avanzamos
+       * dentro del archivo. Es un guiño a los rails del home.
+       */
+      if (
+        progress
+      ) {
+        gsap.set(
+          progress,
+          {
+            scaleX:
+              0,
+
+            transformOrigin:
+              "left center",
+          }
+        );
+
+        gsap.to(
+          progress,
+          {
+            scaleX:
+              1,
+
+            ease:
+              "none",
+
+            scrollTrigger: {
+              trigger:
+                archive,
+
+              start:
+                "top top",
+
+              end:
+                "bottom bottom",
+
+              scrub:
+                true,
+            },
+          }
+        );
+      }
+
+      /*
+       * ENTRADA DE PROYECTOS
+       * Reveal de imagen + título + meta.
+       * Cada card resuelve rápido; no hacemos una escena
+       * completa por proyecto para mantener el archivo escalable.
+       */
+      cards.forEach(
+        (
+          card,
+          index
+        ) => {
+          const projectMedia =
+            card.querySelector<HTMLElement>(
+              "[data-project-media]"
+            );
+
+          const image =
+            card.querySelector<HTMLImageElement>(
+              "img"
+            );
+
+          const projectTitle =
+            card.querySelector<HTMLElement>(
+              "[data-project-title]"
+            );
+
+          const projectMeta =
+            card.querySelector<HTMLElement>(
+              "[data-project-meta]"
+            );
+
+          const direction =
+            index % 2 ===
+              0
+              ? -1
+              : 1;
+
+          const revealTl =
+            gsap.timeline({
+              scrollTrigger: {
+                trigger:
+                  card,
+
+                start:
+                  "top 88%",
+
+                once:
+                  true,
+              },
+            });
+
+          revealTl.fromTo(
+            card,
+            {
+              x:
+                18 *
+                direction,
+
+              y:
+                34,
+
+              autoAlpha:
+                0,
+            },
+            {
+              x:
+                0,
+
+              y:
+                0,
+
+              autoAlpha:
+                1,
+
+              duration:
+                0.72,
+
+              ease:
+                "power4.out",
+            },
+            0
+          );
+
+          if (
+            projectMedia
+          ) {
+            revealTl.fromTo(
+              projectMedia,
+              {
+                clipPath:
+                  "inset(0 0 18% 0)",
+              },
+              {
+                clipPath:
+                  "inset(0 0 0% 0)",
+
+                duration:
+                  0.85,
+
+                ease:
+                  "power4.inOut",
+              },
+              0.03
+            );
+          }
+
+          if (
+            projectTitle
+          ) {
+            revealTl.fromTo(
+              projectTitle,
+              {
+                y:
+                  12,
+
+                autoAlpha:
+                  0,
+              },
+              {
+                y:
+                  0,
+
+                autoAlpha:
+                  1,
+
+                duration:
+                  0.48,
+
+                ease:
+                  "power3.out",
+              },
+              0.28
+            );
+          }
+
+          if (
+            projectMeta
+          ) {
+            revealTl.fromTo(
+              projectMeta,
+              {
+                y:
+                  8,
+
+                autoAlpha:
+                  0,
+              },
+              {
+                y:
+                  0,
+
+                autoAlpha:
+                  0.55,
+
+                duration:
+                  0.42,
+
+                ease:
+                  "power3.out",
+              },
+              0.36
+            );
+          }
+
+          /*
+           * El parallax sólo vive en desktop.
+           * Es pequeño, reversible y no añade pin/sticky.
+           */
+          media.add(
+            "(min-width: 901px)",
+            () => {
+              if (
+                !image
+              ) {
+                return;
+              }
+
+              const tween =
+                gsap.fromTo(
+                  image,
+                  {
+                    yPercent:
+                      -3,
+
+                    scale:
+                      1.04,
+                  },
+                  {
+                    yPercent:
+                      3,
+
+                    scale:
+                      1.015,
+
+                    ease:
+                      "none",
+
+                    scrollTrigger: {
+                      trigger:
+                        projectMedia ??
+                        card,
+
+                      start:
+                        "top bottom",
+
+                      end:
+                        "bottom top",
+
+                      scrub:
+                        0.18,
+                    },
+                  }
+                );
+
+              return () => {
+                tween.kill();
+              };
+            }
+          );
+        }
+      );
+
+      /*
+       * INTERLUDE
+       * No es una sección gigante: sólo dos palabras que
+       * cruzan ligeramente en sentidos opuestos.
+       */
+      if (
+        interlude
+      ) {
+        const words =
+          Array.from(
+            interlude.children
+          );
+
+        if (
+          words[0]
+        ) {
+          gsap.fromTo(
+            words[0],
+            {
+              xPercent:
+                -8,
+
+              autoAlpha:
+                0,
+            },
+            {
+              xPercent:
+                0,
+
+              autoAlpha:
+                1,
+
+              ease:
+                "none",
+
+              scrollTrigger: {
+                trigger:
+                  interlude,
+
+                start:
+                  "top 92%",
+
+                end:
+                  "center 62%",
+
+                scrub:
+                  0.18,
+              },
+            }
+          );
+        }
+
+        if (
+          words[1]
+        ) {
+          gsap.fromTo(
+            words[1],
+            {
+              xPercent:
+                8,
+
+              autoAlpha:
+                0,
+            },
+            {
+              xPercent:
+                0,
+
+              autoAlpha:
+                1,
+
+              ease:
+                "none",
+
+              scrollTrigger: {
+                trigger:
+                  interlude,
+
+                start:
+                  "top 92%",
+
+                end:
+                  "center 62%",
+
+                scrub:
+                  0.18,
+              },
+            }
+          );
+        }
+      }
+
+      /*
+       * CIERRE
+       * Entra por capas, como el Final CTA del home,
+       * pero en versión compacta.
+       */
+      if (
+        final
+      ) {
+        const finalIndex =
+          final.querySelector<HTMLElement>(
+            ".archive__final-copy > span"
+          );
+
+        const finalTitle =
+          final.querySelector<HTMLElement>(
+            ".archive__final-copy h2"
+          );
+
+        const finalLink =
+          final.querySelector<HTMLElement>(
+            ".archive__final-link"
+          );
+
+        const finalTl =
+          gsap.timeline({
+            scrollTrigger: {
+              trigger:
+                final,
+
+              start:
+                "top 86%",
+
+              once:
+                true,
+            },
+          });
+
+        if (
+          finalIndex
+        ) {
+          finalTl.fromTo(
+            finalIndex,
+            {
+              y:
+                10,
+
+              autoAlpha:
+                0,
+            },
+            {
+              y:
+                0,
+
+              autoAlpha:
+                0.45,
+
+              duration:
+                0.38,
+
+              ease:
+                "power3.out",
+            },
+            0
+          );
+        }
+
+        if (
+          finalTitle
+        ) {
+          finalTl.fromTo(
+            finalTitle,
+            {
+              y:
+                28,
+
+              clipPath:
+                "inset(0 0 45% 0)",
+
+              autoAlpha:
+                0,
+            },
+            {
+              y:
+                0,
+
+              clipPath:
+                "inset(0 0 0% 0)",
+
+              autoAlpha:
+                1,
+
+              duration:
+                0.78,
+
+              ease:
+                "power4.out",
+            },
+            0.08
+          );
+        }
+
+        if (
+          finalLink
+        ) {
+          finalTl.fromTo(
+            finalLink,
+            {
+              x:
+                24,
+
+              autoAlpha:
+                0,
+            },
+            {
+              x:
+                0,
+
+              autoAlpha:
+                1,
+
+              duration:
+                0.58,
+
+              ease:
+                "power3.out",
+            },
+            0.32
+          );
+        }
+      }
+    }
+
+    /*
+     * FILTROS
+     * Se conserva la lógica compacta; la transición usa
+     * la misma dirección vertical de los reveals.
+     */
+    filters.forEach(
+      (
+        button
+      ) => {
+        button.addEventListener(
+          "click",
+          () => {
+            const filter =
+              button.dataset.filter ??
+              "all";
+
+            filters.forEach(
+              (
+                item
+              ) => {
+                const active =
+                  item ===
+                  button;
+
+                item.classList.toggle(
+                  "is-active",
+                  active
+                );
+
+                item.setAttribute(
+                  "aria-pressed",
+                  String(
+                    active
+                  )
+                );
+              }
+            );
+
+            const visible =
+              cards.filter(
+                (
+                  card
+                ) =>
+                  filter ===
+                    "all" ||
+                  card.dataset
+                    .category ===
+                    filter
+              );
+
+            const hidden =
+              cards.filter(
+                (
+                  card
+                ) =>
+                  !visible.includes(
+                    card
+                  )
+              );
+
+            gsap.to(
+              cards,
+              {
+                autoAlpha:
+                  0,
+
+                y:
+                  12,
+
+                duration:
+                  0.16,
+
+                stagger:
+                  0.008,
+
+                ease:
+                  "power2.in",
+
+                onComplete:
+                  () => {
+                    hidden.forEach(
+                      (
+                        card
+                      ) => {
+                        card.hidden =
+                          true;
+                      }
+                    );
+
+                    visible.forEach(
+                      (
+                        card
+                      ) => {
+                        card.hidden =
+                          false;
+                      }
+                    );
+
+                    gsap.set(
+                      visible,
+                      {
+                        y:
+                          18,
+
+                        autoAlpha:
+                          0,
+                      }
+                    );
+
+                    gsap.to(
+                      visible,
+                      {
+                        y:
+                          0,
+
+                        autoAlpha:
+                          1,
+
+                        duration:
+                          0.44,
+
+                        stagger:
+                          0.028,
+
+                        ease:
+                          "power4.out",
+
+                        onComplete:
+                          () => {
+                            ScrollTrigger.refresh();
+                          },
+                      }
+                    );
+                  },
+              }
+            );
+          }
+        );
+      }
+    );
+  }
+</script>
+
+<style>
+  .archive {
+    --black:
+      #080808;
+
+    --paper:
+      #f2f0ea;
+
+    --accent:
+      #ff3d2e;
+
+    background:
+      var(--paper);
+
+    color:
+      var(--black);
+  }
+
+  .archive__hero {
+    min-height:
+      58vh;
+
+    background:
+      var(--black);
+
+    color:
+      var(--paper);
+  }
+
+  .archive__hero-inner {
+    display:
+      grid;
+
+    min-height:
+      58vh;
+
+    grid-template-rows:
+      auto
+      minmax(
+        2rem,
+        1fr
+      )
+      auto;
+
+    padding-top:
+      clamp(
+        6.5rem,
+        8vh,
+        7.5rem
+      );
+
+    padding-bottom:
+      clamp(
+        2rem,
+        4vw,
+        3rem
+      );
+  }
+
+  .archive__meta {
+    display:
+      flex;
+
+    justify-content:
+      space-between;
+
+    gap:
+      1rem;
+
+    font-size:
+      0.44rem;
+
+    font-weight:
+      650;
+
+    letter-spacing:
+      0.1em;
+
+    text-transform:
+      uppercase;
+
+    opacity:
+      0.5;
+  }
+
+  .archive__hero-middle {
+    display:
+      grid;
+
+    grid-template-columns:
+      minmax(
+        0,
+        1fr
+      )
+      auto;
+
+    gap:
+      clamp(
+        1.5rem,
+        3vw,
+        3rem
+      );
+
+    align-items:
+      center;
+
+    align-self:
+      center;
+
+    width:
+      100%;
+
+    padding:
+      clamp(
+        1.4rem,
+        2.4vh,
+        2rem
+      )
+      0;
+  }
+
+  .archive__hero-rail {
+    display:
+      block;
+
+    width:
+      100%;
+
+    height:
+      1px;
+
+    background:
+      rgba(
+        242,
+        240,
+        234,
+        0.18
+      );
+
+    transform-origin:
+      left center;
+  }
+
+  .archive__hero-categories {
+    max-width:
+      31rem;
+
+    font-size:
+      0.43rem;
+
+    font-weight:
+      650;
+
+    line-height:
+      1.45;
+
+    letter-spacing:
+      0.1em;
+
+    text-align:
+      right;
+
+    text-transform:
+      uppercase;
+
+    opacity:
+      0.44;
+  }
+
+  .archive__hero-copy {
+    display:
+      grid;
+
+    grid-template-columns:
+      minmax(
+        0,
+        1fr
+      )
+      minmax(
+        15rem,
+        25rem
+      );
+
+    gap:
+      4rem;
+
+    align-items:
+      end;
+  }
+
+  .archive__hero-copy
+  h1 {
+    display:
+      flex;
+
+    flex-direction:
+      column;
+
+    margin:
+      0;
+
+    overflow:
+      hidden;
+
+    font-family:
+      var(--font-display);
+
+    font-size:
+      clamp(
+        3.8rem,
+        7vw,
+        7.6rem
+      );
+
+    font-weight:
+      500;
+
+    line-height:
+      0.84;
+
+    letter-spacing:
+      -0.07em;
+
+    text-transform:
+      uppercase;
+  }
+
+  .archive__hero-copy
+  h1
+  span {
+    display:
+      block;
+
+    will-change:
+      transform;
+  }
+
+  .archive__hero-copy
+  h1
+  span:nth-child(2) {
+    color:
+      transparent;
+
+    -webkit-text-stroke:
+      1px
+      rgba(
+        242,
+        240,
+        234,
+        0.85
+      );
+  }
+
+  .archive__hero-copy
+  p {
+    max-width:
+      24rem;
+
+    margin:
+      0;
+
+    font-size:
+      clamp(
+        0.8rem,
+        0.9vw,
+        0.95rem
+      );
+
+    line-height:
+      1.5;
+
+    letter-spacing:
+      -0.015em;
+
+    opacity:
+      0.78;
+  }
+
+  .archive__toolbar {
+    position:
+      sticky;
+
+    /*
+     * Header global:
+     * - visible  -> esta variable vale la altura real del Header
+     * - oculto   -> vale 0px
+     *
+     * Así ambas barras permanecen literalmente pegadas.
+     */
+    z-index:
+      18;
+
+    top:
+      var(
+        --site-header-visible-height,
+        0px
+      );
+
+    transition:
+      top
+      480ms
+      cubic-bezier(
+        0.76,
+        0,
+        0.24,
+        1
+      );
+
+    border-bottom:
+      1px solid
+      rgba(
+        8,
+        8,
+        8,
+        0.14
+      );
+
+    background:
+      rgba(
+        242,
+        240,
+        234,
+        0.94
+      );
+
+    backdrop-filter:
+      blur(12px);
+  }
+
+  .archive__progress {
+    position:
+      absolute;
+
+    right:
+      0;
+
+    bottom:
+      -1px;
+
+    left:
+      0;
+
+    display:
+      block;
+
+    height:
+      1px;
+
+    transform:
+      scaleX(0);
+
+    transform-origin:
+      left center;
+
+    background:
+      var(--accent);
+
+    pointer-events:
+      none;
+  }
+
+  .archive__toolbar-inner {
+    display:
+      flex;
+
+    min-height:
+      4.6rem;
+
+    align-items:
+      center;
+
+    justify-content:
+      space-between;
+
+    gap:
+      2rem;
+  }
+
+  .archive__toolbar-label {
+    font-size:
+      0.42rem;
+
+    font-weight:
+      650;
+
+    letter-spacing:
+      0.09em;
+
+    opacity:
+      0.42;
+  }
+
+  .archive__filters {
+    display:
+      flex;
+
+    gap:
+      clamp(
+        1rem,
+        2vw,
+        2rem
+      );
+
+    align-items:
+      center;
+  }
+
+  .archive__filter {
+    position:
+      relative;
+
+    padding:
+      0.45rem
+      0;
+
+    border:
+      0;
+
+    background:
+      transparent;
+
+    color:
+      inherit;
+
+    cursor:
+      pointer;
+
+    font:
+      inherit;
+
+    font-size:
+      0.5rem;
+
+    font-weight:
+      650;
+
+    letter-spacing:
+      0.055em;
+
+    text-transform:
+      uppercase;
+  }
+
+  .archive__filter::after {
+    content:
+      "";
+
+    position:
+      absolute;
+
+    right:
+      0;
+
+    bottom:
+      0;
+
+    left:
+      0;
+
+    height:
+      1px;
+
+    transform:
+      scaleX(0);
+
+    transform-origin:
+      left center;
+
+    background:
+      var(--accent);
+
+    transition:
+      transform
+      320ms
+      cubic-bezier(
+        0.77,
+        0,
+        0.18,
+        1
+      );
+  }
+
+  .archive__filter.is-active::after {
+    transform:
+      scaleX(1);
+  }
+
+  .archive__grid {
+    display:
+      grid;
+
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(
+          0,
+          1fr
+        )
+      );
+
+    gap:
+      clamp(
+        3rem,
+        5vw,
+        5rem
+      )
+      clamp(
+        1.3rem,
+        2.4vw,
+        2.6rem
+      );
+
+    padding-top:
+      clamp(
+        3.5rem,
+        5vw,
+        5rem
+      );
+
+    padding-bottom:
+      clamp(
+        6rem,
+        9vw,
+        9rem
+      );
+  }
+
+  .archive-card {
+    min-width:
+      0;
+  }
+
+  .archive-card[hidden] {
+    display:
+      none !important;
+  }
+
+  .archive-card__link {
+    display:
+      block;
+
+    color:
+      inherit;
+
+    text-decoration:
+      none;
+  }
+
+  .archive-card__media {
+    position:
+      relative;
+
+    overflow:
+      hidden;
+
+    aspect-ratio:
+      16 / 10;
+
+    background:
+      #d8d7d2;
+  }
+
+  .archive-card__media
+  img {
+    display:
+      block;
+
+    width:
+      100%;
+
+    height:
+      100%;
+
+    object-fit:
+      cover;
+
+    object-position:
+      top center;
+
+    transition:
+      transform
+      700ms
+      cubic-bezier(
+        0.16,
+        1,
+        0.3,
+        1
+      );
+  }
+
+  .archive-card__arrow {
+    position:
+      absolute;
+
+    top:
+      0.85rem;
+
+    right:
+      0.85rem;
+
+    display:
+      grid;
+
+    width:
+      2.25rem;
+
+    aspect-ratio:
+      1;
+
+    place-items:
+      center;
+
+    border:
+      1px solid
+      rgba(
+        242,
+        240,
+        234,
+        0.55
+      );
+
+    border-radius:
+      50%;
+
+    background:
+      rgba(
+        8,
+        8,
+        8,
+        0.28
+      );
+
+    color:
+      #fff;
+
+    opacity:
+      0;
+
+    transform:
+      translateY(
+        -0.3rem
+      );
+
+    transition:
+      opacity
+      250ms
+      ease,
+      transform
+      400ms
+      cubic-bezier(
+        0.16,
+        1,
+        0.3,
+        1
+      );
+  }
+
+  .archive-card__content {
+    padding-top:
+      0.8rem;
+  }
+
+  .archive-card__top,
+  .archive-card__bottom {
+    will-change:
+      transform,
+      opacity;
+  }
+
+  .archive-card__top {
+    display:
+      grid;
+
+    grid-template-columns:
+      auto
+      minmax(
+        0,
+        1fr
+      );
+
+    align-items:
+      baseline;
+
+    gap:
+      0.65rem;
+  }
+
+  .archive-card__number {
+    font-size:
+      0.4rem;
+
+    font-weight:
+      650;
+
+    letter-spacing:
+      0.08em;
+
+    opacity:
+      0.42;
+  }
+
+  .archive-card__top
+  h2 {
+    margin:
+      0;
+
+    font-family:
+      var(--font-display);
+
+    font-size:
+      clamp(
+        1.55rem,
+        2.2vw,
+        2.65rem
+      );
+
+    font-weight:
+      520;
+
+    line-height:
+      0.94;
+
+    letter-spacing:
+      -0.05em;
+  }
+
+  .archive-card__bottom {
+    display:
+      flex;
+
+    justify-content:
+      space-between;
+
+    gap:
+      1rem;
+
+    margin-top:
+      0.55rem;
+
+    padding-top:
+      0.5rem;
+
+    border-top:
+      1px solid
+      rgba(
+        8,
+        8,
+        8,
+        0.12
+      );
+
+    font-size:
+      0.42rem;
+
+    font-weight:
+      650;
+
+    letter-spacing:
+      0.06em;
+
+    text-transform:
+      uppercase;
+
+    opacity:
+      0.55;
+  }
+
+  .archive-card__link:hover
+  .archive-card__media
+  img {
+    transform:
+      scale(1.035);
+  }
+
+  .archive-card__link:hover
+  .archive-card__arrow {
+    opacity:
+      1;
+
+    transform:
+      translateY(0);
+  }
+
+  .archive__interlude {
+    grid-column:
+      1 / -1;
+
+    display:
+      flex;
+
+    min-height:
+      9rem;
+
+    align-items:
+      center;
+
+    justify-content:
+      space-between;
+
+    gap:
+      2rem;
+
+    margin:
+      clamp(
+        1rem,
+        2vw,
+        2rem
+      )
+      0;
+
+    padding:
+      1.8rem
+      0;
+
+    border-top:
+      1px solid
+      rgba(
+        8,
+        8,
+        8,
+        0.15
+      );
+
+    border-bottom:
+      1px solid
+      rgba(
+        8,
+        8,
+        8,
+        0.15
+      );
+
+    font-family:
+      var(--font-display);
+
+    font-size:
+      clamp(
+        2rem,
+        4vw,
+        4.8rem
+      );
+
+    font-weight:
+      500;
+
+    line-height:
+      0.9;
+
+    letter-spacing:
+      -0.055em;
+
+    text-transform:
+      uppercase;
+  }
+
+  .archive__interlude
+  span:last-child {
+    position:
+      relative;
+
+    padding-right:
+      clamp(
+        1.2rem,
+        2vw,
+        2rem
+      );
+  }
+
+  .archive__interlude
+  span:last-child::after {
+    content:
+      "";
+
+    position:
+      absolute;
+
+    top:
+      50%;
+
+    right:
+      0;
+
+    width:
+      0.55rem;
+
+    aspect-ratio:
+      1;
+
+    transform:
+      translateY(-50%);
+
+    border-radius:
+      50%;
+
+    background:
+      var(--accent);
+  }
+
+  .archive__final {
+    display:
+      grid;
+
+    min-height:
+      48vh;
+
+    grid-template-columns:
+      minmax(
+        0,
+        1fr
+      )
+      auto;
+
+    gap:
+      3rem;
+
+    align-items:
+      end;
+
+    padding-top:
+      clamp(
+        4rem,
+        6vw,
+        6rem
+      );
+
+    padding-bottom:
+      clamp(
+        3rem,
+        4vw,
+        4rem
+      );
+
+    border-top:
+      1px solid
+      rgba(
+        8,
+        8,
+        8,
+        0.16
+      );
+  }
+
+  .archive__final-copy
+  > span {
+    display:
+      block;
+
+    margin-bottom:
+      1rem;
+
+    font-size:
+      0.43rem;
+
+    font-weight:
+      650;
+
+    letter-spacing:
+      0.08em;
+
+    opacity:
+      0.45;
+  }
+
+  .archive__final-copy
+  h2 {
+    max-width:
+      13ch;
+
+    margin:
+      0;
+
+    font-family:
+      var(--font-display);
+
+    font-size:
+      clamp(
+        2.8rem,
+        5.2vw,
+        6rem
+      );
+
+    font-weight:
+      500;
+
+    line-height:
+      0.86;
+
+    letter-spacing:
+      -0.065em;
+  }
+
+  .archive__final-link {
+    display:
+      flex;
+
+    min-width:
+      min(
+        28vw,
+        22rem
+      );
+
+    align-items:
+      center;
+
+    justify-content:
+      space-between;
+
+    gap:
+      2rem;
+
+    padding:
+      1rem
+      0;
+
+    border-top:
+      1px solid
+      currentColor;
+
+    border-bottom:
+      1px solid
+      currentColor;
+
+    color:
+      inherit;
+
+    font-size:
+      0.58rem;
+
+    font-weight:
+      650;
+
+    letter-spacing:
+      0.06em;
+
+    text-decoration:
+      none;
+
+    text-transform:
+      uppercase;
+  }
+
+  .archive__final-link
+  span:last-child {
+    transition:
+      transform
+      420ms
+      cubic-bezier(
+        0.16,
+        1,
+        0.3,
+        1
+      );
+  }
+
+  .archive__final-link:hover
+  span:last-child {
+    transform:
+      translate(
+        0.35rem,
+        -0.35rem
+      );
+  }
+
+  @media (
+    min-width:
+      1500px
+  ) {
+    .archive__grid {
+      grid-template-columns:
+        repeat(
+          3,
+          minmax(
+            0,
+            1fr
+          )
+        );
+    }
+  }
+
+  @media (
+    max-width:
+      900px
+  ) {
+    .archive__progress {
+      height:
+        1px;
+    }
+
+
+    .archive__hero {
+      min-height:
+        52lvh;
+    }
+
+    .archive__hero-inner {
+      min-height:
+        52lvh;
+
+      padding-top:
+        6.2rem;
+
+      padding-bottom:
+        1.6rem;
+    }
+
+    .archive__hero-middle {
+      display:
+        none;
+    }
+
+    .archive__hero-copy {
+      grid-template-columns:
+        1fr;
+
+      gap:
+        1.4rem;
+    }
+
+    .archive__hero-copy
+    h1 {
+      font-size:
+        clamp(
+          3.2rem,
+          15.5vw,
+          5.5rem
+        );
+    }
+
+    .archive__hero-copy
+    p {
+      max-width:
+        22rem;
+    }
+
+    .archive__toolbar {
+      overflow-x:
+        auto;
+
+      scrollbar-width:
+        none;
+    }
+
+    .archive__toolbar::-webkit-scrollbar {
+      display:
+        none;
+    }
+
+    .archive__toolbar-inner {
+      width:
+        max-content;
+
+      min-width:
+        100%;
+
+      min-height:
+        4.2rem;
+
+      justify-content:
+        flex-start;
+
+      padding-right:
+        1.25rem;
+    }
+
+    .archive__toolbar-label {
+      display:
+        none;
+    }
+
+    .archive__filters {
+      gap:
+        1.25rem;
+    }
+
+    .archive__filter {
+      font-size:
+        0.48rem;
+
+      white-space:
+        nowrap;
+    }
+
+    .archive__grid {
+      grid-template-columns:
+        1fr;
+
+      gap:
+        4.8rem;
+
+      padding-top:
+        3rem;
+
+      padding-bottom:
+        6rem;
+    }
+
+    .archive-card__media {
+      aspect-ratio:
+        4 / 3;
+    }
+
+    .archive-card__top
+    h2 {
+      font-size:
+        clamp(
+          1.8rem,
+          8.5vw,
+          2.9rem
+        );
+    }
+
+    .archive-card__arrow {
+      display:
+        none;
+    }
+
+    .archive__interlude {
+      min-height:
+        auto;
+
+      align-items:
+        flex-start;
+
+      flex-direction:
+        column;
+
+      gap:
+        0.2rem;
+
+      margin:
+        0;
+
+      padding:
+        1.5rem
+        0;
+
+      font-size:
+        clamp(
+          2.2rem,
+          11vw,
+          4rem
+        );
+    }
+
+    .archive__final {
+      min-height:
+        54lvh;
+
+      grid-template-columns:
+        1fr;
+
+      gap:
+        2.5rem;
+
+      padding-top:
+        3rem;
+
+      padding-bottom:
+        2.4rem;
+    }
+
+    .archive__final-copy
+    h2 {
+      font-size:
+        clamp(
+          3rem,
+          13vw,
+          5rem
+        );
+    }
+
+    .archive__final-link {
+      width:
+        100%;
+
+      min-width:
+        0;
+    }
+  }
+
+  @media (
+    prefers-reduced-motion:
+      reduce
+  ) {
+    .archive-card,
+    .archive-card__media,
+    .archive__interlude,
+    .archive__final,
+    [data-archive-title]
+    > span {
+      opacity:
+        1 !important;
+
+      transform:
+        none !important;
+
+      clip-path:
+        none !important;
+    }
+  }
+</style>

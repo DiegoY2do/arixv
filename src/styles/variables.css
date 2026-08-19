@@ -1,0 +1,82 @@
+:root {
+  /* =========================
+     COLORS
+  ========================= */
+
+  --color-black: #000000;
+  --color-black-soft: #0a0a0a;
+
+  --color-white: #ffffff;
+  --color-white-pure: #ffffff;
+
+  --color-gray: #9a9a9a;
+  --color-gray-light: #cfcfcf;
+
+  --color-line-dark:
+    rgba(
+      255,
+      255,
+      255,
+      0.1
+    );
+
+  --color-line-light:
+    rgba(
+      0,
+      0,
+      0,
+      0.12
+    );
+
+  --color-accent: #ef3224;
+
+  /* =========================
+     TYPOGRAPHY
+  ========================= */
+
+  --font-display:
+    "Space Grotesk Variable",
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  --font-body:
+    "Manrope Variable",
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  /* =========================
+     LAYOUT
+  ========================= */
+
+  --page-padding:
+    clamp(
+      1.25rem,
+      3vw,
+      3.75rem
+    );
+
+  --header-height:
+    5rem;
+
+  /* =========================
+     MOTION
+  ========================= */
+
+  --ease-out:
+    cubic-bezier(
+      0.16,
+      1,
+      0.3,
+      1
+    );
+
+  --ease-in-out:
+    cubic-bezier(
+      0.76,
+      0,
+      0.24,
+      1
+    );
+}

@@ -1,0 +1,158 @@
+---
+interface Props {
+  variant?: "hero" | "stage";
+}
+
+const { variant = "hero" } = Astro.props;
+---
+
+<div
+  class:list={[
+    "signature",
+    `signature--${variant}`,
+  ]}
+  data-signature
+  aria-hidden="true"
+>
+  <svg
+    viewBox="0 0 1000 720"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      class="signature__path signature__path--main"
+      data-signature-path
+      d="
+        M65 430
+        C180 430 205 185 350 185
+        C510 185 430 535 600 535
+        C760 535 735 270 930 270
+      "
+    />
+
+    <path
+      class="signature__path signature__path--secondary"
+      data-signature-path
+      d="
+        M85 505
+        C240 505 260 310 405 310
+        C565 310 550 440 690 440
+        C820 440 845 355 945 355
+      "
+    />
+
+    <path
+      class="signature__path signature__path--ghost"
+      data-signature-path
+      d="
+        M125 235
+        C275 235 270 420 415 420
+        C555 420 600 155 765 155
+        C850 155 895 200 940 225
+      "
+    />
+
+    <circle
+      class="signature__dot"
+      data-signature-dot
+      cx="600"
+      cy="535"
+      r="7"
+    />
+  </svg>
+
+  <span class="signature__micro signature__micro--one">
+    ARIXV / 001
+  </span>
+
+  <span class="signature__micro signature__micro--two">
+    DIGITAL FORM
+  </span>
+</div>
+
+<style>
+  .signature {
+    position: relative;
+
+    width: 100%;
+
+    color: currentColor;
+
+    pointer-events: none;
+
+    will-change:
+      transform,
+      opacity;
+  }
+
+  .signature svg {
+    display: block;
+
+    width: 100%;
+    height: auto;
+
+    overflow: visible;
+  }
+
+  .signature__path {
+    fill: none;
+
+    stroke: currentColor;
+
+    stroke-width: 1.2;
+
+    vector-effect:
+      non-scaling-stroke;
+  }
+
+  .signature__path--main {
+    opacity: 0.72;
+  }
+
+  .signature__path--secondary {
+    opacity: 0.3;
+  }
+
+  .signature__path--ghost {
+    opacity: 0.12;
+  }
+
+  .signature__dot {
+    fill: var(--color-accent);
+  }
+
+  .signature__micro {
+    position: absolute;
+
+    font-size: 0.5rem;
+    font-weight: 600;
+
+    letter-spacing: 0.12em;
+
+    opacity: 0.35;
+  }
+
+  .signature__micro--one {
+    top: 27%;
+    left: 18%;
+  }
+
+  .signature__micro--two {
+    right: 7%;
+    bottom: 20%;
+  }
+
+  .signature--hero {
+    opacity: 0.7;
+  }
+
+  .signature--stage {
+    opacity: 1;
+  }
+
+  @media (max-width: 700px) {
+    .signature__micro {
+      display: none;
+    }
+  }
+</style>

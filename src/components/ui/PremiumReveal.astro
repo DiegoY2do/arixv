@@ -1,0 +1,250 @@
+<div
+  class="reveal-art"
+  data-premium-reveal
+  aria-hidden="true"
+>
+  <span class="reveal-art__backdrop">
+    ARIXV
+  </span>
+
+  <div class="reveal-art__meta reveal-art__meta--top">
+    <span>ARIXV / DIGITAL STUDIO</span>
+    <span>MEXICO / 2026</span>
+  </div>
+
+  <div class="reveal-art__graphic">
+    <svg
+      viewBox="0 0 1200 760"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <!-- Forma principal -->
+      <path
+        class="reveal-art__path reveal-art__path--main"
+        data-reveal-main-path
+        data-reveal-path
+        d="
+          M95 455
+          C195 455 240 175 405 175
+          C565 175 525 545 710 545
+          C875 545 865 265 1105 265
+        "
+      />
+
+      <!-- Segundo gesto -->
+      <path
+        class="reveal-art__path reveal-art__path--secondary"
+        data-reveal-path
+        d="
+          M120 555
+          C275 555 285 335 445 335
+          C590 335 610 455 755 455
+          C905 455 930 365 1090 365
+        "
+      />
+
+      <!-- Línea fantasma -->
+      <path
+        class="reveal-art__path reveal-art__path--ghost"
+        data-reveal-path
+        d="
+          M160 235
+          C315 235 320 410 470 410
+          C635 410 660 130 845 130
+          C955 130 1020 190 1080 220
+        "
+      />
+
+      <!-- Pequeñas extensiones -->
+      <path
+        class="reveal-art__detail"
+        data-reveal-path
+        d="M250 175 H350"
+      />
+
+      <path
+        class="reveal-art__detail"
+        data-reveal-path
+        d="M840 545 H970"
+      />
+
+      <!-- Punto dinámico -->
+      <circle
+        class="reveal-art__dot"
+        data-reveal-dot
+        cx="0"
+        cy="0"
+        r="7"
+      />
+    </svg>
+  </div>
+
+  <div class="reveal-art__caption">
+    <span>FORM / FUNCTION / MOTION</span>
+    <span>001</span>
+  </div>
+</div>
+
+<style>
+  .reveal-art {
+    position: absolute;
+    inset: 0;
+
+    overflow: hidden;
+
+    color: var(--color-black);
+
+    pointer-events: none;
+  }
+
+  /*
+   * ARIXV enorme al fondo.
+   * Apenas visible.
+   */
+
+  .reveal-art__backdrop {
+    position: absolute;
+
+    top: 50%;
+    left: 50%;
+
+    font-family: var(--font-display);
+
+    font-size: clamp(8rem, 23vw, 25rem);
+    font-weight: 500;
+
+    line-height: 0.75;
+    letter-spacing: -0.09em;
+
+    color: rgba(8, 8, 8, 0.045);
+
+    transform:
+      translate(-50%, -50%);
+
+    white-space: nowrap;
+  }
+
+  .reveal-art__meta {
+    position: absolute;
+
+    left: var(--page-padding);
+    right: var(--page-padding);
+
+    display: flex;
+    justify-content: space-between;
+
+    font-size: 0.55rem;
+    font-weight: 600;
+
+    letter-spacing: 0.11em;
+
+    text-transform: uppercase;
+  }
+
+  .reveal-art__meta--top {
+    top:
+      clamp(
+        5rem,
+        7vw,
+        6.5rem
+      );
+  }
+
+  .reveal-art__graphic {
+    position: absolute;
+
+    top: 50%;
+    left: 50%;
+
+    width:
+      min(
+        76vw,
+        70rem
+      );
+
+    transform:
+      translate(-50%, -50%);
+  }
+
+  .reveal-art__graphic svg {
+    width: 100%;
+    overflow: visible;
+  }
+
+  .reveal-art__path,
+  .reveal-art__detail {
+    fill: none;
+
+    stroke: currentColor;
+
+    vector-effect:
+      non-scaling-stroke;
+  }
+
+  .reveal-art__path--main {
+    stroke-width: 1.4;
+
+    opacity: 0.82;
+  }
+
+  .reveal-art__path--secondary {
+    stroke-width: 1;
+
+    opacity: 0.3;
+  }
+
+  .reveal-art__path--ghost {
+    stroke-width: 1;
+
+    opacity: 0.11;
+  }
+
+  .reveal-art__detail {
+    stroke-width: 1;
+
+    opacity: 0.22;
+  }
+
+  .reveal-art__dot {
+    fill: var(--color-accent);
+  }
+
+  .reveal-art__caption {
+    position: absolute;
+
+    left: var(--page-padding);
+    right: var(--page-padding);
+    bottom:
+      clamp(
+        1.5rem,
+        3vw,
+        3rem
+      );
+
+    display: flex;
+    justify-content: space-between;
+
+    font-size: 0.52rem;
+    font-weight: 600;
+
+    letter-spacing: 0.11em;
+  }
+
+  @media (max-width: 700px) {
+    .reveal-art__graphic {
+      width: 125vw;
+    }
+
+    .reveal-art__backdrop {
+      font-size: 30vw;
+    }
+
+    .reveal-art__meta {
+      font-size: 0.46rem;
+    }
+
+    .reveal-art__caption {
+      font-size: 0.46rem;
+    }
+  }
+</style>

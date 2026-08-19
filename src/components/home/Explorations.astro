@@ -1,0 +1,2764 @@
+---
+import {
+  homeContent,
+  type HomeLocale,
+} from "../../data/home";
+
+interface Props {
+  lang?: HomeLocale;
+}
+
+const {
+  lang = "es",
+} = Astro.props;
+
+const content =
+  homeContent[lang].explorations;
+
+/*
+ * Capturas más ligeras para evitar picos de decodificación
+ * en Android. La animación desktop se mantiene intacta.
+ */
+const getExplorationImage =
+  (
+    source: string
+  ) =>
+    source
+      .replace(
+        "/width/1400/",
+        "/width/1000/"
+      )
+      .replace(
+        "/crop/900/",
+        "/crop/650/"
+      );
+---
+
+<section
+  class="explorations"
+  id="explorations"
+  data-explorations
+>
+  <div class="explorations__desktop">
+    <div class="explorations__sticky">
+      <div class="explorations__top container">
+        <span>
+          {content.meta.label}
+        </span>
+
+        <span>
+          {content.meta.number}
+        </span>
+      </div>
+
+      <div
+        class="explorations__word explorations__word--one"
+        data-explorations-word-one
+        aria-hidden="true"
+      >
+        {content.words[0]}
+      </div>
+
+      <div
+        class="explorations__word explorations__word--two"
+        data-explorations-word-two
+        aria-hidden="true"
+      >
+        {content.words[1]}
+      </div>
+
+      <p
+        class="explorations__intro"
+        data-explorations-intro
+      >
+        {content.intro}
+      </p>
+
+      <svg
+        class="explorations__orbits"
+        viewBox="0 0 1600 900"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+      >
+        <path
+          data-explorations-orbit
+          d="M-120 760 C220 220 980 120 1710 500"
+        />
+
+        <path
+          data-explorations-orbit
+          d="M-80 930 C400 510 1130 430 1690 690"
+        />
+      </svg>
+
+      <div
+        class="explorations__camera"
+        data-explorations-camera
+      >
+        <div
+          class="explorations__cards"
+          data-explorations-cards
+        >
+          {
+            content.cards.map(
+              (card, index) => (
+                <article
+                  class="exploration-card"
+                  data-exploration-card
+                  data-index={index}
+                  aria-label={`${card.title} — ${card.category}`}
+                >
+                  <div class="exploration-card__screen">
+                    <img
+                      src={getExplorationImage(card.image)}
+                      alt={`Referencia visual ${card.title}`}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </div>
+
+                  <div
+                    class="exploration-card__meta"
+                    data-exploration-meta
+                  >
+                    <span>
+                      {card.number}
+                    </span>
+
+                    <span>
+                      {card.title}
+                    </span>
+
+                    <span>
+                      {card.category}
+                    </span>
+                  </div>
+                </article>
+              )
+            )
+          }
+        </div>
+      </div>
+
+      <div
+        class="explorations__final-label container"
+        data-explorations-final-label
+      >
+        <span>
+          SELECTED DIGITAL REFERENCES
+        </span>
+
+        <span>
+          VISUAL STUDIES
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="explorations__mobile">
+    <div
+      class="explorations__mobile-sticky"
+      data-explorations-mobile-sticky
+    >
+      <div class="explorations__mobile-meta">
+        <span>
+          {content.meta.label}
+        </span>
+
+        <span>
+          {content.meta.number}
+        </span>
+      </div>
+
+      <div
+        class="explorations__mobile-word explorations__mobile-word--one"
+        data-explorations-mobile-word-one
+        aria-hidden="true"
+      >
+        {content.words[0]}
+      </div>
+
+      <div
+        class="explorations__mobile-word explorations__mobile-word--two"
+        data-explorations-mobile-word-two
+        aria-hidden="true"
+      >
+        {content.words[1]}
+      </div>
+
+      <p
+        class="explorations__mobile-intro"
+        data-explorations-mobile-intro
+      >
+        {content.intro}
+      </p>
+
+      <svg
+        class="explorations__mobile-orbit"
+        viewBox="0 0 390 844"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+      >
+        <path
+          data-explorations-mobile-orbit
+          d="M-40 610 C50 380 285 335 440 515"
+        />
+
+        <path
+          data-explorations-mobile-orbit
+          d="M-30 745 C95 555 315 520 430 645"
+        />
+      </svg>
+
+      <div
+        class="explorations__mobile-camera"
+        data-explorations-mobile-camera
+      >
+        {
+          content.cards.map(
+            (card, index) => (
+              <article
+                class="explorations__mobile-card"
+                data-exploration-mobile-card
+                data-mobile-index={index}
+                aria-label={`${card.title} — ${card.category}`}
+              >
+                <div class="explorations__mobile-screen">
+                  <img
+                    src={getExplorationImage(card.image)}
+                    alt={`Referencia visual ${card.title}`}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+
+                <div
+                  class="explorations__mobile-card-meta"
+                  data-exploration-mobile-meta
+                >
+                  <span>
+                    {card.number}
+                  </span>
+
+                  <strong>
+                    {card.title}
+                  </strong>
+                </div>
+              </article>
+            )
+          )
+        }
+      </div>
+
+      <div
+        class="explorations__mobile-final"
+        data-explorations-mobile-final
+      >
+        <span>
+          SELECTED DIGITAL REFERENCES
+        </span>
+
+        <span>
+          CURATED REFERENCES
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import {
+    gsap,
+    ScrollTrigger,
+  } from "../../scripts/gsap";
+
+  const section =
+    document.querySelector<HTMLElement>(
+      "[data-explorations]"
+    );
+
+  if (section) {
+    const cards =
+      Array.from(
+        section.querySelectorAll<HTMLElement>(
+          "[data-exploration-card]"
+        )
+      );
+
+    const metas =
+      Array.from(
+        section.querySelectorAll<HTMLElement>(
+          "[data-exploration-meta]"
+        )
+      );
+
+    const camera =
+      section.querySelector<HTMLElement>(
+        "[data-explorations-camera]"
+      );
+
+    const wordOne =
+      section.querySelector<HTMLElement>(
+        "[data-explorations-word-one]"
+      );
+
+    const wordTwo =
+      section.querySelector<HTMLElement>(
+        "[data-explorations-word-two]"
+      );
+
+    const intro =
+      section.querySelector<HTMLElement>(
+        "[data-explorations-intro]"
+      );
+
+    const finalLabel =
+      section.querySelector<HTMLElement>(
+        "[data-explorations-final-label]"
+      );
+
+    const orbits =
+      Array.from(
+        section.querySelectorAll<SVGPathElement>(
+          "[data-explorations-orbit]"
+        )
+      );
+
+    const explorationImages =
+      Array.from(
+        section.querySelectorAll<HTMLImageElement>(
+          "img"
+        )
+      );
+
+    /*
+     * Predecodifica imágenes antes de entrar a la escena.
+     * Esto evita que la GPU tenga que animar y decodificar
+     * al mismo tiempo cuando llegamos a Explorations.
+     */
+    const preloadObserver =
+      new IntersectionObserver(
+        (
+          entries,
+          observer
+        ) => {
+          if (
+            !entries.some(
+              (
+                entry
+              ) =>
+                entry.isIntersecting
+            )
+          ) {
+            return;
+          }
+
+          const sources =
+            new Set<string>();
+
+          explorationImages.forEach(
+            (
+              image
+            ) => {
+              const source =
+                image.currentSrc ||
+                image.src;
+
+              if (
+                !source ||
+                sources.has(
+                  source
+                )
+              ) {
+                return;
+              }
+
+              sources.add(
+                source
+              );
+
+              const preload =
+                new Image();
+
+              preload.src =
+                source;
+
+              preload.decode?.().catch(
+                () => {}
+              );
+            }
+          );
+
+          observer.disconnect();
+        },
+        {
+          rootMargin:
+            "1100px 0px",
+        }
+      );
+
+    preloadObserver.observe(
+      section
+    );
+
+    const media =
+      gsap.matchMedia();
+
+    media.add(
+      "(min-width: 901px)",
+      () => {
+        if (
+          cards.length !== 6 ||
+          !camera ||
+          !wordOne ||
+          !wordTwo ||
+          !intro ||
+          !finalLabel
+        ) {
+          return;
+        }
+
+        const vw =
+          () =>
+            window.innerWidth;
+
+        const vh =
+          () =>
+            window.innerHeight;
+
+        type CardState =
+          readonly [
+            number,
+            number,
+            number,
+            number,
+            number,
+            number,
+            number
+          ];
+
+        /*
+         * x, y, scale, rotateZ, rotateY, rotateX, zIndex
+         *
+         * Hay seis composiciones completas. La sección ya no
+         * pasa simplemente de "curva -> primer plano -> grid":
+         * viaja por diferentes estados de cámara y hace que
+         * distintas piezas tomen protagonismo.
+         */
+
+        const seed:
+          readonly CardState[] = [
+            [-0.22, 0.43, 0.13, -5, 0, 0, 2],
+            [-0.14, 0.47, 0.14, -3, 0, 0, 3],
+            [-0.05, 0.50, 0.16, -1, 0, 0, 4],
+            [0.05, 0.50, 0.16, 1, 0, 0, 4],
+            [0.14, 0.47, 0.14, 3, 0, 0, 3],
+            [0.22, 0.43, 0.13, 5, 0, 0, 2],
+          ];
+
+        /*
+         * Las capturas son heroes completos. Por eso la órbita
+         * conserva el movimiento, pero evita inclinaciones 3D
+         * agresivas que deformaban los sitios.
+         */
+        const ribbon:
+          readonly CardState[] = [
+            [-0.32, 0.04, 0.48, -3, 0, 0, 2],
+            [-0.20, -0.01, 0.55, -2, 0, 0, 3],
+            [-0.07, -0.05, 0.62, -1, 0, 0, 5],
+            [0.07, -0.05, 0.64, 1, 0, 0, 6],
+            [0.21, -0.01, 0.56, 2, 0, 0, 4],
+            [0.33, 0.05, 0.48, 3, 0, 0, 2],
+          ];
+
+        /*
+         * Primer acercamiento: protagonista legible, no enorme.
+         */
+        const closePassOne:
+          readonly CardState[] = [
+            [-0.37, -0.10, 0.62, -2, 0, 0, 2],
+            [-0.22, 0.10, 0.72, -1, 0, 0, 5],
+            [0.01, -0.025, 1.08, 0, 0, 0, 12],
+            [0.29, 0.05, 0.78, 2, 0, 0, 7],
+            [0.40, 0.20, 0.55, 2.5, 0, 0, 3],
+            [-0.39, 0.24, 0.52, -2.5, 0, 0, 1],
+          ];
+
+        /*
+         * Segundo protagonista con la misma regla: se lee el hero
+         * entero y el resto acompaña sin salirse tanto del viewport.
+         */
+        const closePassTwo:
+          readonly CardState[] = [
+            [-0.38, 0.18, 0.53, -2, 0, 0, 2],
+            [-0.04, -0.03, 1.06, 0, 0, 0, 11],
+            [0.29, -0.16, 0.64, 2, 0, 0, 5],
+            [0.38, 0.19, 0.70, 2.5, 0, 0, 6],
+            [0.12, 0.28, 0.58, 1, 0, 0, 4],
+            [-0.29, -0.20, 0.76, -2, 0, 0, 8],
+          ];
+
+        const farRibbon:
+          readonly CardState[] = [
+            [-0.29, -0.29, 0.42, -2, 0, 0, 3],
+            [-0.18, -0.33, 0.46, -1.5, 0, 0, 4],
+            [-0.06, -0.35, 0.49, -0.5, 0, 0, 5],
+            [0.06, -0.34, 0.49, 0.5, 0, 0, 5],
+            [0.19, -0.30, 0.45, 1.5, 0, 0, 4],
+            [0.30, -0.22, 0.41, 2, 0, 0, 3],
+          ];
+
+        const scatter:
+          readonly CardState[] = [
+            [-0.29, -0.21, 0.76, -2, 0, 0, 6],
+            [0.02, -0.30, 0.68, 1, 0, 0, 5],
+            [0.35, -0.27, 0.60, 2, 0, 0, 3],
+            [-0.34, 0.19, 0.58, -2, 0, 0, 2],
+            [0.10, 0.18, 0.64, 1, 0, 0, 4],
+            [0.35, 0.10, 0.72, 2, 0, 0, 7],
+          ];
+
+        const grid:
+          readonly CardState[] = [
+            [-0.245, -0.19, 0.82, 0, 0, 0, 3],
+            [0, -0.19, 0.82, 0, 0, 0, 3],
+            [0.245, -0.19, 0.82, 0, 0, 0, 3],
+            [-0.245, 0.19, 0.82, 0, 0, 0, 3],
+            [0, 0.19, 0.82, 0, 0, 0, 3],
+            [0.245, 0.19, 0.82, 0, 0, 0, 3],
+          ];
+
+        const setState =
+          (
+            card:
+              HTMLElement,
+            state:
+              CardState
+          ) => {
+            gsap.set(
+              card,
+              {
+                x:
+                  () =>
+                    vw() *
+                    state[0],
+
+                y:
+                  () =>
+                    vh() *
+                    state[1],
+
+                scale:
+                  state[2],
+
+                rotation:
+                  state[3],
+
+                rotationY:
+                  state[4],
+
+                rotationX:
+                  state[5],
+
+                zIndex:
+                  state[6],
+              }
+            );
+          };
+
+        const tweenState =
+          (
+            tl:
+              gsap.core.Timeline,
+            state:
+              readonly CardState[],
+            at:
+              number,
+            duration:
+              number,
+            ease:
+              string,
+            stagger:
+              number = 0
+          ) => {
+            cards.forEach(
+              (
+                card,
+                index
+              ) => {
+                const next =
+                  state[index];
+
+                tl.to(
+                  card,
+                  {
+                    x:
+                      () =>
+                        vw() *
+                        next[0],
+
+                    y:
+                      () =>
+                        vh() *
+                        next[1],
+
+                    scale:
+                      next[2],
+
+                    rotation:
+                      next[3],
+
+                    rotationY:
+                      next[4],
+
+                    rotationX:
+                      next[5],
+
+                    zIndex:
+                      next[6],
+
+                    autoAlpha:
+                      1,
+
+                    duration,
+
+                    ease,
+                  },
+                  at +
+                    index *
+                      stagger
+                );
+              }
+            );
+          };
+
+        gsap.set(
+          cards,
+          {
+            xPercent:
+              -50,
+
+            yPercent:
+              -50,
+
+            transformPerspective:
+              1400,
+
+            transformOrigin:
+              "50% 50%",
+
+            autoAlpha:
+              0,
+
+            willChange:
+              "transform, opacity",
+          }
+        );
+
+        cards.forEach(
+          (
+            card,
+            index
+          ) => {
+            setState(
+              card,
+              seed[index]
+            );
+          }
+        );
+
+        gsap.set(
+          metas,
+          {
+            autoAlpha:
+              0,
+
+            y:
+              10,
+          }
+        );
+
+        gsap.set(
+          finalLabel,
+          {
+            autoAlpha:
+              0,
+
+            y:
+              16,
+          }
+        );
+
+        gsap.set(
+          intro,
+          {
+            autoAlpha:
+              0,
+          }
+        );
+
+        orbits.forEach(
+          (path) => {
+            const length =
+              path.getTotalLength();
+
+            gsap.set(
+              path,
+              {
+                strokeDasharray:
+                  length,
+
+                strokeDashoffset:
+                  length,
+              }
+            );
+          }
+        );
+
+        const tl =
+          gsap.timeline({
+            scrollTrigger: {
+              trigger:
+                section,
+
+              start:
+                "top top",
+
+              end:
+                "bottom bottom",
+
+              scrub:
+                1.15,
+
+              invalidateOnRefresh:
+                true,
+            },
+          });
+
+        /*
+         * PHASE 01
+         * La cinta nace pequeña desde abajo.
+         */
+        tweenState(
+          tl,
+          ribbon,
+          0.15,
+          1.25,
+          "power3.out",
+          0.055
+        );
+
+        tl.to(
+          orbits,
+          {
+            strokeDashoffset:
+              0,
+
+            duration:
+              1.25,
+
+            stagger:
+              0.08,
+
+            ease:
+              "none",
+          },
+          0
+        );
+
+        /*
+         * PHASE 02
+         * Primera pasada muy cerca de cámara.
+         */
+        tweenState(
+          tl,
+          closePassOne,
+          1.45,
+          1.45,
+          "power3.inOut",
+          0.025
+        );
+
+        tl.to(
+          camera,
+          {
+            xPercent:
+              -2.5,
+
+            yPercent:
+              -1.5,
+
+            scale:
+              1.01,
+
+            rotation:
+              -0.2,
+
+            duration:
+              1.45,
+
+            ease:
+              "power2.inOut",
+          },
+          1.45
+        );
+
+        tl.to(
+          wordOne,
+          {
+            x:
+              () =>
+                -vw() *
+                0.20,
+
+            y:
+              () =>
+                vh() *
+                0.05,
+
+            duration:
+              1.55,
+
+            ease:
+              "none",
+          },
+          1.4
+        );
+
+        tl.to(
+          wordTwo,
+          {
+            x:
+              () =>
+                vw() *
+                0.18,
+
+            y:
+              () =>
+                -vh() *
+                0.04,
+
+            duration:
+              1.55,
+
+            ease:
+              "none",
+          },
+          1.4
+        );
+
+        /*
+         * PHASE 03
+         * Cambia el protagonista. Las tarjetas se cruzan
+         * y la composición se siente menos lineal.
+         */
+        tweenState(
+          tl,
+          closePassTwo,
+          2.9,
+          1.55,
+          "power4.inOut",
+          0.018
+        );
+
+        tl.to(
+          camera,
+          {
+            xPercent:
+              2,
+
+            yPercent:
+              1,
+
+            scale:
+              0.995,
+
+            rotation:
+              0.2,
+
+            duration:
+              1.55,
+
+            ease:
+              "power3.inOut",
+          },
+          2.9
+        );
+
+        /*
+         * PHASE 04
+         * Zoom out fuerte: la cinta queda pequeña arriba,
+         * como en el punto más lejano del video.
+         */
+        tweenState(
+          tl,
+          farRibbon,
+          4.45,
+          1.35,
+          "power4.inOut",
+          0.025
+        );
+
+        tl.to(
+          camera,
+          {
+            xPercent:
+              0,
+
+            yPercent:
+              0,
+
+            scale:
+              0.94,
+
+            rotation:
+              0,
+
+            duration:
+              1.35,
+
+            ease:
+              "power4.inOut",
+          },
+          4.45
+        );
+
+        tl.to(
+          intro,
+          {
+            autoAlpha:
+              1,
+
+            duration:
+              0.65,
+
+            ease:
+              "power3.out",
+          },
+          4.95
+        );
+
+        tl.to(
+          wordOne,
+          {
+            x:
+              () =>
+                -vw() *
+                0.42,
+
+            autoAlpha:
+              0.72,
+
+            duration:
+              1.25,
+
+            ease:
+              "none",
+          },
+          4.4
+        );
+
+        tl.to(
+          wordTwo,
+          {
+            x:
+              () =>
+                vw() *
+                0.40,
+
+            autoAlpha:
+              0.72,
+
+            duration:
+              1.25,
+
+            ease:
+              "none",
+          },
+          4.4
+        );
+
+        /*
+         * PHASE 05
+         * Se separan de la cinta. Algunas piezas quedan
+         * cortadas por los bordes antes de aterrizar.
+         */
+        tweenState(
+          tl,
+          scatter,
+          5.85,
+          1.45,
+          "power3.inOut",
+          0.035
+        );
+
+        tl.to(
+          intro,
+          {
+            autoAlpha:
+              0,
+
+            y:
+              -12,
+
+            duration:
+              0.45,
+
+            ease:
+              "power2.out",
+          },
+          6.2
+        );
+
+        tl.to(
+          orbits,
+          {
+            autoAlpha:
+              0,
+
+            duration:
+              0.7,
+
+            ease:
+              "power2.out",
+          },
+          6.2
+        );
+
+        /*
+         * PHASE 06
+         * Grid final 3 × 2.
+         */
+        tweenState(
+          tl,
+          grid,
+          7.25,
+          1.55,
+          "power4.inOut",
+          0.025
+        );
+
+        tl.to(
+          camera,
+          {
+            scale:
+              1,
+
+            xPercent:
+              0,
+
+            yPercent:
+              0,
+
+            rotation:
+              0,
+
+            duration:
+              1.4,
+
+            ease:
+              "power4.inOut",
+          },
+          7.25
+        );
+
+        tl.to(
+          [
+            wordOne,
+            wordTwo,
+          ],
+          {
+            autoAlpha:
+              0.06,
+
+            duration:
+              1,
+
+            ease:
+              "power2.out",
+          },
+          7.45
+        );
+
+        tl.to(
+          metas,
+          {
+            autoAlpha:
+              1,
+
+            y:
+              0,
+
+            duration:
+              0.55,
+
+            stagger:
+              0.035,
+
+            ease:
+              "power3.out",
+          },
+          8.15
+        );
+
+        tl.to(
+          finalLabel,
+          {
+            autoAlpha:
+              1,
+
+            y:
+              0,
+
+            duration:
+              0.65,
+
+            ease:
+              "power3.out",
+          },
+          8.25
+        );
+
+        /*
+         * Hold final.
+         */
+        tl.to(
+          {},
+          {
+            duration:
+              1,
+          }
+        );
+
+        return () => {
+          tl.kill();
+        };
+      }
+    );
+
+    media.add(
+      "(max-width: 900px)",
+      () => {
+        const mobileRoot =
+          section.querySelector<HTMLElement>(
+            ".explorations__mobile"
+          );
+
+        const mobileCards =
+          Array.from(
+            section.querySelectorAll<HTMLElement>(
+              "[data-exploration-mobile-card]"
+            )
+          );
+
+        const mobileMetas =
+          Array.from(
+            section.querySelectorAll<HTMLElement>(
+              "[data-exploration-mobile-meta]"
+            )
+          );
+
+        const mobileWordOne =
+          section.querySelector<HTMLElement>(
+            "[data-explorations-mobile-word-one]"
+          );
+
+        const mobileWordTwo =
+          section.querySelector<HTMLElement>(
+            "[data-explorations-mobile-word-two]"
+          );
+
+        const mobileIntro =
+          section.querySelector<HTMLElement>(
+            "[data-explorations-mobile-intro]"
+          );
+
+        const mobileFinal =
+          section.querySelector<HTMLElement>(
+            "[data-explorations-mobile-final]"
+          );
+
+        const mobileOrbits =
+          Array.from(
+            section.querySelectorAll<SVGPathElement>(
+              "[data-explorations-mobile-orbit]"
+            )
+          );
+
+        if (
+          !mobileRoot ||
+          !mobileWordOne ||
+          !mobileWordTwo ||
+          !mobileIntro ||
+          !mobileFinal ||
+          mobileCards.length !== 6
+        ) {
+          return;
+        }
+
+        const vw =
+          () =>
+            window.innerWidth;
+
+        const vh =
+          () =>
+            window.innerHeight;
+
+        type MobileState =
+          readonly [
+            number,
+            number,
+            number,
+            number,
+            number
+          ];
+
+        /*
+         * MOBILE CINEMATIC LITE
+         *
+         * x / y / scale / rotation / zIndex
+         *
+         * Recuperamos el momento espectacular de la V3,
+         * pero NO recuperamos las partes caras:
+         * - sin rotateX / rotateY
+         * - sin movimiento de cámara
+         * - sin strokeDashoffset animado
+         * - sin 6 estados completos
+         *
+         * Secuencia:
+         * seed -> ribbon -> hero pass -> focus swap -> grid
+         */
+
+        const seed:
+          readonly MobileState[] = [
+            [-0.30, 0.35, 0.18, -3, 2],
+            [-0.19, 0.39, 0.19, -2, 3],
+            [-0.07, 0.42, 0.21, -1, 4],
+            [0.07, 0.42, 0.21, 1, 4],
+            [0.19, 0.39, 0.19, 2, 3],
+            [0.30, 0.35, 0.18, 3, 2],
+          ];
+
+        const ribbon:
+          readonly MobileState[] = [
+            [-0.36, 0.08, 0.40, -2.5, 2],
+            [-0.23, 0.035, 0.45, -1.5, 3],
+            [-0.085, -0.005, 0.51, -0.5, 5],
+            [0.085, -0.005, 0.52, 0.5, 6],
+            [0.23, 0.035, 0.45, 1.5, 4],
+            [0.36, 0.08, 0.40, 2.5, 2],
+          ];
+
+        /*
+         * Primera pasada: suficientemente grande para destacar,
+         * sin convertir la captura en un recorte gigante.
+         */
+        const heroPass:
+          readonly MobileState[] = [
+            [-0.45, 0.16, 0.38, -2, 1],
+            [-0.32, 0.19, 0.50, -1.5, 4],
+            [0.00, -0.015, 1.05, 0, 15],
+            [0.38, 0.08, 0.56, 1.5, 7],
+            [0.47, 0.24, 0.36, 2, 2],
+            [-0.42, 0.28, 0.35, -2, 1],
+          ];
+
+        /*
+         * Segundo protagonista, también manteniendo el hero legible.
+         */
+        const focusSwap:
+          readonly MobileState[] = [
+            [-0.42, 0.24, 0.35, -2, 1],
+            [-0.25, -0.12, 0.52, -1, 5],
+            [0.35, -0.18, 0.46, 1.5, 4],
+            [0.42, 0.21, 0.48, 2, 3],
+            [0.01, 0.00, 1.03, 0, 15],
+            [-0.34, -0.20, 0.58, -1.5, 7],
+          ];
+
+        const grid:
+          readonly MobileState[] = [
+            [-0.225, -0.235, 0.50, 0, 3],
+            [0.225, -0.235, 0.50, 0, 3],
+            [-0.225, -0.005, 0.50, 0, 3],
+            [0.225, -0.005, 0.50, 0, 3],
+            [-0.225, 0.225, 0.50, 0, 3],
+            [0.225, 0.225, 0.50, 0, 3],
+          ];
+
+        const setState =
+          (
+            card:
+              HTMLElement,
+            state:
+              MobileState
+          ) => {
+            gsap.set(
+              card,
+              {
+                x:
+                  () =>
+                    vw() *
+                    state[0],
+
+                y:
+                  () =>
+                    vh() *
+                    state[1],
+
+                scale:
+                  state[2],
+
+                rotation:
+                  state[3],
+
+                zIndex:
+                  state[4],
+
+                force3D:
+                  true,
+              }
+            );
+          };
+
+        const tweenState =
+          (
+            timeline:
+              gsap.core.Timeline,
+            state:
+              readonly MobileState[],
+            at:
+              number,
+            duration:
+              number
+          ) => {
+            mobileCards.forEach(
+              (
+                card,
+                index
+              ) => {
+                const next =
+                  state[index];
+
+                timeline.to(
+                  card,
+                  {
+                    x:
+                      () =>
+                        vw() *
+                        next[0],
+
+                    y:
+                      () =>
+                        vh() *
+                        next[1],
+
+                    scale:
+                      next[2],
+
+                    rotation:
+                      next[3],
+
+                    zIndex:
+                      next[4],
+
+                    autoAlpha:
+                      1,
+
+                    force3D:
+                      true,
+
+                    duration,
+
+                    /*
+                     * Con scrub muy corto, ease:none se siente
+                     * más conectado al dedo y evita microtirones.
+                     */
+                    ease:
+                      "none",
+                  },
+                  at
+                );
+              }
+            );
+          };
+
+        gsap.set(
+          mobileCards,
+          {
+            xPercent:
+              -50,
+
+            yPercent:
+              -50,
+
+            autoAlpha:
+              0,
+
+            transformOrigin:
+              "50% 50%",
+
+            force3D:
+              true,
+
+            willChange:
+              "transform, opacity",
+          }
+        );
+
+        mobileCards.forEach(
+          (
+            card,
+            index
+          ) => {
+            setState(
+              card,
+              seed[index]
+            );
+          }
+        );
+
+        gsap.set(
+          mobileMetas,
+          {
+            autoAlpha:
+              0,
+
+            y:
+              7,
+          }
+        );
+
+        gsap.set(
+          mobileIntro,
+          {
+            autoAlpha:
+              0,
+          }
+        );
+
+        /*
+         * Las órbitas sólo hacen fade. Ya no se recalcula
+         * strokeDashoffset en cada frame.
+         */
+        gsap.set(
+          mobileOrbits,
+          {
+            autoAlpha:
+              0,
+          }
+        );
+
+        gsap.set(
+          mobileFinal,
+          {
+            autoAlpha:
+              0,
+
+            y:
+              10,
+          }
+        );
+
+        const mobileTl =
+          gsap.timeline({
+            scrollTrigger: {
+              trigger:
+                mobileRoot,
+
+              start:
+                "top top",
+
+              end:
+                "bottom bottom",
+
+              scrub:
+                0.12,
+
+              invalidateOnRefresh:
+                true,
+            },
+          });
+
+        /*
+         * 01 — Cinta.
+         */
+        tweenState(
+          mobileTl,
+          ribbon,
+          0.05,
+          0.82
+        );
+
+        mobileTl.to(
+          mobileOrbits,
+          {
+            autoAlpha:
+              0.68,
+
+            duration:
+              0.38,
+
+            ease:
+              "power2.out",
+          },
+          0.04
+        );
+
+        /*
+         * 02 — Hero pass.
+         */
+        tweenState(
+          mobileTl,
+          heroPass,
+          0.88,
+          0.90
+        );
+
+        mobileTl.to(
+          mobileWordOne,
+          {
+            x:
+              () =>
+                -vw() *
+                0.16,
+
+            y:
+              () =>
+                vh() *
+                0.025,
+
+            duration:
+              0.9,
+
+            ease:
+              "none",
+          },
+          0.88
+        );
+
+        mobileTl.to(
+          mobileWordTwo,
+          {
+            x:
+              () =>
+                vw() *
+                0.14,
+
+            y:
+              () =>
+                -vh() *
+                0.02,
+
+            duration:
+              0.9,
+
+            ease:
+              "none",
+          },
+          0.88
+        );
+
+        /*
+         * 03 — Focus swap.
+         * Es el segundo golpe visual que faltaba en V4.
+         */
+        tweenState(
+          mobileTl,
+          focusSwap,
+          1.82,
+          0.95
+        );
+
+        mobileTl.to(
+          mobileIntro,
+          {
+            autoAlpha:
+              1,
+
+            y:
+              0,
+
+            duration:
+              0.32,
+
+            ease:
+              "power2.out",
+          },
+          2.15
+        );
+
+        /*
+         * 04 — Aterrizaje directo al grid.
+         */
+        tweenState(
+          mobileTl,
+          grid,
+          2.82,
+          1.0
+        );
+
+        mobileTl.to(
+          mobileIntro,
+          {
+            autoAlpha:
+              0,
+
+            y:
+              -8,
+
+            duration:
+              0.28,
+
+            ease:
+              "none",
+          },
+          2.82
+        );
+
+        mobileTl.to(
+          mobileOrbits,
+          {
+            autoAlpha:
+              0,
+
+            duration:
+              0.34,
+
+            ease:
+              "none",
+          },
+          2.95
+        );
+
+        mobileTl.to(
+          [
+            mobileWordOne,
+            mobileWordTwo,
+          ],
+          {
+            autoAlpha:
+              0.055,
+
+            duration:
+              0.42,
+
+            ease:
+              "none",
+          },
+          3.05
+        );
+
+        mobileTl.to(
+          mobileMetas,
+          {
+            autoAlpha:
+              1,
+
+            y:
+              0,
+
+            duration:
+              0.34,
+
+            stagger:
+              0.018,
+
+            ease:
+              "power2.out",
+          },
+          3.42
+        );
+
+        mobileTl.to(
+          mobileFinal,
+          {
+            autoAlpha:
+              1,
+
+            y:
+              0,
+
+            duration:
+              0.36,
+
+            ease:
+              "power2.out",
+          },
+          3.52
+        );
+
+        mobileTl.to(
+          {},
+          {
+            duration:
+              0.28,
+          }
+        );
+
+        return () => {
+          mobileTl.kill();
+        };
+      }
+    );
+  }
+</script>
+
+<style>
+  .explorations {
+    position:
+      relative;
+
+    background:
+      #d3d3d1;
+
+    color:
+      #222;
+  }
+
+  .explorations__desktop {
+    position:
+      relative;
+
+    height:
+      650svh;
+  }
+
+  .explorations__sticky {
+    position:
+      sticky;
+
+    top:
+      0;
+
+    height:
+      100svh;
+
+    overflow:
+      hidden;
+
+    background:
+      #d3d3d1;
+  }
+
+  .explorations__top {
+    position:
+      absolute;
+
+    z-index:
+      50;
+
+    top:
+      clamp(
+        1.7rem,
+        2.8vw,
+        2.8rem
+      );
+
+    left:
+      50%;
+
+    display:
+      flex;
+
+    width:
+      100%;
+
+    justify-content:
+      space-between;
+
+    transform:
+      translateX(
+        -50%
+      );
+
+    font-size:
+      0.48rem;
+
+    font-weight:
+      650;
+
+    letter-spacing:
+      0.1em;
+
+    text-transform:
+      uppercase;
+
+    opacity:
+      0.55;
+  }
+
+  .explorations__word {
+    position:
+      absolute;
+
+    z-index:
+      1;
+
+    font-family:
+      var(--font-display);
+
+    font-size:
+      clamp(
+        5.6rem,
+        10.6vw,
+        12.6rem
+      );
+
+    font-weight:
+      500;
+
+    line-height:
+      0.74;
+
+    letter-spacing:
+      -0.08em;
+
+    white-space:
+      nowrap;
+
+    text-transform:
+      uppercase;
+
+    opacity:
+      0.86;
+
+    pointer-events:
+      none;
+
+    will-change:
+      transform,
+      opacity;
+  }
+
+  .explorations__word--one {
+    top:
+      35%;
+
+    left:
+      3vw;
+  }
+
+  .explorations__word--two {
+    right:
+      3vw;
+
+    bottom:
+      28%;
+  }
+
+  .explorations__intro {
+    position:
+      absolute;
+
+    z-index:
+      3;
+
+    top:
+      49%;
+
+    left:
+      50%;
+
+    width:
+      min(
+        19rem,
+        28vw
+      );
+
+    margin:
+      0;
+
+    transform:
+      translate(
+        -50%,
+        -50%
+      );
+
+    text-align:
+      center;
+
+    font-size:
+      clamp(
+        0.65rem,
+        0.78vw,
+        0.84rem
+      );
+
+    font-weight:
+      550;
+
+    line-height:
+      1.45;
+
+    text-transform:
+      uppercase;
+
+    opacity:
+      0;
+
+    will-change:
+      transform,
+      opacity;
+  }
+
+  .explorations__orbits {
+    position:
+      absolute;
+
+    z-index:
+      2;
+
+    inset:
+      0;
+
+    width:
+      100%;
+
+    height:
+      100%;
+
+    pointer-events:
+      none;
+  }
+
+  .explorations__orbits
+  path {
+    fill:
+      none;
+
+    stroke:
+      rgba(
+        24,
+        24,
+        24,
+        0.18
+      );
+
+    stroke-width:
+      1;
+
+    vector-effect:
+      non-scaling-stroke;
+
+    will-change:
+      stroke-dashoffset,
+      opacity;
+  }
+
+  .explorations__camera {
+    position:
+      absolute;
+
+    z-index:
+      10;
+
+    inset:
+      0;
+
+    perspective:
+      1400px;
+
+    transform-style:
+      preserve-3d;
+
+    will-change:
+      transform;
+  }
+
+  .explorations__cards {
+    position:
+      absolute;
+
+    inset:
+      0;
+
+    transform-style:
+      preserve-3d;
+  }
+
+  .exploration-card {
+    position:
+      absolute;
+
+    top:
+      50%;
+
+    left:
+      50%;
+
+    display:
+      block;
+
+    width:
+      clamp(
+        18.5rem,
+        24vw,
+        28rem
+      );
+
+    aspect-ratio:
+      16 / 9;
+
+    overflow:
+      hidden;
+
+    background:
+      #efefec;
+
+    color:
+      #111;
+
+    border:
+      1px solid
+      rgba(
+        0,
+        0,
+        0,
+        0.12
+      );
+
+    box-shadow:
+      0
+      1.8rem
+      5.5rem
+      rgba(
+        0,
+        0,
+        0,
+        0.10
+      );
+
+    text-decoration:
+      none;
+
+    transform-style:
+      preserve-3d;
+
+    will-change:
+      transform,
+      opacity;
+  }
+
+  .exploration-card__screen {
+    position:
+      absolute;
+
+    inset:
+      0;
+
+    overflow:
+      hidden;
+
+    background:
+      #ecece8;
+  }
+
+  .exploration-card__placeholder {
+    display:
+      flex;
+
+    flex-direction:
+      column;
+
+    align-items:
+      center;
+
+    justify-content:
+      center;
+
+    gap:
+      0.65rem;
+
+    width:
+      100%;
+
+    height:
+      100%;
+
+    background:
+      linear-gradient(
+        135deg,
+        #e9e9e5,
+        #d7d7d2
+      );
+
+    color:
+      rgba(
+        0,
+        0,
+        0,
+        0.42
+      );
+
+    text-align:
+      center;
+
+    letter-spacing:
+      0.12em;
+  }
+
+  .exploration-card__placeholder span {
+    font-size:
+      0.55rem;
+  }
+
+  .exploration-card__placeholder strong {
+    font-size:
+      0.62rem;
+
+    font-weight:
+      600;
+  }
+
+  .exploration-card__screen
+  img {
+    display:
+      block;
+
+    width:
+      100%;
+
+    height:
+      100%;
+
+    object-fit:
+      cover;
+
+    object-position:
+      top center;
+
+    transform:
+      none;
+
+    transition:
+      transform
+      600ms
+      var(--ease-out);
+  }
+
+  .exploration-card:hover
+  .exploration-card__screen
+  img {
+    transform:
+      scale(
+        1.012
+      );
+  }
+
+  .exploration-card__meta {
+    position:
+      absolute;
+
+    z-index:
+      3;
+
+    right:
+      0;
+
+    bottom:
+      0;
+
+    left:
+      0;
+
+    display:
+      grid;
+
+    grid-template-columns:
+      auto
+      1fr
+      auto;
+
+    gap:
+      0.7rem;
+
+    align-items:
+      center;
+
+    min-height:
+      1.8rem;
+
+    padding:
+      0.45rem
+      0.6rem;
+
+    background:
+      rgba(
+        242,
+        240,
+        234,
+        0.92
+      );
+
+    backdrop-filter:
+      blur(
+        10px
+      );
+
+    border-top:
+      1px solid
+      rgba(
+        0,
+        0,
+        0,
+        0.09
+      );
+
+    font-size:
+      0.33rem;
+
+    font-weight:
+      650;
+
+    letter-spacing:
+      0.075em;
+
+    text-transform:
+      uppercase;
+  }
+
+  .exploration-card__meta
+  span:nth-child(2) {
+    text-align:
+      center;
+  }
+
+  .explorations__final-label {
+    position:
+      absolute;
+
+    z-index:
+      50;
+
+    bottom:
+      clamp(
+        1.4rem,
+        2.2vw,
+        2.2rem
+      );
+
+    left:
+      50%;
+
+    display:
+      flex;
+
+    width:
+      100%;
+
+    justify-content:
+      space-between;
+
+    transform:
+      translateX(
+        -50%
+      );
+
+    font-size:
+      0.44rem;
+
+    font-weight:
+      650;
+
+    letter-spacing:
+      0.09em;
+
+    text-transform:
+      uppercase;
+
+    opacity:
+      0;
+  }
+
+  .explorations__mobile {
+    display:
+      none;
+  }
+
+  @media (
+    max-width:
+      900px
+  ) {
+    .explorations__desktop {
+      display:
+        none;
+    }
+
+    .explorations__mobile {
+      position:
+        relative;
+
+      display:
+        block;
+
+      /*
+       * Algo más de recorrido que V4 para devolver dramatismo,
+       * pero bastante menos que la versión pesada original.
+       */
+      height:
+        400lvh;
+
+      background:
+        #d3d3d1;
+    }
+
+    .explorations__mobile-sticky {
+      position:
+        sticky;
+
+      top:
+        0;
+
+      height:
+        100vh;
+
+      height:
+        100lvh;
+
+      min-height:
+        100lvh;
+
+      overflow:
+        hidden;
+
+      background:
+        #d3d3d1;
+    }
+
+    .explorations__mobile-meta {
+      position:
+        absolute;
+
+      z-index:
+        50;
+
+      top:
+        1.2rem;
+
+      left:
+        1.25rem;
+
+      right:
+        1.25rem;
+
+      display:
+        flex;
+
+      justify-content:
+        space-between;
+
+      gap:
+        1rem;
+
+      font-size:
+        0.44rem;
+
+      font-weight:
+        650;
+
+      letter-spacing:
+        0.09em;
+
+      text-transform:
+        uppercase;
+
+      opacity:
+        0.58;
+    }
+
+    .explorations__mobile-word {
+      position:
+        absolute;
+
+      z-index:
+        1;
+
+      font-family:
+        var(--font-display);
+
+      font-size:
+        clamp(
+          3.65rem,
+          16.5vw,
+          5.8rem
+        );
+
+      font-weight:
+        500;
+
+      line-height:
+        0.77;
+
+      letter-spacing:
+        -0.075em;
+
+      white-space:
+        nowrap;
+
+      text-transform:
+        uppercase;
+
+      opacity:
+        0.88;
+
+      pointer-events:
+        none;
+
+      will-change:
+        transform,
+        opacity;
+    }
+
+    .explorations__mobile-word--one {
+      top:
+        29%;
+
+      left:
+        4vw;
+    }
+
+    .explorations__mobile-word--two {
+      right:
+        4vw;
+
+      bottom:
+        28%;
+    }
+
+    .explorations__mobile-intro {
+      position:
+        absolute;
+
+      z-index:
+        3;
+
+      top:
+        51%;
+
+      left:
+        50%;
+
+      width:
+        min(
+          15rem,
+          66vw
+        );
+
+      margin:
+        0;
+
+      transform:
+        translate(
+          -50%,
+          -50%
+        );
+
+      text-align:
+        center;
+
+      font-size:
+        0.62rem;
+
+      font-weight:
+        600;
+
+      line-height:
+        1.45;
+
+      letter-spacing:
+        0.02em;
+
+      text-transform:
+        uppercase;
+
+      opacity:
+        0;
+    }
+
+    .explorations__mobile-orbit {
+      position:
+        absolute;
+
+      z-index:
+        2;
+
+      inset:
+        0;
+
+      width:
+        100%;
+
+      height:
+        100%;
+
+      pointer-events:
+        none;
+    }
+
+    .explorations__mobile-orbit
+    path {
+      fill:
+        none;
+
+      stroke:
+        rgba(
+          24,
+          24,
+          24,
+          0.18
+        );
+
+      stroke-width:
+        0.8;
+
+      vector-effect:
+        non-scaling-stroke;
+
+      will-change:
+        stroke-dashoffset,
+        opacity;
+    }
+
+    .explorations__mobile-camera {
+      position:
+        absolute;
+
+      z-index:
+        10;
+
+      inset:
+        0;
+
+      /*
+       * Sin cámara 3D móvil: escala + posición generan
+       * profundidad con mucho menor costo.
+       */
+      transform-style:
+        flat;
+    }
+
+    .explorations__mobile-card {
+      position:
+        absolute;
+
+      top:
+        50%;
+
+      left:
+        50%;
+
+      display:
+        block;
+
+      width:
+        min(
+          74vw,
+          19rem
+        );
+
+      aspect-ratio:
+        16 / 9;
+
+      overflow:
+        hidden;
+
+      background:
+        #efefec;
+
+      color:
+        #111;
+
+      border:
+        1px solid
+        rgba(
+          0,
+          0,
+          0,
+          0.12
+        );
+
+      box-shadow:
+        none;
+
+      text-decoration:
+        none;
+
+      contain:
+        layout
+        paint
+        style;
+
+      backface-visibility:
+        hidden;
+
+      will-change:
+        transform,
+        opacity;
+    }
+
+    .explorations__mobile-screen {
+      position:
+        absolute;
+
+      inset:
+        0;
+
+      overflow:
+        hidden;
+
+      background:
+        #ecece8;
+    }
+
+    .explorations__mobile-screen
+    img {
+      display:
+        block;
+
+      width:
+        100%;
+
+      height:
+        100%;
+
+      object-fit:
+        cover;
+
+      object-position:
+        top center;
+
+      backface-visibility:
+        hidden;
+    }
+
+    .explorations__mobile-card-meta {
+      position:
+        absolute;
+
+      z-index:
+        3;
+
+      right:
+        0;
+
+      bottom:
+        0;
+
+      left:
+        0;
+
+      display:
+        flex;
+
+      justify-content:
+        space-between;
+
+      gap:
+        0.5rem;
+
+      align-items:
+        center;
+
+      min-height:
+        1.5rem;
+
+      padding:
+        0.35rem
+        0.45rem;
+
+      background:
+        rgba(
+          242,
+          240,
+          234,
+          0.94
+        );
+
+      border-top:
+        1px solid
+        rgba(
+          0,
+          0,
+          0,
+          0.08
+        );
+
+      font-size:
+        0.30rem;
+
+      font-weight:
+        650;
+
+      letter-spacing:
+        0.065em;
+
+      text-transform:
+        uppercase;
+    }
+
+    .explorations__mobile-card-meta
+    strong {
+      overflow:
+        hidden;
+
+      text-overflow:
+        ellipsis;
+
+      white-space:
+        nowrap;
+    }
+
+    .explorations__mobile-final {
+      position:
+        absolute;
+
+      z-index:
+        50;
+
+      right:
+        1.25rem;
+
+      bottom:
+        1.3rem;
+
+      left:
+        1.25rem;
+
+      display:
+        flex;
+
+      justify-content:
+        space-between;
+
+      gap:
+        1rem;
+
+      font-size:
+        0.40rem;
+
+      font-weight:
+        650;
+
+      letter-spacing:
+        0.08em;
+
+      text-transform:
+        uppercase;
+
+      opacity:
+        0;
+    }
+  }
+
+  @media (
+    prefers-reduced-motion:
+      reduce
+  ) {
+    .exploration-card,
+    .explorations__mobile-card {
+      opacity:
+        1 !important;
+    }
+  }
+</style>

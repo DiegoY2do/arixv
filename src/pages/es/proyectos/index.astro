@@ -1,0 +1,20 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import Header from "../../../components/layout/Header.astro";
+import Footer from "../../../components/layout/Footer.astro";
+import ProjectsArchive from "../../../components/projects/ProjectsArchive.astro";
+---
+
+<BaseLayout
+  title="Proyectos — ARIXV"
+  description="Archivo de proyectos, experiencias digitales, e-commerce y productos desarrollados por ARIXV."
+  lang="es"
+>
+  <Header />
+
+  <main id="top">
+    <ProjectsArchive lang="es" />
+  </main>
+
+  <Footer lang="es" />
+</BaseLayout>

@@ -1,0 +1,60 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import Header from "../../../components/layout/Header.astro";
+import Footer from "../../../components/layout/Footer.astro";
+import CaseStudy from "../../../components/projects/CaseStudy.astro";
+
+import {
+  caseStudyProjects,
+  getCaseStudyContent,
+  type CaseStudyProject,
+} from "../../../data/projects";
+
+export function getStaticPaths() {
+  return caseStudyProjects.map(
+    (
+      project
+    ) => ({
+      params: {
+        slug:
+          project.slug,
+      },
+
+      props: {
+        project,
+      },
+    })
+  );
+}
+
+interface Props {
+  project: CaseStudyProject;
+}
+
+const {
+  project,
+} = Astro.props;
+
+const content =
+  getCaseStudyContent(
+    project,
+    "es"
+  );
+---
+
+<BaseLayout
+  title={`${project.title} — Caso de estudio | ARIXV`}
+  description={content.intro}
+  lang="es"
+>
+  <Header lang="es" />
+
+  <main id="top">
+    <CaseStudy
+      project={project}
+      lang="es"
+    />
+  </main>
+
+  <Footer lang="es" />
+</BaseLayout>

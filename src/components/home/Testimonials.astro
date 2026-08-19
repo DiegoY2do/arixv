@@ -1,0 +1,1636 @@
+---
+import {
+  homeContent,
+  type HomeLocale,
+} from "../../data/home";
+
+interface Props {
+  lang?: HomeLocale;
+}
+
+const {
+  lang = "es",
+} = Astro.props;
+
+const content =
+  homeContent[lang].testimonials;
+---
+
+<section
+  class="reviews"
+  id="testimonials"
+  data-reviews
+>
+  <!-- DESKTOP -->
+  <div
+    class="reviews__scene reviews__scene--desktop"
+    data-reviews-desktop
+  >
+    <div class="reviews__sticky">
+      <div class="reviews__mast container">
+        <div
+          class="reviews__heading"
+          data-reviews-heading
+        >
+          <h2>
+            {content.title}
+          </h2>
+
+          <span class="reviews__link">
+            {lang === "es"
+              ? "VER TODAS LAS RESEÑAS"
+              : "READ ALL REVIEWS"}
+          </span>
+        </div>
+
+        <div
+          class="reviews__signal"
+          aria-hidden="true"
+        >
+          <span class="reviews__signal-line"></span>
+
+          <span
+            class="reviews__signal-wave"
+            data-reviews-wave
+          >
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+          </span>
+        </div>
+      </div>
+
+      <div class="reviews__track-wrap">
+        <div
+          class="reviews__track"
+          data-reviews-track
+        >
+          {
+            content.items.map(
+              (item, index) => (
+                <article
+                  class="review-card"
+                  data-review-card
+                  data-index={index}
+                >
+                  <header class="review-card__head">
+                    <div
+                      class="review-card__avatar"
+                      aria-hidden="true"
+                    >
+                      {item.number}
+                    </div>
+
+                    <div class="review-card__person">
+                      <strong>
+                        {item.client}
+                      </strong>
+
+                      <span>
+                        {item.project}
+                      </span>
+                    </div>
+                  </header>
+
+                  <blockquote>
+                    {item.quote}
+                  </blockquote>
+                </article>
+              )
+            )
+          }
+        </div>
+      </div>
+
+      <div class="reviews__micro container">
+        <span>
+          {content.meta.label}
+        </span>
+
+        <span>
+          {content.meta.number}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOBILE -->
+  <div
+    class="reviews__scene reviews__scene--mobile"
+    data-reviews-mobile
+  >
+    <div class="reviews__sticky reviews__sticky--mobile">
+      <div class="reviews__mobile-head container">
+        <span>
+          {content.meta.label}
+        </span>
+
+        <span>
+          {content.meta.number}
+        </span>
+      </div>
+
+      <div
+        class="reviews__mobile-title container"
+        data-reviews-mobile-heading
+      >
+        <h2>
+          {content.title}
+        </h2>
+      </div>
+
+      <div
+        class="reviews__mobile-signal container"
+        aria-hidden="true"
+      >
+        <span class="reviews__signal-line"></span>
+
+        <span
+          class="reviews__signal-wave"
+          data-reviews-mobile-wave
+        >
+          <i></i>
+          <i></i>
+          <i></i>
+          <i></i>
+          <i></i>
+        </span>
+      </div>
+
+      <div class="reviews__mobile-track-wrap">
+        <div
+          class="reviews__mobile-track"
+          data-reviews-mobile-track
+        >
+          {
+            content.items.map(
+              (item, index) => (
+                <article
+                  class="review-card review-card--mobile"
+                  data-review-mobile-card
+                  data-index={index}
+                >
+                  <header class="review-card__head">
+                    <div
+                      class="review-card__avatar"
+                      aria-hidden="true"
+                    >
+                      {item.number}
+                    </div>
+
+                    <div class="review-card__person">
+                      <strong>
+                        {item.client}
+                      </strong>
+
+                      <span>
+                        {item.project}
+                      </span>
+                    </div>
+                  </header>
+
+                  <blockquote>
+                    {item.quote}
+                  </blockquote>
+                </article>
+              )
+            )
+          }
+        </div>
+      </div>
+
+      <div class="reviews__mobile-hint container">
+        <span>
+          {lang === "es"
+            ? "SCROLL PARA LEER"
+            : "SCROLL TO READ"}
+        </span>
+
+        <span>
+          →
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import {
+    gsap,
+    ScrollTrigger,
+  } from "../../scripts/gsap";
+
+  const section =
+    document.querySelector<HTMLElement>(
+      "[data-reviews]"
+    );
+
+  if (section) {
+    const media =
+      gsap.matchMedia();
+
+    /*
+     * La lógica de ambas versiones es la misma:
+     *
+     * 1. Todas las cards suben a LA MISMA línea base.
+     * 2. El scroll vertical mueve la fila horizontalmente.
+     * 3. El recorrido termina EXACTAMENTE cuando la última
+     *    card queda centrada.
+     * 4. Ahí termina la escena sticky y vuelve el scroll normal.
+     *
+     * No existe hold final ni una animación extra que empuje
+     * la última reseña fuera de pantalla.
+     */
+
+    media.add(
+      "(min-width: 901px)",
+      () => {
+        const scene =
+          section.querySelector<HTMLElement>(
+            "[data-reviews-desktop]"
+          );
+
+        const track =
+          section.querySelector<HTMLElement>(
+            "[data-reviews-track]"
+          );
+
+        const cards =
+          Array.from(
+            section.querySelectorAll<HTMLElement>(
+              "[data-review-card]"
+            )
+          );
+
+        const heading =
+          section.querySelector<HTMLElement>(
+            "[data-reviews-heading]"
+          );
+
+        const wave =
+          section.querySelector<HTMLElement>(
+            "[data-reviews-wave]"
+          );
+
+        if (
+          !scene ||
+          !track ||
+          !heading ||
+          !wave ||
+          cards.length === 0
+        ) {
+          return;
+        }
+
+        const getViewportHeight =
+          () =>
+            window.innerHeight;
+
+        const getStartX =
+          () =>
+            window.innerWidth *
+            0.14;
+
+        const getEndX =
+          () => {
+            const last =
+              cards[
+                cards.length -
+                1
+              ];
+
+            const lastCenter =
+              last.offsetLeft +
+              last.offsetWidth /
+                2;
+
+            return (
+              window.innerWidth /
+                2 -
+              lastCenter
+            );
+          };
+
+        const setSceneHeight =
+          () => {
+            const horizontalDistance =
+              Math.abs(
+                getEndX() -
+                getStartX()
+              );
+
+            const revealDistance =
+              getViewportHeight() *
+              0.72;
+
+            /*
+             * viewport + entrada + recorrido horizontal.
+             * Al terminar esta altura, sticky se libera.
+             */
+            scene.style.height =
+              `${
+                getViewportHeight() +
+                revealDistance +
+                horizontalDistance
+              }px`;
+          };
+
+        setSceneHeight();
+
+        gsap.set(
+          track,
+          {
+            x:
+              getStartX,
+          }
+        );
+
+        gsap.set(
+          cards,
+          {
+            y:
+              () =>
+                getViewportHeight() *
+                0.56,
+
+            autoAlpha:
+              1,
+
+            rotation:
+              0,
+
+            willChange:
+              "transform",
+          }
+        );
+
+        const tl =
+          gsap.timeline({
+            scrollTrigger: {
+              trigger:
+                scene,
+
+              start:
+                "top top",
+
+              end:
+                "bottom bottom",
+
+              scrub:
+                true,
+
+              invalidateOnRefresh:
+                true,
+
+              onRefreshInit:
+                setSceneHeight,
+
+              onUpdate:
+                (
+                  self
+                ) => {
+                  gsap.set(
+                    wave,
+                    {
+                      left:
+                        `${5 + self.progress * 90}%`,
+                    }
+                  );
+                },
+            },
+          });
+
+        /*
+         * ENTRADA:
+         * stagger muy corto, pero TODAS terminan en y:0.
+         * Se conserva el ritmo de PRODUX sin crear una escalera
+         * permanente entre tarjetas.
+         */
+        tl.to(
+          cards,
+          {
+            y:
+              0,
+
+            duration:
+              0.82,
+
+            stagger:
+              0.045,
+
+            ease:
+              "power4.out",
+          },
+          0
+        );
+
+        /*
+         * La fila comienza a viajar mientras termina de entrar.
+         */
+        tl.to(
+          track,
+          {
+            x:
+              getEndX,
+
+            duration:
+              3.65,
+
+            ease:
+              "none",
+          },
+          0.58
+        );
+
+        /*
+         * El heading cede protagonismo, pero no desaparece
+         * demasiado pronto.
+         */
+        tl.to(
+          heading,
+          {
+            y:
+              -28,
+
+            autoAlpha:
+              0.16,
+
+            duration:
+              0.85,
+
+            ease:
+              "power3.inOut",
+          },
+          0.95
+        );
+
+        return () => {
+          tl.kill();
+
+          scene.style.removeProperty(
+            "height"
+          );
+        };
+      }
+    );
+
+    media.add(
+      "(max-width: 900px)",
+      () => {
+        const scene =
+          section.querySelector<HTMLElement>(
+            "[data-reviews-mobile]"
+          );
+
+        const track =
+          section.querySelector<HTMLElement>(
+            "[data-reviews-mobile-track]"
+          );
+
+        const cards =
+          Array.from(
+            section.querySelectorAll<HTMLElement>(
+              "[data-review-mobile-card]"
+            )
+          );
+
+        const heading =
+          section.querySelector<HTMLElement>(
+            "[data-reviews-mobile-heading]"
+          );
+
+        const wave =
+          section.querySelector<HTMLElement>(
+            "[data-reviews-mobile-wave]"
+          );
+
+        if (
+          !scene ||
+          !track ||
+          !heading ||
+          !wave ||
+          cards.length === 0
+        ) {
+          return;
+        }
+
+        const getViewportHeight =
+          () =>
+            window.innerHeight;
+
+        const getStartX =
+          () =>
+            window.innerWidth *
+            0.09;
+
+        const getEndX =
+          () => {
+            const last =
+              cards[
+                cards.length -
+                1
+              ];
+
+            const lastCenter =
+              last.offsetLeft +
+              last.offsetWidth /
+                2;
+
+            return (
+              window.innerWidth /
+                2 -
+              lastCenter
+            );
+          };
+
+        const setSceneHeight =
+          () => {
+            const horizontalDistance =
+              Math.abs(
+                getEndX() -
+                getStartX()
+              );
+
+            const revealDistance =
+              getViewportHeight() *
+              0.62;
+
+            scene.style.height =
+              `${
+                getViewportHeight() +
+                revealDistance +
+                horizontalDistance
+              }px`;
+          };
+
+        setSceneHeight();
+
+        gsap.set(
+          track,
+          {
+            x:
+              getStartX,
+          }
+        );
+
+        gsap.set(
+          cards,
+          {
+            y:
+              () =>
+                getViewportHeight() *
+                0.48,
+
+            autoAlpha:
+              1,
+
+            rotation:
+              0,
+
+            willChange:
+              "transform",
+          }
+        );
+
+        const tl =
+          gsap.timeline({
+            scrollTrigger: {
+              trigger:
+                scene,
+
+              start:
+                "top top",
+
+              end:
+                "bottom bottom",
+
+              scrub:
+                true,
+
+              invalidateOnRefresh:
+                true,
+
+              onRefreshInit:
+                setSceneHeight,
+
+              onUpdate:
+                (
+                  self
+                ) => {
+                  gsap.set(
+                    wave,
+                    {
+                      left:
+                        `${6 + self.progress * 88}%`,
+                    }
+                  );
+                },
+            },
+          });
+
+        tl.to(
+          cards,
+          {
+            y:
+              0,
+
+            duration:
+              0.78,
+
+            stagger:
+              0.04,
+
+            ease:
+              "power4.out",
+          },
+          0
+        );
+
+        tl.to(
+          track,
+          {
+            x:
+              getEndX,
+
+            duration:
+              3.3,
+
+            ease:
+              "none",
+          },
+          0.55
+        );
+
+        tl.to(
+          heading,
+          {
+            y:
+              -18,
+
+            autoAlpha:
+              0.18,
+
+            duration:
+              0.75,
+
+            ease:
+              "power3.inOut",
+          },
+          0.92
+        );
+
+        return () => {
+          tl.kill();
+
+          scene.style.removeProperty(
+            "height"
+          );
+        };
+      }
+    );
+  }
+</script>
+
+<style>
+  .reviews {
+    position:
+      relative;
+
+    background:
+      #080808;
+
+    color:
+      #f2f0ea;
+  }
+
+  .reviews__scene {
+    position:
+      relative;
+  }
+
+  .reviews__scene--mobile {
+    display:
+      none;
+  }
+
+  .reviews__sticky {
+    position:
+      sticky;
+
+    top:
+      0;
+
+    height:
+      100vh;
+
+    height:
+      100lvh;
+
+    overflow:
+      hidden;
+
+    background:
+      #080808;
+  }
+
+  /* =========================================
+     DESKTOP
+     ========================================= */
+
+  .reviews__mast {
+    position:
+      absolute;
+
+    z-index:
+      20;
+
+    top:
+      clamp(
+        4.8rem,
+        6.5vw,
+        6.8rem
+      );
+
+    left:
+      50%;
+
+    width:
+      100%;
+
+    transform:
+      translateX(
+        -50%
+      );
+  }
+
+  .reviews__heading {
+    display:
+      grid;
+
+    grid-template-columns:
+      minmax(
+        0,
+        1fr
+      )
+      auto;
+
+    gap:
+      4rem;
+
+    align-items:
+      end;
+
+    will-change:
+      transform,
+      opacity;
+  }
+
+  .reviews__heading
+  h2 {
+    max-width:
+      14ch;
+
+    margin:
+      0;
+
+    font-family:
+      var(--font-display);
+
+    font-size:
+      clamp(
+        2.8rem,
+        4.1vw,
+        4.8rem
+      );
+
+    font-weight:
+      500;
+
+    line-height:
+      0.93;
+
+    letter-spacing:
+      -0.06em;
+  }
+
+  .reviews__link {
+    margin-bottom:
+      0.55rem;
+
+    padding-bottom:
+      0.5rem;
+
+    border-bottom:
+      1px solid
+      rgba(
+        242,
+        240,
+        234,
+        0.45
+      );
+
+    font-size:
+      0.46rem;
+
+    font-weight:
+      650;
+
+    letter-spacing:
+      0.08em;
+
+    white-space:
+      nowrap;
+
+    text-transform:
+      uppercase;
+
+    opacity:
+      0.72;
+  }
+
+  .reviews__signal {
+    position:
+      relative;
+
+    height:
+      1.2rem;
+
+    margin-top:
+      clamp(
+        1.5rem,
+        2vw,
+        2rem
+      );
+  }
+
+  .reviews__signal-line {
+    position:
+      absolute;
+
+    top:
+      50%;
+
+    right:
+      0;
+
+    left:
+      0;
+
+    height:
+      1px;
+
+    background:
+      rgba(
+        242,
+        240,
+        234,
+        0.12
+      );
+  }
+
+  .reviews__signal-wave {
+    position:
+      absolute;
+
+    top:
+      50%;
+
+    left:
+      5%;
+
+    display:
+      flex;
+
+    width:
+      1.4rem;
+
+    height:
+      1rem;
+
+    align-items:
+      center;
+
+    justify-content:
+      center;
+
+    gap:
+      1px;
+
+    transform:
+      translate(
+        -50%,
+        -50%
+      );
+
+    background:
+      #080808;
+
+    will-change:
+      left;
+  }
+
+  .reviews__signal-wave
+  i {
+    display:
+      block;
+
+    width:
+      1px;
+
+    background:
+      #f2f0ea;
+  }
+
+  .reviews__signal-wave
+  i:nth-child(1),
+  .reviews__signal-wave
+  i:nth-child(7) {
+    height:
+      22%;
+  }
+
+  .reviews__signal-wave
+  i:nth-child(2),
+  .reviews__signal-wave
+  i:nth-child(6) {
+    height:
+      48%;
+  }
+
+  .reviews__signal-wave
+  i:nth-child(3),
+  .reviews__signal-wave
+  i:nth-child(5) {
+    height:
+      78%;
+  }
+
+  .reviews__signal-wave
+  i:nth-child(4) {
+    height:
+      100%;
+
+    background:
+      var(--color-accent);
+  }
+
+  .reviews__track-wrap {
+    position:
+      absolute;
+
+    z-index:
+      10;
+
+    top:
+      clamp(
+        16rem,
+        36vh,
+        19rem
+      );
+
+    right:
+      0;
+
+    bottom:
+      4rem;
+
+    left:
+      0;
+
+    overflow:
+      hidden;
+  }
+
+  .reviews__track {
+    position:
+      absolute;
+
+    top:
+      0;
+
+    left:
+      0;
+
+    display:
+      flex;
+
+    width:
+      max-content;
+
+    align-items:
+      flex-start;
+
+    gap:
+      clamp(
+        1.1rem,
+        1.55vw,
+        1.7rem
+      );
+
+    padding-right:
+      8vw;
+
+    will-change:
+      transform;
+  }
+
+  .review-card {
+    position:
+      relative;
+
+    flex:
+      0 0
+      clamp(
+        18rem,
+        21vw,
+        24rem
+      );
+
+    width:
+      clamp(
+        18rem,
+        21vw,
+        24rem
+      );
+
+    height:
+      min(
+        47vh,
+        27rem
+      );
+
+    min-height:
+      21rem;
+
+    padding:
+      clamp(
+        1.4rem,
+        1.65vw,
+        1.75rem
+      );
+
+    overflow:
+      hidden;
+
+    background:
+      #f2f0ea;
+
+    color:
+      #080808;
+
+    border:
+      1px solid
+      rgba(
+        255,
+        255,
+        255,
+        0.04
+      );
+
+    will-change:
+      transform;
+  }
+
+  .review-card__head {
+    display:
+      flex;
+
+    align-items:
+      center;
+
+    gap:
+      0.72rem;
+  }
+
+  .review-card__avatar {
+    display:
+      grid;
+
+    width:
+      clamp(
+        2.25rem,
+        2.6vw,
+        2.75rem
+      );
+
+    aspect-ratio:
+      1;
+
+    place-items:
+      center;
+
+    flex:
+      0 0
+      auto;
+
+    border-radius:
+      50%;
+
+    background:
+      #080808;
+
+    color:
+      #f2f0ea;
+
+    font-family:
+      var(--font-display);
+
+    font-size:
+      0.54rem;
+
+    font-weight:
+      600;
+  }
+
+  .review-card__person {
+    display:
+      grid;
+
+    gap:
+      0.13rem;
+  }
+
+  .review-card__person
+  strong {
+    font-size:
+      clamp(
+        0.66rem,
+        0.76vw,
+        0.8rem
+      );
+
+    font-weight:
+      650;
+
+    letter-spacing:
+      -0.02em;
+  }
+
+  .review-card__person
+  span {
+    font-size:
+      clamp(
+        0.5rem,
+        0.58vw,
+        0.62rem
+      );
+
+    opacity:
+      0.55;
+  }
+
+  .review-card
+  blockquote {
+    position:
+      absolute;
+
+    right:
+      clamp(
+        1.4rem,
+        1.65vw,
+        1.75rem
+      );
+
+    bottom:
+      clamp(
+        1.5rem,
+        2vw,
+        2rem
+      );
+
+    left:
+      clamp(
+        1.4rem,
+        1.65vw,
+        1.75rem
+      );
+
+    margin:
+      0;
+
+    font-family:
+      var(--font-body);
+
+    font-size:
+      clamp(
+        1rem,
+        1.18vw,
+        1.28rem
+      );
+
+    font-weight:
+      500;
+
+    line-height:
+      1.36;
+
+    letter-spacing:
+      -0.032em;
+  }
+
+  .reviews__micro {
+    position:
+      absolute;
+
+    z-index:
+      30;
+
+    right:
+      0;
+
+    bottom:
+      1.45rem;
+
+    left:
+      50%;
+
+    display:
+      flex;
+
+    width:
+      100%;
+
+    justify-content:
+      space-between;
+
+    transform:
+      translateX(
+        -50%
+      );
+
+    font-size:
+      0.39rem;
+
+    font-weight:
+      650;
+
+    letter-spacing:
+      0.09em;
+
+    text-transform:
+      uppercase;
+
+    opacity:
+      0.32;
+  }
+
+  /* =========================================
+     MOBILE
+     ========================================= */
+
+  .reviews__mobile-head,
+  .reviews__mobile-title,
+  .reviews__mobile-signal,
+  .reviews__mobile-hint {
+    display:
+      none;
+  }
+
+  @media (
+    max-width:
+      900px
+  ) {
+    .reviews__scene--desktop {
+      display:
+        none;
+    }
+
+    .reviews__scene--mobile {
+      display:
+        block;
+    }
+
+    .reviews__sticky--mobile {
+      height:
+        100vh;
+
+      height:
+        100lvh;
+
+      min-height:
+        100lvh;
+    }
+
+    .reviews__mobile-head {
+      position:
+        absolute;
+
+      z-index:
+        30;
+
+      top:
+        1.3rem;
+
+      left:
+        50%;
+
+      display:
+        flex;
+
+      width:
+        100%;
+
+      justify-content:
+        space-between;
+
+      gap:
+        1rem;
+
+      transform:
+        translateX(
+          -50%
+        );
+
+      font-size:
+        0.40rem;
+
+      font-weight:
+        650;
+
+      letter-spacing:
+        0.09em;
+
+      text-transform:
+        uppercase;
+
+      opacity:
+        0.5;
+    }
+
+    .reviews__mobile-title {
+      position:
+        absolute;
+
+      z-index:
+        20;
+
+      top:
+        4.8rem;
+
+      left:
+        50%;
+
+      display:
+        block;
+
+      width:
+        100%;
+
+      transform:
+        translateX(
+          -50%
+        );
+
+      will-change:
+        transform,
+        opacity;
+    }
+
+    .reviews__mobile-title
+    h2 {
+      max-width:
+        9.2ch;
+
+      margin:
+        0;
+
+      font-family:
+        var(--font-display);
+
+      font-size:
+        clamp(
+          2.9rem,
+          12.6vw,
+          4.7rem
+        );
+
+      font-weight:
+        500;
+
+      line-height:
+        0.88;
+
+      letter-spacing:
+        -0.064em;
+    }
+
+    .reviews__mobile-signal {
+      position:
+        absolute;
+
+      z-index:
+        25;
+
+      top:
+        35.5%;
+
+      left:
+        50%;
+
+      display:
+        block;
+
+      width:
+        100%;
+
+      height:
+        1.1rem;
+
+      transform:
+        translateX(
+          -50%
+        );
+    }
+
+    .reviews__mobile-signal
+    .reviews__signal-wave {
+      left:
+        6%;
+    }
+
+    .reviews__mobile-signal
+    .reviews__signal-wave
+    i:nth-child(n+6) {
+      display:
+        none;
+    }
+
+    .reviews__mobile-track-wrap {
+      position:
+        absolute;
+
+      z-index:
+        10;
+
+      top:
+        calc(
+          35.5% +
+          1.55rem
+        );
+
+      right:
+        0;
+
+      bottom:
+        3.5rem;
+
+      left:
+        0;
+
+      overflow:
+        hidden;
+    }
+
+    .reviews__mobile-track {
+      position:
+        absolute;
+
+      top:
+        0;
+
+      left:
+        0;
+
+      display:
+        flex;
+
+      width:
+        max-content;
+
+      align-items:
+        flex-start;
+
+      gap:
+        0.82rem;
+
+      padding-right:
+        12vw;
+
+      will-change:
+        transform;
+    }
+
+    .review-card--mobile {
+      flex:
+        0 0
+        min(
+          76vw,
+          19rem
+        );
+
+      width:
+        min(
+          76vw,
+          19rem
+        );
+
+      height:
+        min(
+          48lvh,
+          24rem
+        );
+
+      min-height:
+        20rem;
+
+      padding:
+        1.25rem;
+    }
+
+    .review-card--mobile
+    .review-card__avatar {
+      width:
+        2.3rem;
+    }
+
+    .review-card--mobile
+    blockquote {
+      right:
+        1.25rem;
+
+      bottom:
+        1.4rem;
+
+      left:
+        1.25rem;
+
+      font-size:
+        clamp(
+          0.94rem,
+          4.3vw,
+          1.1rem
+        );
+
+      line-height:
+        1.38;
+    }
+
+    .reviews__mobile-hint {
+      position:
+        absolute;
+
+      z-index:
+        30;
+
+      right:
+        0;
+
+      bottom:
+        1.35rem;
+
+      left:
+        50%;
+
+      display:
+        flex;
+
+      width:
+        100%;
+
+      justify-content:
+        space-between;
+
+      gap:
+        1rem;
+
+      transform:
+        translateX(
+          -50%
+        );
+
+      font-size:
+        0.38rem;
+
+      font-weight:
+        650;
+
+      letter-spacing:
+        0.08em;
+
+      text-transform:
+        uppercase;
+
+      opacity:
+        0.38;
+    }
+  }
+
+  @media (
+    prefers-reduced-motion:
+      reduce
+  ) {
+    .review-card,
+    .reviews__track,
+    .reviews__mobile-track {
+      opacity:
+        1 !important;
+
+      transform:
+        none !important;
+    }
+  }
+</style>

@@ -1,0 +1,1086 @@
+---
+import Menu from "./Menu.astro";
+
+type Locale =
+  | "es"
+  | "en";
+
+interface Props {
+  lang?: Locale;
+}
+
+const {
+  lang: langProp,
+} = Astro.props;
+
+const currentPath =
+  Astro.url.pathname;
+
+/*
+ * La URL manda sobre el prop:
+ * /en/... => inglés
+ * /es/... => español
+ *
+ * Esto evita que Header/Menu caigan al español
+ * cuando alguna página no pasa lang explícitamente.
+ */
+const lang:
+  Locale =
+    currentPath === "/en" ||
+    currentPath.startsWith(
+      "/en/"
+    )
+      ? "en"
+      : currentPath === "/es" ||
+        currentPath.startsWith(
+          "/es/"
+        )
+        ? "es"
+        : langProp ?? "es";
+
+const isEs =
+  lang === "es";
+
+const homeHref =
+  `/${lang}/`;
+
+const talkHref =
+  isEs
+    ? "https://wa.me/528140165334?text=Hola%2C%20quiero%20iniciar%20un%20proyecto%20con%20ARIXV.%20Me%20gustar%C3%ADa%20contarles%20lo%20que%20necesito%20y%20conocer%20el%20proceso%2C%20tiempos%20y%20costos."
+    : "https://wa.me/528140165334?text=Hello%2C%20I%27d%20like%20to%20start%20a%20project%20with%20ARIXV.%20I%27d%20like%20to%20tell%20you%20what%20I%20need%20and%20learn%20about%20the%20process%2C%20timelines%2C%20and%20costs.";
+
+const talkLabel =
+  isEs
+    ? "HABLEMOS"
+    : "LET'S TALK";
+
+const menuLabel =
+  isEs
+    ? "MENÚ"
+    : "MENU";
+
+const closeLabel =
+  isEs
+    ? "CERRAR"
+    : "CLOSE";
+
+const openAria =
+  isEs
+    ? "Abrir menú"
+    : "Open menu";
+
+const closeAria =
+  isEs
+    ? "Cerrar menú"
+    : "Close menu";
+---
+
+<header
+  class="header"
+  data-header
+  data-state="top"
+  data-theme="dark"
+>
+  <a
+    href={homeHref}
+    class="header__brand"
+    aria-label="ARIXV"
+  >
+    <span>
+      ARIXV
+    </span>
+
+    <span class="header__dot"></span>
+  </a>
+
+  <div class="header__right">
+    <a
+      href={talkHref}
+      class="header__talk"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      {talkLabel}
+    </a>
+
+    <button
+      class="header__menu"
+      type="button"
+      data-menu-toggle
+      data-menu-open-label={menuLabel}
+      data-menu-close-label={closeLabel}
+      data-menu-open-aria={openAria}
+      data-menu-close-aria={closeAria}
+      aria-expanded="false"
+      aria-label={openAria}
+    >
+      <span
+        data-menu-toggle-label
+      >
+        {menuLabel}
+      </span>
+
+      <span
+        data-menu-toggle-symbol
+      >
+        +
+      </span>
+    </button>
+  </div>
+</header>
+
+<Menu lang={lang} />
+
+<script>
+  const header =
+    document.querySelector<HTMLElement>(
+      "[data-header]"
+    );
+
+  if (header) {
+    const root =
+      document.documentElement;
+
+    const body =
+      document.body;
+
+    const TOP_THRESHOLD =
+      20;
+
+    const HIDE_AFTER =
+      80;
+
+    const DIRECTION_THRESHOLD =
+      4;
+
+    let lastY =
+      Math.max(
+        window.scrollY,
+        0
+      );
+
+    let visible =
+      true;
+
+    let ticking =
+      false;
+
+    let headerHeight =
+      header.offsetHeight;
+
+    const parseBackground =
+      (
+        value:
+          string
+      ) => {
+        const match =
+          value.match(
+            /rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)(?:[,\s/]+([\d.]+))?\s*\)/
+          );
+
+        if (
+          !match
+        ) {
+          return null;
+        }
+
+        return {
+          r:
+            Number(
+              match[1]
+            ),
+
+          g:
+            Number(
+              match[2]
+            ),
+
+          b:
+            Number(
+              match[3]
+            ),
+
+          a:
+            match[4] ===
+            undefined
+              ? 1
+              : Number(
+                  match[4]
+                ),
+        };
+      };
+
+    const getLuminance =
+      (
+        r:
+          number,
+        g:
+          number,
+        b:
+          number
+      ) => {
+        const channels =
+          [
+            r,
+            g,
+            b,
+          ].map(
+            (
+              value
+            ) => {
+              const normalized =
+                value /
+                255;
+
+              return normalized <=
+                0.03928
+                ? normalized /
+                    12.92
+                : Math.pow(
+                    (
+                      normalized +
+                      0.055
+                    ) /
+                      1.055,
+                    2.4
+                  );
+            }
+          );
+
+        return (
+          0.2126 *
+            channels[0] +
+          0.7152 *
+            channels[1] +
+          0.0722 *
+            channels[2]
+        );
+      };
+
+    const detectTheme =
+      () => {
+        const sampleY =
+          Math.min(
+            Math.max(
+              headerHeight +
+                6,
+              1
+            ),
+            window.innerHeight -
+              1
+          );
+
+        const layers =
+          document.elementsFromPoint(
+            window.innerWidth /
+              2,
+            sampleY
+          );
+
+        for (
+          const element
+          of layers
+        ) {
+          if (
+            element ===
+              header ||
+            header.contains(
+              element
+            )
+          ) {
+            continue;
+          }
+
+          const themed =
+            element.closest<HTMLElement>(
+              "[data-header-theme]"
+            );
+
+          const explicit =
+            themed?.dataset
+              .headerTheme;
+
+          if (
+            explicit ===
+              "dark" ||
+            explicit ===
+              "light"
+          ) {
+            return explicit;
+          }
+
+          let current:
+            Element | null =
+            element;
+
+          while (
+            current &&
+            current !==
+              document.documentElement
+          ) {
+            const style =
+              window.getComputedStyle(
+                current
+              );
+
+            const parsed =
+              parseBackground(
+                style.backgroundColor
+              );
+
+            if (
+              parsed &&
+              parsed.a >
+                0.12
+            ) {
+              return getLuminance(
+                parsed.r,
+                parsed.g,
+                parsed.b
+              ) <
+                0.48
+                ? "dark"
+                : "light";
+            }
+
+            current =
+              current.parentElement;
+          }
+        }
+
+        return "dark";
+      };
+
+    const syncSharedState =
+      () => {
+        root.style.setProperty(
+          "--site-header-height",
+          `${headerHeight}px`
+        );
+
+        root.style.setProperty(
+          "--site-header-visible-height",
+          visible
+            ? `${headerHeight}px`
+            : "0px"
+        );
+
+        root.dataset.headerVisible =
+          String(
+            visible
+          );
+
+        window.dispatchEvent(
+          new CustomEvent(
+            "arixv:header-state",
+            {
+              detail: {
+                visible,
+                height:
+                  headerHeight,
+              },
+            }
+          )
+        );
+      };
+
+    const measure =
+      () => {
+        headerHeight =
+          header.offsetHeight;
+
+        syncSharedState();
+      };
+
+    const updateTheme =
+      () => {
+        header.dataset.theme =
+          detectTheme();
+      };
+
+    const setVisible =
+      (
+        nextVisible:
+          boolean
+      ) => {
+        const changed =
+          visible !==
+          nextVisible;
+
+        /*
+         * No confiamos únicamente en la variable interna.
+         * Astro/HMR o una navegación entre páginas puede
+         * conservar temporalmente la clase `is-hidden`
+         * aunque este script vuelva a iniciar con
+         * `visible = true`.
+         *
+         * Siempre sincronizamos el DOM con el estado real.
+         */
+        visible =
+          nextVisible;
+
+        header.classList.toggle(
+          "is-hidden",
+          !visible
+        );
+
+        /*
+         * Solo publicamos el estado compartido cuando
+         * realmente cambia, evitando trabajo innecesario
+         * durante cada frame de scroll.
+         */
+        if (
+          changed
+        ) {
+          syncSharedState();
+        } else {
+          root.style.setProperty(
+            "--site-header-visible-height",
+            visible
+              ? `${headerHeight}px`
+              : "0px"
+          );
+
+          root.dataset.headerVisible =
+            String(
+              visible
+            );
+        }
+
+        if (
+          visible
+        ) {
+          requestAnimationFrame(
+            updateTheme
+          );
+        }
+      };
+
+    const updateState =
+      () => {
+        const currentY =
+          Math.max(
+            window.scrollY,
+            0
+          );
+
+        const delta =
+          currentY -
+          lastY;
+
+        const atTop =
+          currentY <=
+          TOP_THRESHOLD;
+
+        const menuOpen =
+          body.classList.contains(
+            "menu-open"
+          );
+
+        header.dataset.state =
+          atTop
+            ? "top"
+            : "floating";
+
+        if (
+          menuOpen ||
+          atTop
+        ) {
+          setVisible(
+            true
+          );
+
+          updateTheme();
+
+          lastY =
+            currentY;
+
+          return;
+        }
+
+        /*
+         * ↓ BAJANDO:
+         * ocultamos el Header después de salir del inicio.
+         */
+        if (
+          delta >
+            DIRECTION_THRESHOLD &&
+          currentY >
+            HIDE_AFTER
+        ) {
+          setVisible(
+            false
+          );
+        }
+
+        /*
+         * ↑ SUBIENDO:
+         * lo mostramos en cuanto detectamos intención real
+         * de volver hacia arriba.
+         */
+        if (
+          delta <
+          -DIRECTION_THRESHOLD
+        ) {
+          setVisible(
+            true
+          );
+        }
+
+        if (
+          visible
+        ) {
+          updateTheme();
+        }
+
+        /*
+         * Importante: siempre actualizamos lastY.
+         * Evita que el Header se quede "atorado" con trackpad
+         * o scroll táctil lento.
+         */
+        lastY =
+          currentY;
+      };
+
+    const onScroll =
+      () => {
+        if (
+          ticking
+        ) {
+          return;
+        }
+
+        ticking =
+          true;
+
+        requestAnimationFrame(
+          () => {
+            ticking =
+              false;
+
+            updateState();
+          }
+        );
+      };
+
+    const onResize =
+      () => {
+        measure();
+
+        updateTheme();
+      };
+
+    const menuObserver =
+      new MutationObserver(
+        () => {
+          if (
+            body.classList.contains(
+              "menu-open"
+            )
+          ) {
+            setVisible(
+              true
+            );
+          }
+
+          updateState();
+        }
+      );
+
+    menuObserver.observe(
+      body,
+      {
+        attributes:
+          true,
+
+        attributeFilter:
+          [
+            "class",
+          ],
+      }
+    );
+
+    measure();
+
+    /*
+     * Al montar/cambiar de página aseguramos que el Header
+     * arranque visible si estamos arriba, incluso si HMR o
+     * una navegación anterior dejó `is-hidden` en el DOM.
+     */
+    header.classList.remove(
+      "is-hidden"
+    );
+
+    visible =
+      true;
+
+    updateState();
+
+    updateTheme();
+
+    window.addEventListener(
+      "scroll",
+      onScroll,
+      {
+        passive:
+          true,
+      }
+    );
+
+    window.addEventListener(
+      "resize",
+      onResize
+    );
+
+    if (
+      "fonts" in
+      document
+    ) {
+      document.fonts.ready.then(
+        () => {
+          measure();
+
+          updateTheme();
+        }
+      );
+    }
+
+    window.addEventListener(
+      "pagehide",
+      () => {
+        window.removeEventListener(
+          "scroll",
+          onScroll
+        );
+
+        window.removeEventListener(
+          "resize",
+          onResize
+        );
+
+        menuObserver.disconnect();
+
+        root.style.removeProperty(
+          "--site-header-height"
+        );
+
+        root.style.removeProperty(
+          "--site-header-visible-height"
+        );
+
+        delete root.dataset
+          .headerVisible;
+      },
+      {
+        once:
+          true,
+      }
+    );
+  }
+</script>
+
+<style>
+  .header {
+    position:
+      fixed;
+
+    z-index:
+      110;
+
+    top:
+      0;
+
+    left:
+      0;
+
+    display:
+      flex;
+
+    width:
+      100%;
+
+    align-items:
+      center;
+
+    justify-content:
+      space-between;
+
+    padding:
+      1.4rem
+      var(
+        --page-padding
+      );
+
+    color:
+      var(
+        --color-white
+      );
+
+    transform:
+      translateY(
+        0
+      );
+
+    border-bottom:
+      1px solid
+      transparent;
+
+    background:
+      transparent;
+
+    will-change:
+      transform;
+
+    transition:
+      transform
+        420ms
+        cubic-bezier(
+          0.76,
+          0,
+          0.24,
+          1
+        ),
+      color
+        280ms
+        ease,
+      background-color
+        320ms
+        ease,
+      border-color
+        320ms
+        ease,
+      backdrop-filter
+        320ms
+        ease;
+  }
+
+  /*
+   * Arriba del todo:
+   * completamente transparente como el Header original.
+   * difference permite que funcione sobre el Hero.
+   */
+  .header[data-state="top"] {
+    mix-blend-mode:
+      difference;
+
+    background:
+      transparent;
+
+    border-bottom-color:
+      transparent;
+
+    backdrop-filter:
+      none;
+  }
+
+  /*
+   * Al reaparecer durante el scroll ya NO dependemos
+   * de mix-blend-mode. Le damos una superficie editorial
+   * muy sutil para garantizar legibilidad.
+   */
+  .header[data-state="floating"] {
+    mix-blend-mode:
+      normal;
+
+    backdrop-filter:
+      blur(
+        16px
+      )
+      saturate(
+        120%
+      );
+
+    -webkit-backdrop-filter:
+      blur(
+        16px
+      )
+      saturate(
+        120%
+      );
+  }
+
+  .header[data-state="floating"][data-theme="dark"] {
+    color:
+      var(
+        --color-white
+      );
+
+    background:
+      rgba(
+        8,
+        8,
+        8,
+        0.86
+      );
+
+    border-bottom-color:
+      rgba(
+        242,
+        240,
+        234,
+        0.10
+      );
+  }
+
+  .header[data-state="floating"][data-theme="light"] {
+    color:
+      var(
+        --color-black
+      );
+
+    background:
+      rgba(
+        242,
+        240,
+        234,
+        0.88
+      );
+
+    border-bottom-color:
+      rgba(
+        8,
+        8,
+        8,
+        0.10
+      );
+  }
+
+  /*
+   * Scroll hacia abajo.
+   */
+  .header.is-hidden {
+    transform:
+      translate3d(
+        0,
+        calc(
+          -100% -
+          3px
+        ),
+        0
+      );
+
+    pointer-events:
+      none;
+  }
+
+  .header__brand {
+    display:
+      flex;
+
+    align-items:
+      center;
+
+    gap:
+      0.38rem;
+
+    color:
+      inherit;
+
+    font-family:
+      var(
+        --font-display
+      );
+
+    font-size:
+      0.96rem;
+
+    font-weight:
+      600;
+
+    letter-spacing:
+      -0.045em;
+
+    text-decoration:
+      none;
+  }
+
+  .header__dot {
+    width:
+      0.38rem;
+
+    height:
+      0.38rem;
+
+    flex:
+      0 0
+      auto;
+
+    border-radius:
+      50%;
+
+    background:
+      var(
+        --color-accent
+      );
+  }
+
+  .header__right {
+    display:
+      flex;
+
+    align-items:
+      center;
+
+    gap:
+      clamp(
+        1.5rem,
+        3vw,
+        3rem
+      );
+  }
+
+  .header__talk,
+  .header__menu {
+    color:
+      inherit;
+
+    font-size:
+      0.65rem;
+
+    font-weight:
+      600;
+
+    letter-spacing:
+      0.1em;
+  }
+
+  .header__talk {
+    position:
+      relative;
+
+    text-decoration:
+      none;
+  }
+
+  .header__talk::after {
+    content:
+      "";
+
+    position:
+      absolute;
+
+    bottom:
+      -0.35rem;
+
+    left:
+      0;
+
+    width:
+      100%;
+
+    height:
+      1px;
+
+    background:
+      currentColor;
+
+    transform:
+      scaleX(
+        0
+      );
+
+    transform-origin:
+      right center;
+
+    transition:
+      transform
+      450ms
+      var(
+        --ease-out
+      );
+  }
+
+  .header__talk:hover::after {
+    transform:
+      scaleX(
+        1
+      );
+
+    transform-origin:
+      left center;
+  }
+
+  .header__menu {
+    display:
+      flex;
+
+    align-items:
+      center;
+
+    gap:
+      0.5rem;
+
+    padding:
+      0;
+
+    border:
+      0;
+
+    background:
+      transparent;
+
+    cursor:
+      pointer;
+  }
+
+  /*
+   * Menu abierto:
+   * conserva la regla que ya teníamos y además anula
+   * cualquier fondo flotante para integrarse al overlay.
+   */
+  :global(body.menu-open)
+  .header {
+    color:
+      var(
+        --color-black
+      );
+
+    transform:
+      translateY(
+        0
+      );
+
+    mix-blend-mode:
+      normal;
+
+    background:
+      transparent;
+
+    border-bottom-color:
+      transparent;
+
+    backdrop-filter:
+      none;
+
+    -webkit-backdrop-filter:
+      none;
+
+    pointer-events:
+      auto;
+  }
+
+  @media (
+    max-width:
+      640px
+  ) {
+    .header {
+      padding-top:
+        1.2rem;
+    }
+
+    .header__talk {
+      display:
+        none;
+    }
+  }
+
+  @media (
+    prefers-reduced-motion:
+      reduce
+  ) {
+    .header {
+      transition:
+        none;
+    }
+  }
+</style>

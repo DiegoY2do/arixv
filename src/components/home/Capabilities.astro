@@ -1,0 +1,1805 @@
+---
+import {
+  homeContent,
+  type HomeLocale,
+} from "../../data/home";
+
+interface Props {
+  lang?: HomeLocale;
+}
+
+const {
+  lang = "es",
+} = Astro.props;
+
+const content =
+  homeContent[lang].capabilities;
+
+const firstDetail =
+  content.details[0];
+---
+
+<section
+  class="capabilities"
+  id="capabilities"
+  data-capabilities
+>
+  <!-- ESCENA CINÉTICA -->
+  <div
+    class="capabilities__motion"
+    data-capabilities-motion
+  >
+    <div
+      class="capabilities__pin"
+      data-capabilities-pin
+    >
+      <div class="capabilities__inner container">
+        <div
+          class="capabilities__statement"
+          data-capabilities-statement
+        >
+          {
+            content.statement.map(
+              (line, index) => (
+                <div
+                  class="capabilities__line"
+                  data-capabilities-line
+                  data-line-index={index}
+                >
+                  <span class="capabilities__line-base">
+                    {line}
+                  </span>
+
+                  <span
+                    class="capabilities__line-active"
+                    data-capabilities-line-active
+                    aria-hidden="true"
+                  >
+                    {line}
+                  </span>
+
+                  <span
+                    class="capabilities__line-echo"
+                    data-capabilities-line-echo
+                    aria-hidden="true"
+                  >
+                    {line}
+                  </span>
+                </div>
+              )
+            )
+          }
+        </div>
+
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ACORDEÓN -->
+  <div
+    class="cap-accordion container"
+    data-cap-accordion
+  >
+
+
+    <div class="cap-accordion__list">
+      {
+        content.details.map(
+          (item, index) => (
+            <article
+              class:list={[
+                "cap-accordion__item",
+                {
+                  "is-open":
+                    index === 0,
+                },
+              ]}
+              data-cap-accordion-item
+            >
+              <button
+                class="cap-accordion__trigger"
+                type="button"
+                aria-expanded={
+                  index === 0
+                    ? "true"
+                    : "false"
+                }
+                data-cap-accordion-trigger
+              >
+                <span class="cap-accordion__number">
+                  {item.number}
+                </span>
+
+                <span class="cap-accordion__title">
+                  {item.title}
+                </span>
+
+                <span class="cap-accordion__tag">
+                  {item.tag}
+                </span>
+
+                <span
+                  class="cap-accordion__icon"
+                  aria-hidden="true"
+                  data-cap-accordion-icon
+                >
+                  +
+                </span>
+              </button>
+
+              <div
+                class="cap-accordion__content"
+                data-cap-accordion-content
+              >
+                <div class="cap-accordion__content-inner">
+                  <div class="cap-accordion__detail">
+                    <p class="cap-accordion__description">
+                      {item.description}
+                    </p>
+
+                    <ul
+                      class="cap-accordion__services"
+                      aria-label={
+                        lang === "es"
+                          ? `Capacidades de ${item.title}`
+                          : `${item.title} capabilities`
+                      }
+                    >
+                      {
+                        item.items.map(
+                          (service) => (
+                            <li>
+                              <span
+                                class="cap-accordion__service-mark"
+                                aria-hidden="true"
+                              ></span>
+
+                              <span>
+                                {service}
+                              </span>
+                            </li>
+                          )
+                        )
+                      }
+                    </ul>
+                  </div>
+
+                  <span
+                    class="cap-accordion__accent"
+                    aria-hidden="true"
+                  ></span>
+                </div>
+              </div>
+            </article>
+          )
+        )
+      }
+    </div>
+  </div>
+</section>
+
+<script>
+  import {
+    gsap,
+    ScrollTrigger,
+    SplitText,
+  } from "../../scripts/gsap";
+
+  const section =
+    document.querySelector<HTMLElement>(
+      "[data-capabilities]"
+    );
+
+  if (section) {
+    const motion =
+      section.querySelector<HTMLElement>(
+        "[data-capabilities-motion]"
+      );
+
+    const pin =
+      section.querySelector<HTMLElement>(
+        "[data-capabilities-pin]"
+      );
+
+    const lines =
+      Array.from(
+        section.querySelectorAll<HTMLElement>(
+          "[data-capabilities-line]"
+        )
+      );
+
+    const activeLayers =
+      Array.from(
+        section.querySelectorAll<HTMLElement>(
+          "[data-capabilities-line-active]"
+        )
+      );
+
+    const echoLayers =
+      Array.from(
+        section.querySelectorAll<HTMLElement>(
+          "[data-capabilities-line-echo]"
+        )
+      );
+
+    const reducedMotion =
+      window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches;
+
+    if (
+      motion &&
+      pin &&
+      lines.length &&
+      !reducedMotion
+    ) {
+      const media =
+        gsap.matchMedia();
+
+      /*
+       * DESKTOP:
+       * conserva la escena cinética pinned, pero con
+       * menor retraso de scrub para que el reverse sea estable.
+       */
+      media.add(
+        "(min-width: 901px)",
+        () => {
+          gsap.set(
+            activeLayers,
+            {
+              clipPath:
+                "inset(0 100% 0 0)",
+            }
+          );
+
+          gsap.set(
+            echoLayers,
+            {
+              clipPath:
+                "inset(0 100% 0 0)",
+
+              xPercent:
+                -1.2,
+
+              autoAlpha:
+                0,
+            }
+          );
+
+          const timeline =
+            gsap.timeline({
+              scrollTrigger: {
+                trigger:
+                  motion,
+
+                start:
+                  "top top",
+
+                end:
+                  "+=220%",
+
+                pin,
+
+                scrub:
+                  0.24,
+
+                anticipatePin:
+                  1,
+
+                refreshPriority:
+                  40,
+
+                invalidateOnRefresh:
+                  true,
+              },
+            });
+
+          lines.forEach(
+            (
+              _,
+              index
+            ) => {
+              const active =
+                activeLayers[index];
+
+              const echo =
+                echoLayers[index];
+
+              const position =
+                index *
+                0.62;
+
+              timeline.to(
+                active,
+                {
+                  clipPath:
+                    "inset(0 0% 0 0)",
+
+                  duration:
+                    0.75,
+
+                  ease:
+                    "none",
+                },
+                position
+              );
+
+              timeline.fromTo(
+                echo,
+                {
+                  clipPath:
+                    "inset(0 100% 0 0)",
+
+                  xPercent:
+                    -1.4,
+
+                  autoAlpha:
+                    0,
+                },
+                {
+                  clipPath:
+                    "inset(0 0% 0 0)",
+
+                  xPercent:
+                    1.3,
+
+                  autoAlpha:
+                    0.92,
+
+                  duration:
+                    0.34,
+
+                  ease:
+                    "power2.out",
+                },
+                position +
+                  0.18
+              );
+
+              timeline.to(
+                echo,
+                {
+                  xPercent:
+                    2.4,
+
+                  autoAlpha:
+                    0,
+
+                  duration:
+                    0.32,
+
+                  ease:
+                    "power2.in",
+                },
+                position +
+                  0.46
+              );
+            }
+          );
+        }
+      );
+
+      /*
+       * MOBILE:
+       * NO pin. Cada línea se revela dentro del flujo normal,
+       * por lo que el acordeón nunca puede quedar debajo/encima
+       * del titular cinético.
+       */
+      media.add(
+        "(max-width: 900px)",
+        () => {
+          gsap.set(
+            echoLayers,
+            {
+              display:
+                "none",
+            }
+          );
+
+          activeLayers.forEach(
+            (
+              active,
+              index
+            ) => {
+              gsap.fromTo(
+                active,
+                {
+                  clipPath:
+                    "inset(0 100% 0 0)",
+                },
+                {
+                  clipPath:
+                    "inset(0 0% 0 0)",
+
+                  ease:
+                    "none",
+
+                  scrollTrigger: {
+                    trigger:
+                      lines[index],
+
+                    start:
+                      "top 82%",
+
+                    end:
+                      "bottom 58%",
+
+                    scrub:
+                      true,
+                  },
+                }
+              );
+            }
+          );
+        }
+      );
+    }
+
+    /*
+     * ACORDEÓN
+     */
+    const accordionItems =
+      Array.from(
+        section.querySelectorAll<HTMLElement>(
+          "[data-cap-accordion-item]"
+        )
+      );
+
+    /*
+     * =====================================
+     * TEXTO / ACORDEÓN
+     * =====================================
+     *
+     * Solo animamos tipografía:
+     *
+     * - títulos: SplitText por palabras al entrar al viewport.
+     * - descripción: SplitText por palabras al abrir.
+     * - lista de capacidades: stagger suave al abrir.
+     *
+     * La estructura, alturas, bordes y comportamiento
+     * original del acordeón se mantienen intactos.
+     */
+    type AccordionTextEffect = {
+      play:
+        (
+          delay?: number
+        ) => void;
+
+      reset:
+        () => void;
+
+      revert:
+        () => void;
+    };
+
+    const accordionTextEffects =
+      new Map<
+        HTMLElement,
+        AccordionTextEffect
+      >();
+
+    accordionItems.forEach(
+      (
+        item
+      ) => {
+        if (
+          reducedMotion
+        ) {
+          return;
+        }
+
+        const title =
+          item.querySelector<HTMLElement>(
+            ".cap-accordion__title"
+          );
+
+        const description =
+          item.querySelector<HTMLElement>(
+            ".cap-accordion__description"
+          );
+
+        const serviceTexts =
+          Array.from(
+            item.querySelectorAll<HTMLElement>(
+              ".cap-accordion__services li > span:last-child"
+            )
+          );
+
+        const splits:
+          Array<{
+            revert:
+              () => void;
+          }> =
+            [];
+
+        /*
+         * Título del acordeón:
+         * aparece palabra por palabra desde máscara.
+         */
+        if (
+          title
+        ) {
+          const titleSplit =
+            SplitText.create(
+              title,
+              {
+                type:
+                  "words",
+
+                mask:
+                  "words",
+              }
+            );
+
+          splits.push(
+            titleSplit
+          );
+
+          gsap.fromTo(
+            titleSplit.words,
+            {
+              yPercent:
+                115,
+
+              autoAlpha:
+                0,
+            },
+            {
+              yPercent:
+                0,
+
+              autoAlpha:
+                1,
+
+              duration:
+                0.72,
+
+              stagger:
+                0.075,
+
+              ease:
+                "power4.out",
+
+              scrollTrigger: {
+                trigger:
+                  item,
+
+                start:
+                  "top 90%",
+
+                toggleActions:
+                  "play none none reverse",
+              },
+            }
+          );
+        }
+
+        /*
+         * Contenido interior:
+         * queda preparado fuera de su máscara hasta abrirse.
+         */
+        const descriptionSplit =
+          description
+            ? SplitText.create(
+                description,
+                {
+                  type:
+                    "words",
+
+                  mask:
+                    "words",
+                }
+              )
+            : null;
+
+        if (
+          descriptionSplit
+        ) {
+          splits.push(
+            descriptionSplit
+          );
+        }
+
+        let revealTimeline:
+          gsap.core.Timeline
+          | null =
+            null;
+
+        const reset =
+          () => {
+            revealTimeline?.kill();
+
+            if (
+              descriptionSplit
+            ) {
+              gsap.set(
+                descriptionSplit.words,
+                {
+                  yPercent:
+                    110,
+
+                  autoAlpha:
+                    0,
+                }
+              );
+            }
+
+            if (
+              serviceTexts.length
+            ) {
+              gsap.set(
+                serviceTexts,
+                {
+                  y:
+                    12,
+
+                  autoAlpha:
+                    0,
+                }
+              );
+            }
+          };
+
+        const play =
+          (
+            delay =
+              0
+          ) => {
+            revealTimeline?.kill();
+
+            revealTimeline =
+              gsap.timeline({
+                delay,
+              });
+
+            if (
+              descriptionSplit
+            ) {
+              revealTimeline.to(
+                descriptionSplit.words,
+                {
+                  yPercent:
+                    0,
+
+                  autoAlpha:
+                    1,
+
+                  duration:
+                    0.58,
+
+                  stagger:
+                    0.018,
+
+                  ease:
+                    "power4.out",
+                },
+                0
+              );
+            }
+
+            if (
+              serviceTexts.length
+            ) {
+              revealTimeline.to(
+                serviceTexts,
+                {
+                  y:
+                    0,
+
+                  autoAlpha:
+                    1,
+
+                  duration:
+                    0.46,
+
+                  stagger:
+                    0.055,
+
+                  ease:
+                    "power3.out",
+                },
+                0.18
+              );
+            }
+          };
+
+        reset();
+
+        accordionTextEffects.set(
+          item,
+          {
+            play,
+            reset,
+
+            revert:
+              () => {
+                revealTimeline?.kill();
+
+                splits.forEach(
+                  (
+                    split
+                  ) =>
+                    split.revert()
+                );
+              },
+          }
+        );
+      }
+    );
+
+    accordionItems.forEach(
+      (item) => {
+        const trigger =
+          item.querySelector<HTMLButtonElement>(
+            "[data-cap-accordion-trigger]"
+          );
+
+        const content =
+          item.querySelector<HTMLElement>(
+            "[data-cap-accordion-content]"
+          );
+
+        const icon =
+          item.querySelector<HTMLElement>(
+            "[data-cap-accordion-icon]"
+          );
+
+        if (
+          !trigger ||
+          !content
+        ) {
+          return;
+        }
+
+        const initiallyOpen =
+          item.classList.contains(
+            "is-open"
+          );
+
+        gsap.set(
+          content,
+          {
+            height:
+              initiallyOpen
+                ? "auto"
+                : 0,
+
+            autoAlpha:
+              initiallyOpen
+                ? 1
+                : 0,
+          }
+        );
+
+        if (
+          icon &&
+          initiallyOpen
+        ) {
+          gsap.set(
+            icon,
+            {
+              rotation:
+                45,
+            }
+          );
+        }
+
+        if (
+          initiallyOpen &&
+          !reducedMotion
+        ) {
+          const textEffect =
+            accordionTextEffects.get(
+              item
+            );
+
+          if (
+            textEffect
+          ) {
+            ScrollTrigger.create({
+              trigger:
+                item,
+
+              start:
+                "top 82%",
+
+              once:
+                true,
+
+              onEnter:
+                () =>
+                  textEffect.play(
+                    0.08
+                  ),
+            });
+          }
+        }
+
+        trigger.addEventListener(
+          "click",
+          () => {
+            const isOpen =
+              item.classList.contains(
+                "is-open"
+              );
+
+            accordionItems.forEach(
+              (other) => {
+                if (
+                  other === item
+                ) {
+                  return;
+                }
+
+                const otherTrigger =
+                  other.querySelector<HTMLButtonElement>(
+                    "[data-cap-accordion-trigger]"
+                  );
+
+                const otherContent =
+                  other.querySelector<HTMLElement>(
+                    "[data-cap-accordion-content]"
+                  );
+
+                const otherIcon =
+                  other.querySelector<HTMLElement>(
+                    "[data-cap-accordion-icon]"
+                  );
+
+                other.classList.remove(
+                  "is-open"
+                );
+
+                otherTrigger?.setAttribute(
+                  "aria-expanded",
+                  "false"
+                );
+
+                if (otherContent) {
+                  gsap.to(
+                    otherContent,
+                    {
+                      height:
+                        0,
+
+                      autoAlpha:
+                        0,
+
+                      duration:
+                        reducedMotion
+                          ? 0
+                          : 0.42,
+
+                      ease:
+                        "power3.inOut",
+
+                      onComplete:
+                        () => {
+                          accordionTextEffects
+                            .get(
+                              other
+                            )
+                            ?.reset();
+                        },
+                    }
+                  );
+                }
+
+                if (otherIcon) {
+                  gsap.to(
+                    otherIcon,
+                    {
+                      rotation:
+                        0,
+
+                      duration:
+                        reducedMotion
+                          ? 0
+                          : 0.32,
+
+                      ease:
+                        "power3.out",
+                    }
+                  );
+                }
+              }
+            );
+
+            if (isOpen) {
+              item.classList.remove(
+                "is-open"
+              );
+
+              trigger.setAttribute(
+                "aria-expanded",
+                "false"
+              );
+
+              gsap.to(
+                content,
+                {
+                  height:
+                    0,
+
+                  autoAlpha:
+                    0,
+
+                  duration:
+                    reducedMotion
+                      ? 0
+                      : 0.42,
+
+                  ease:
+                    "power3.inOut",
+
+                  onComplete:
+                    () => {
+                      accordionTextEffects
+                        .get(
+                          item
+                        )
+                        ?.reset();
+                    },
+                }
+              );
+
+              if (icon) {
+                gsap.to(
+                  icon,
+                  {
+                    rotation:
+                      0,
+
+                    duration:
+                      reducedMotion
+                        ? 0
+                        : 0.32,
+
+                    ease:
+                      "power3.out",
+                  }
+                );
+              }
+
+              return;
+            }
+
+            item.classList.add(
+              "is-open"
+            );
+
+            trigger.setAttribute(
+              "aria-expanded",
+              "true"
+            );
+
+            gsap.to(
+              content,
+              {
+                height:
+                  "auto",
+
+                autoAlpha:
+                  1,
+
+                duration:
+                  reducedMotion
+                    ? 0
+                    : 0.58,
+
+                ease:
+                  "power4.inOut",
+              }
+            );
+
+            if (
+              !reducedMotion
+            ) {
+              const textEffect =
+                accordionTextEffects.get(
+                  item
+                );
+
+              textEffect?.reset();
+              textEffect?.play(
+                0.1
+              );
+            }
+
+            if (icon) {
+              gsap.to(
+                icon,
+                {
+                  rotation:
+                    45,
+
+                  duration:
+                    reducedMotion
+                      ? 0
+                      : 0.35,
+
+                  ease:
+                    "power3.out",
+                }
+              );
+            }
+          }
+        );
+      }
+    );
+  }
+</script>
+
+<style>
+  .capabilities {
+    position:
+      relative;
+
+    background:
+      #080808;
+
+    color:
+      #f2f0ea;
+  }
+
+  /*
+   * ESCENA CINÉTICA
+   */
+
+  .capabilities__motion {
+    position:
+      relative;
+
+    height:
+      320svh;
+  }
+
+  .capabilities__pin {
+    position:
+      relative;
+
+    width:
+      100%;
+
+    height:
+      100svh;
+
+    overflow:
+      hidden;
+
+    background:
+      radial-gradient(
+        circle at 52% 52%,
+        rgba(
+          255,
+          61,
+          46,
+          0.045
+        ),
+        transparent 32%
+      ),
+      #080808;
+  }
+
+  .capabilities__inner {
+    display:
+      flex;
+
+    height:
+      100%;
+
+    flex-direction:
+      column;
+
+    padding-top:
+      clamp(
+        5.5rem,
+        7vw,
+        7rem
+      );
+
+    padding-bottom:
+      clamp(
+        2rem,
+        3vw,
+        3rem
+      );
+  }
+
+
+
+
+
+  .capabilities__statement {
+    display:
+      flex;
+
+    flex:
+      1;
+
+    min-height:
+      0;
+
+    flex-direction:
+      column;
+
+    justify-content:
+      center;
+
+    padding:
+      clamp(
+        2rem,
+        4vw,
+        4rem
+      )
+      0;
+  }
+
+  .capabilities__line {
+    position:
+      relative;
+
+    width:
+      fit-content;
+
+    max-width:
+      100%;
+
+    overflow:
+      visible;
+
+    font-family:
+      var(--font-display);
+
+    font-size:
+      clamp(
+        3.5rem,
+        6.6vw,
+        7.8rem
+      );
+
+    font-weight:
+      500;
+
+    line-height:
+      0.86;
+
+    letter-spacing:
+      -0.07em;
+
+    text-transform:
+      uppercase;
+  }
+
+  .capabilities__line:nth-child(2) {
+    margin-left:
+      clamp(
+        2rem,
+        8vw,
+        9rem
+      );
+  }
+
+  .capabilities__line:nth-child(3) {
+    margin-left:
+      clamp(
+        0rem,
+        2vw,
+        2rem
+      );
+  }
+
+  .capabilities__line-base,
+  .capabilities__line-active,
+  .capabilities__line-echo {
+    display:
+      block;
+  }
+
+  .capabilities__line-base {
+    color:
+      rgba(
+        242,
+        240,
+        234,
+        0.17
+      );
+  }
+
+  .capabilities__line-active,
+  .capabilities__line-echo {
+    position:
+      absolute;
+
+    inset:
+      0;
+
+    pointer-events:
+      none;
+  }
+
+  .capabilities__line-active {
+    z-index:
+      2;
+
+    color:
+      #f2f0ea;
+  }
+
+  .capabilities__line-echo {
+    z-index:
+      3;
+
+    color:
+      var(--color-accent);
+
+    mix-blend-mode:
+      screen;
+
+    will-change:
+      clip-path,
+      transform,
+      opacity;
+  }
+
+  /*
+   * ACORDEÓN
+   */
+
+  .cap-accordion {
+    padding-top:
+      clamp(
+        1.5rem,
+        2.5vw,
+        2.5rem
+      );
+
+    padding-bottom:
+      clamp(
+        6rem,
+        9vw,
+        9rem
+      );
+
+    border-top:
+      1px solid
+      rgba(
+        255,
+        255,
+        255,
+        0.14
+      );
+  }
+
+  .cap-accordion__list {
+    border-bottom:
+      1px solid
+      rgba(
+        255,
+        255,
+        255,
+        0.16
+      );
+  }
+
+  .cap-accordion__item {
+    position:
+      relative;
+
+    border-top:
+      1px solid
+      rgba(
+        255,
+        255,
+        255,
+        0.16
+      );
+  }
+
+  .cap-accordion__trigger {
+    display:
+      grid;
+
+    width:
+      100%;
+
+    grid-template-columns:
+      auto
+      minmax(
+        0,
+        1fr
+      )
+      auto
+      auto;
+
+    gap:
+      clamp(
+        1rem,
+        2.5vw,
+        3rem
+      );
+
+    align-items:
+      center;
+
+    padding:
+      clamp(
+        1.6rem,
+        2.5vw,
+        2.5rem
+      )
+      0;
+
+    border:
+      0;
+
+    background:
+      transparent;
+
+    color:
+      inherit;
+
+    text-align:
+      left;
+
+    cursor:
+      pointer;
+  }
+
+  .cap-accordion__number,
+  .cap-accordion__tag {
+    font-size:
+      0.46rem;
+
+    font-weight:
+      600;
+
+    letter-spacing:
+      0.09em;
+
+    text-transform:
+      uppercase;
+
+    opacity:
+      0.42;
+  }
+
+  .cap-accordion__title {
+    font-family:
+      var(--font-display);
+
+    font-size:
+      clamp(
+        1.8rem,
+        3vw,
+        3.3rem
+      );
+
+    font-weight:
+      500;
+
+    line-height:
+      0.95;
+
+    letter-spacing:
+      -0.05em;
+
+    text-transform:
+      uppercase;
+  }
+
+  .cap-accordion__icon {
+    display:
+      inline-grid;
+
+    width:
+      1.7rem;
+
+    height:
+      1.7rem;
+
+    place-items:
+      center;
+
+    font-size:
+      1.25rem;
+
+    line-height:
+      1;
+
+    transform-origin:
+      center;
+
+    will-change:
+      transform;
+  }
+
+  .cap-accordion__content {
+    height:
+      0;
+
+    overflow:
+      hidden;
+
+    opacity:
+      0;
+  }
+
+  .cap-accordion__content-inner {
+    position:
+      relative;
+
+    display:
+      grid;
+
+    grid-template-columns:
+      minmax(
+        0,
+        1fr
+      )
+      minmax(
+        16rem,
+        0.55fr
+      );
+
+    gap:
+      clamp(
+        3rem,
+        8vw,
+        9rem
+      );
+
+    padding:
+      0
+      0
+      clamp(
+        2rem,
+        3vw,
+        3.5rem
+      )
+      calc(
+        1.3rem + clamp(
+          1rem,
+          2.5vw,
+          3rem
+        )
+      );
+  }
+
+  .cap-accordion__detail {
+    grid-column:
+      2;
+
+    width:
+      min(
+        100%,
+        38rem
+      );
+  }
+
+  .cap-accordion__description {
+    max-width:
+      36rem;
+
+    margin:
+      0;
+
+    font-size:
+      clamp(
+        0.9rem,
+        1vw,
+        1.05rem
+      );
+
+    line-height:
+      1.65;
+
+    opacity:
+      0.66;
+  }
+
+  .cap-accordion__services {
+    display:
+      grid;
+
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(
+          0,
+          1fr
+        )
+      );
+
+    gap:
+      0.7rem
+      clamp(
+        1.5rem,
+        3vw,
+        3rem
+      );
+
+    margin:
+      clamp(
+        1.65rem,
+        2.4vw,
+        2.25rem
+      )
+      0
+      0;
+
+    padding:
+      clamp(
+        1.35rem,
+        1.8vw,
+        1.75rem
+      )
+      0
+      0;
+
+    border-top:
+      1px solid
+      rgba(
+        255,
+        255,
+        255,
+        0.12
+      );
+
+    list-style:
+      none;
+  }
+
+  .cap-accordion__services li {
+    display:
+      flex;
+
+    min-width:
+      0;
+
+    align-items:
+      flex-start;
+
+    gap:
+      0.65rem;
+
+    font-size:
+      clamp(
+        0.7rem,
+        0.78vw,
+        0.82rem
+      );
+
+    line-height:
+      1.45;
+
+    letter-spacing:
+      0.01em;
+
+    opacity:
+      0.72;
+  }
+
+  .cap-accordion__service-mark {
+    width:
+      0.28rem;
+
+    height:
+      0.28rem;
+
+    flex:
+      0
+      0
+      auto;
+
+    margin-top:
+      0.46em;
+
+    border-radius:
+      999px;
+
+    background:
+      var(--color-accent);
+  }
+
+  .cap-accordion__accent {
+    position:
+      absolute;
+
+    right:
+      0;
+
+    bottom:
+      0;
+
+    left:
+      0;
+
+    height:
+      2px;
+
+    background:
+      var(--color-accent);
+
+    transform:
+      scaleX(0);
+
+    transform-origin:
+      left center;
+
+    transition:
+      transform
+      500ms
+      var(--ease-out);
+  }
+
+  .cap-accordion__item.is-open
+  .cap-accordion__accent {
+    transform:
+      scaleX(1);
+  }
+
+  @media (
+    max-width:
+      900px
+  ) {
+    .capabilities__motion {
+      height:
+        auto;
+    }
+
+    .capabilities__pin {
+      height:
+        auto;
+
+      min-height:
+        78svh;
+    }
+
+    .capabilities__statement {
+      min-height:
+        78svh;
+    }
+
+    .capabilities__line {
+      font-size:
+        clamp(
+          3rem,
+          10.8vw,
+          5.2rem
+        );
+
+      line-height:
+        0.9;
+    }
+
+    .capabilities__line:nth-child(2),
+    .capabilities__line:nth-child(3) {
+      margin-left:
+        0;
+    }
+
+    .cap-accordion__trigger {
+      grid-template-columns:
+        auto
+        minmax(
+          0,
+          1fr
+        )
+        auto;
+    }
+
+    .cap-accordion__tag {
+      display:
+        none;
+    }
+
+    .cap-accordion__content-inner {
+      grid-template-columns:
+        1fr;
+
+      gap:
+        0;
+
+      padding-left:
+        0;
+    }
+
+    .cap-accordion__detail {
+      grid-column:
+        1;
+
+      width:
+        100%;
+
+      padding-left:
+        2.4rem;
+    }
+  }
+
+  @media (
+    max-width:
+      560px
+  ) {
+    .cap-accordion {
+      padding-top:
+        4rem;
+
+      padding-bottom:
+        5rem;
+    }
+
+    .cap-accordion__trigger {
+      padding:
+        1.35rem
+        0;
+    }
+
+    .cap-accordion__title {
+      font-size:
+        clamp(
+          1.7rem,
+          7.8vw,
+          2.6rem
+        );
+    }
+
+    .cap-accordion__detail {
+      padding-left:
+        0;
+
+      padding-right:
+        0.4rem;
+    }
+
+    .cap-accordion__services {
+      grid-template-columns:
+        1fr;
+
+      gap:
+        0.65rem;
+    }
+  }
+
+  @media (
+    prefers-reduced-motion:
+    reduce
+  ) {
+    .capabilities__motion {
+      height:
+        auto;
+    }
+
+    .capabilities__pin {
+      height:
+        auto;
+
+      min-height:
+        100svh;
+    }
+
+    .capabilities__line-active {
+      clip-path:
+        none !important;
+    }
+
+    .capabilities__line-echo {
+      display:
+        none;
+    }
+
+    .cap-accordion__title,
+    .cap-accordion__description,
+    .cap-accordion__services li > span:last-child {
+      visibility:
+        visible !important;
+
+      opacity:
+        1 !important;
+
+      transform:
+        none !important;
+    }
+  }
+</style>

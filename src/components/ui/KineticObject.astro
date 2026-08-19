@@ -1,0 +1,292 @@
+---
+interface Props {
+  variant?: "hero" | "stage";
+}
+
+const {
+  variant = "hero",
+} = Astro.props;
+---
+
+<div
+  class:list={[
+    "kinetic",
+    `kinetic--${variant}`,
+  ]}
+  data-kinetic-object
+  aria-hidden="true"
+>
+  <svg
+    class="kinetic__svg"
+    viewBox="0 0 900 620"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <!--
+      Estructura mínima.
+      Ya no hay múltiples órbitas, rails ni nodos compitiendo.
+    -->
+    <g
+      class="kinetic__frame"
+      data-kinetic-frame
+    >
+      <line
+        x1="450"
+        y1="72"
+        x2="450"
+        y2="548"
+      />
+
+      <circle
+        cx="450"
+        cy="310"
+        r="220"
+      />
+
+      <path
+        d="M122 310 H778"
+      />
+    </g>
+
+    <!--
+      Trazo fantasma:
+      mantiene una referencia de la geometría original
+      sin convertirse en protagonista.
+    -->
+    <path
+      class="kinetic__ghost"
+      d="
+        M100 318
+        C190 176 315 170 405 310
+        C505 466 640 452 800 286
+      "
+    />
+
+    <!--
+      Trazo principal:
+      DrawSVG al entrar + MorphSVG durante la narrativa.
+    -->
+    <path
+      class="kinetic__path"
+      data-kinetic-main-path
+      d="
+        M100 318
+        C190 176 315 170 405 310
+        C505 466 640 452 800 286
+      "
+    />
+
+    <!--
+      Segmento activo rojo.
+      Comparte geometría con el principal y se desplaza con DrawSVG.
+    -->
+    <path
+      class="kinetic__signal"
+      data-kinetic-signal-path
+      d="
+        M100 318
+        C190 176 315 170 405 310
+        C505 466 640 452 800 286
+      "
+    />
+
+    <!-- Targets ocultos para MorphSVG -->
+
+    <path
+      class="kinetic__target"
+      data-kinetic-target-design
+      d="
+        M100 318
+        C190 176 315 170 405 310
+        C505 466 640 452 800 286
+      "
+    />
+
+    <path
+      class="kinetic__target"
+      data-kinetic-target-code
+      d="
+        M100 310
+        L206 310
+        L286 208
+        L386 428
+        L492 198
+        L580 310
+        L800 310
+      "
+    />
+
+    <path
+      class="kinetic__target"
+      data-kinetic-target-impact
+      d="
+        M92 318
+        C220 118 678 118 808 318
+      "
+    />
+
+    <path
+      class="kinetic__target"
+      data-kinetic-target-open
+      d="
+        M76 310
+        C260 282 642 282 824 310
+      "
+    />
+
+    <!--
+      Único punto vivo.
+      MotionPath lo utiliza durante la entrada y después desaparece.
+    -->
+    <circle
+      class="kinetic__tracer"
+      data-kinetic-tracer
+      cx="0"
+      cy="0"
+      r="6"
+    />
+  </svg>
+
+</div>
+
+<style>
+  .kinetic {
+    position: relative;
+
+    width: 100%;
+    aspect-ratio: 1.45;
+
+    color: currentColor;
+
+    pointer-events: none;
+
+    will-change:
+      transform,
+      opacity;
+  }
+
+  .kinetic__svg {
+    width: 100%;
+    height: 100%;
+
+    overflow: visible;
+  }
+
+  .kinetic__frame {
+    opacity:
+      0.065;
+  }
+
+  .kinetic__frame line,
+  .kinetic__frame circle,
+  .kinetic__frame path {
+    stroke:
+      currentColor;
+
+    stroke-width:
+      1;
+
+    vector-effect:
+      non-scaling-stroke;
+  }
+
+  .kinetic__ghost {
+    stroke:
+      currentColor;
+
+    stroke-width:
+      1;
+
+    opacity:
+      0.055;
+
+    vector-effect:
+      non-scaling-stroke;
+  }
+
+  .kinetic__path,
+  .kinetic__signal,
+  .kinetic__target {
+    fill:
+      none;
+
+    vector-effect:
+      non-scaling-stroke;
+  }
+
+  .kinetic__path {
+    stroke:
+      currentColor;
+
+    stroke-width:
+      1.7;
+
+    opacity:
+      0.68;
+  }
+
+  .kinetic__signal {
+    stroke:
+      var(--color-accent);
+
+    stroke-width:
+      2.2;
+
+    opacity:
+      0.96;
+  }
+
+  .kinetic__target {
+    visibility:
+      hidden;
+
+    stroke:
+      currentColor;
+  }
+
+  .kinetic__tracer {
+    fill:
+      var(--color-accent);
+
+    filter:
+      drop-shadow(
+        0
+        0
+        8px
+        rgba(
+          239,
+          50,
+          36,
+          0.26
+        )
+      );
+  }
+
+
+  .kinetic--hero {
+    opacity:
+      0.9;
+  }
+
+  .kinetic--stage {
+    opacity:
+      1;
+  }
+
+  @media (
+    max-width:
+      767px
+  ) {
+    .kinetic {
+      aspect-ratio:
+        1.16;
+    }
+
+    .kinetic__frame {
+      opacity:
+        0.06;
+    }
+
+
+  }
+</style>

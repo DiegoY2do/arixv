@@ -1,0 +1,876 @@
+---
+import {
+  homeContent,
+  type HomeLocale,
+} from "../../data/home";
+
+interface Props {
+  lang?: HomeLocale;
+}
+
+const {
+  lang = "es",
+} = Astro.props;
+
+const content =
+  homeContent[lang].technologyTicker;
+
+const duplicatedItems = [
+  ...content.items,
+  ...content.items,
+];
+---
+
+<section
+  class="tech-logos"
+  data-tech-logos
+>
+  <div class="tech-logos__head container">
+    <span>
+      {content.label}
+    </span>
+
+    <span
+      class="tech-logos__dot"
+      aria-hidden="true"
+    ></span>
+  </div>
+
+  <div class="tech-logos__viewport">
+    <div
+      class="tech-logos__track"
+      data-tech-logos-track
+    >
+      {
+        [0, 1].map(
+          (groupIndex) => (
+            <div
+              class="tech-logos__group"
+              data-tech-logos-group
+              aria-hidden={groupIndex === 1 ? "true" : undefined}
+            >
+              {
+                content.items.map(
+                  (item) => (
+                    <div
+                      class="tech-logo-card"
+                      data-tech-logo-card
+                      data-layout={item.layout}
+                    >
+                      <img
+                        src={item.logo}
+                        alt={groupIndex === 0 ? item.name : ""}
+                        class:list={[
+                          "tech-logo-card__logo",
+                          `tech-logo-card__logo--${item.layout}`,
+                        ]}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </div>
+                  )
+                )
+              }
+            </div>
+          )
+        )
+      }
+    </div>
+  </div>
+</section>
+
+<script>
+  import {
+    gsap,
+    ScrollTrigger,
+  } from "../../scripts/gsap";
+
+  const section =
+    document.querySelector<HTMLElement>(
+      "[data-tech-logos]"
+    );
+
+  if (section) {
+    const track =
+      section.querySelector<HTMLElement>(
+        "[data-tech-logos-track]"
+      );
+
+    const cards =
+      Array.from(
+        section.querySelectorAll<HTMLElement>(
+          "[data-tech-logo-card]"
+        )
+      );
+
+    const reducedMotion =
+      window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches;
+
+    if (
+      track &&
+      cards.length &&
+      !reducedMotion
+    ) {
+      const groups =
+        Array.from(
+          section.querySelectorAll<HTMLElement>(
+            "[data-tech-logos-group]"
+          )
+        );
+
+      const firstGroup =
+        groups[0];
+
+      if (firstGroup) {
+        const getLoopDistance = () =>
+          firstGroup.getBoundingClientRect().width;
+
+        /*
+         * Movimiento base realmente hacia la derecha:
+         * empezamos desplazados exactamente un grupo
+         * y avanzamos hasta x = 0.
+         *
+         * Como hay dos grupos idénticos, al repetir
+         * vuelve a -distance sin que se perciba la costura.
+         */
+        const loop =
+          gsap.fromTo(
+            track,
+            {
+              x:
+                () => -getLoopDistance(),
+            },
+            {
+              x:
+                0,
+
+              duration:
+                38,
+
+              repeat:
+                -1,
+
+              repeatRefresh:
+                true,
+
+              ease:
+                "none",
+            }
+          );
+
+        loop.timeScale(
+          0.32
+        );
+
+      const clampRotation =
+        gsap.utils.clamp(
+          -3.2,
+          3.2
+        );
+
+      const clampLift =
+        gsap.utils.clamp(
+          -7,
+          7
+        );
+
+      let settle:
+        ReturnType<
+          typeof gsap.delayedCall
+        > | null =
+          null;
+
+      ScrollTrigger.create({
+        trigger:
+          section,
+
+        start:
+          "top bottom",
+
+        end:
+          "bottom top",
+
+        onUpdate:
+          (self) => {
+            const velocity =
+              self.getVelocity();
+
+            const rotation =
+              clampRotation(
+                velocity / 650
+              );
+
+            const y =
+              clampLift(
+                velocity / 210
+              );
+
+            gsap.to(
+              cards,
+              {
+                rotation,
+
+                y,
+
+                duration:
+                  0.2,
+
+                overwrite:
+                  "auto",
+
+                ease:
+                  "power2.out",
+              }
+            );
+
+            const boost =
+              gsap.utils.clamp(
+                1,
+                2.2,
+                1 +
+                  Math.abs(
+                    velocity
+                  ) /
+                    2300
+              );
+
+            const direction =
+              self.direction === 1
+                ? 1
+                : -1;
+
+            gsap.to(
+              loop,
+              {
+                timeScale:
+                  direction * boost,
+
+                duration:
+                  0.2,
+
+                overwrite:
+                  true,
+
+                ease:
+                  "power2.out",
+              }
+            );
+
+            settle?.kill();
+
+            settle =
+              gsap.delayedCall(
+                0.11,
+                () => {
+                  gsap.to(
+                    cards,
+                    {
+                      rotation:
+                        0,
+
+                      y:
+                        0,
+
+                      duration:
+                        0.72,
+
+                      ease:
+                        "power4.out",
+                    }
+                  );
+
+                  gsap.to(
+                    loop,
+                    {
+                      timeScale:
+                        0.32,
+
+                      duration:
+                        0.8,
+
+                      ease:
+                        "power3.out",
+                    }
+                  );
+                }
+              );
+          },
+      });
+
+      if (
+        window.matchMedia(
+          "(pointer: fine)"
+        ).matches
+      ) {
+        cards.forEach(
+          (card) => {
+            card.addEventListener(
+              "mouseenter",
+              () => {
+                gsap.to(
+                  loop,
+                  {
+                    timeScale:
+                      0.14,
+
+                    duration:
+                      0.4,
+
+                    ease:
+                      "power3.out",
+                  }
+                );
+
+                gsap.to(
+                  cards,
+                  {
+                    opacity:
+                      0.3,
+
+                    duration:
+                      0.28,
+
+                    ease:
+                      "power2.out",
+                  }
+                );
+
+                gsap.to(
+                  card,
+                  {
+                    opacity:
+                      1,
+
+                    scale:
+                      1.025,
+
+                    duration:
+                      0.38,
+
+                    ease:
+                      "power3.out",
+                  }
+                );
+              }
+            );
+
+            card.addEventListener(
+              "mouseleave",
+              () => {
+                gsap.to(
+                  loop,
+                  {
+                    timeScale:
+                      0.32,
+
+                    duration:
+                      0.6,
+
+                    ease:
+                      "power3.out",
+                  }
+                );
+
+                gsap.to(
+                  cards,
+                  {
+                    opacity:
+                      1,
+
+                    scale:
+                      1,
+
+                    duration:
+                      0.4,
+
+                    ease:
+                      "power3.out",
+                  }
+                );
+              }
+            );
+          }
+        );
+      }
+      }
+    }
+  }
+</script>
+
+<style>
+  .tech-logos {
+    position:
+      relative;
+
+    overflow:
+      hidden;
+
+    padding:
+      clamp(
+        3rem,
+        4vw,
+        4rem
+      )
+      0
+      clamp(
+        6rem,
+        8vw,
+        8rem
+      );
+
+    background:
+      #080808;
+
+    color:
+      #f2f0ea;
+
+    border-top:
+      1px solid
+      rgba(
+        255,
+        255,
+        255,
+        0.1
+      );
+  }
+
+  .tech-logos__head {
+    display:
+      flex;
+
+    justify-content:
+      space-between;
+
+    align-items:
+      center;
+
+    padding-bottom:
+      clamp(
+        2.8rem,
+        4vw,
+        4.25rem
+      );
+
+    font-size:
+      0.46rem;
+
+    font-weight:
+      600;
+
+    letter-spacing:
+      0.1em;
+
+    text-transform:
+      uppercase;
+
+    opacity:
+      0.42;
+  }
+
+  .tech-logos__dot {
+    display:
+      block;
+
+    width:
+      0.32rem;
+
+    height:
+      0.32rem;
+
+    border-radius:
+      50%;
+
+    background:
+      var(--color-accent);
+
+    opacity:
+      1;
+  }
+
+  .tech-logos__viewport {
+    width:
+      100%;
+
+    overflow:
+      hidden;
+
+    padding:
+      0.7rem
+      0
+      1rem;
+  }
+
+  .tech-logos__track {
+    display:
+      flex;
+
+    width:
+      max-content;
+
+    align-items:
+      center;
+
+    will-change:
+      transform;
+  }
+
+  .tech-logos__group {
+    display:
+      flex;
+
+    flex:
+      0 0
+      auto;
+
+    align-items:
+      center;
+
+    gap:
+      clamp(
+        2.8rem,
+        4.2vw,
+        5rem
+      );
+
+    padding-right:
+      clamp(
+        2.8rem,
+        4.2vw,
+        5rem
+      );
+  }
+
+  .tech-logos__group:first-child {
+    padding-left:
+      clamp(
+        3rem,
+        5vw,
+        6rem
+      );
+  }
+
+  .tech-logo-card {
+    position:
+      relative;
+
+    display:
+      grid;
+
+    flex:
+      0 0
+      clamp(
+        13rem,
+        15vw,
+        16.5rem
+      );
+
+    width:
+      clamp(
+        13rem,
+        15vw,
+        16.5rem
+      );
+
+    height:
+      clamp(
+        15rem,
+        17.5vw,
+        19rem
+      );
+
+    place-items:
+      center;
+
+    padding:
+      clamp(
+        1.7rem,
+        2.3vw,
+        2.5rem
+      );
+
+    border:
+      1px solid
+      rgba(
+        255,
+        255,
+        255,
+        0.13
+      );
+
+    background:
+      #101010;
+
+    transform-origin:
+      center center;
+
+    will-change:
+      transform,
+      opacity;
+
+    transition:
+      border-color
+      280ms
+      ease,
+      background
+      280ms
+      ease;
+  }
+
+  .tech-logo-card:hover {
+    border-color:
+      rgba(
+        255,
+        255,
+        255,
+        0.25
+      );
+
+    background:
+      #121212;
+  }
+
+  .tech-logo-card__logo {
+    display:
+      block;
+
+    max-width:
+      100%;
+
+    object-fit:
+      contain;
+
+    transition:
+      transform
+      360ms
+      var(--ease-out),
+      opacity
+      260ms
+      ease;
+  }
+
+  .tech-logo-card__logo--wide {
+    width:
+      min(
+        76%,
+        11.5rem
+      );
+
+    max-height:
+      5.7rem;
+  }
+
+  .tech-logo-card__logo--icon {
+    width:
+      min(
+        48%,
+        6.4rem
+      );
+
+    max-height:
+      6.4rem;
+  }
+
+  .tech-logo-card:hover
+  .tech-logo-card__logo {
+    transform:
+      scale(1.065);
+  }
+
+  /*
+   * Ajustes ópticos.
+   * Son SVG originales/locales, pero cada marca
+   * ocupa su viewBox de manera distinta.
+   */
+
+  .tech-logo-card:has(
+    img[alt="Astro"]
+  )
+  .tech-logo-card__logo {
+    width:
+      min(
+        82%,
+        12.5rem
+      );
+  }
+
+  .tech-logo-card:has(
+    img[alt="Next.js"]
+  )
+  .tech-logo-card__logo {
+    width:
+      min(
+        80%,
+        12rem
+      );
+  }
+
+  .tech-logo-card:has(
+    img[alt="GSAP"]
+  )
+  .tech-logo-card__logo {
+    width:
+      min(
+        78%,
+        11.75rem
+      );
+  }
+
+  .tech-logo-card:has(
+    img[alt="MySQL"]
+  )
+  .tech-logo-card__logo {
+    width:
+      min(
+        80%,
+        12rem
+      );
+  }
+
+  .tech-logo-card:has(
+    img[alt="Supabase"]
+  )
+  .tech-logo-card__logo {
+    width:
+      min(
+        82%,
+        12.5rem
+      );
+  }
+
+  .tech-logo-card:has(
+    img[alt="Stripe"]
+  )
+  .tech-logo-card__logo {
+    width:
+      min(
+        70%,
+        10.5rem
+      );
+  }
+
+  .tech-logo-card:has(
+    img[alt="Figma"]
+  )
+  .tech-logo-card__logo,
+  .tech-logo-card:has(
+    img[alt="React"]
+  )
+  .tech-logo-card__logo {
+    width:
+      min(
+        43%,
+        5.8rem
+      );
+  }
+
+  @media (
+    max-width:
+      900px
+  ) {
+    .tech-logos__group {
+      gap:
+        2rem;
+
+      padding-right:
+        2rem;
+    }
+
+    .tech-logos__group:first-child {
+      padding-left:
+        2rem;
+    }
+
+    .tech-logo-card {
+      flex-basis:
+        12rem;
+
+      width:
+        12rem;
+
+      height:
+        13.75rem;
+
+      padding:
+        1.5rem;
+    }
+
+    .tech-logo-card__logo--wide {
+      width:
+        min(
+          78%,
+          9rem
+        );
+
+      max-height:
+        4.5rem;
+    }
+
+    .tech-logo-card__logo--icon {
+      width:
+        min(
+          46%,
+          5.2rem
+        );
+
+      max-height:
+        5.2rem;
+    }
+  }
+
+  @media (
+    max-width:
+      560px
+  ) {
+    .tech-logos {
+      padding-top:
+        2.6rem;
+
+      padding-bottom:
+        5rem;
+    }
+
+    .tech-logos__head {
+      padding-bottom:
+        2.4rem;
+    }
+
+    .tech-logos__group {
+      gap:
+        1.5rem;
+
+      padding-right:
+        1.5rem;
+    }
+
+    .tech-logos__group:first-child {
+      padding-left:
+        1.25rem;
+    }
+
+    .tech-logo-card {
+      flex-basis:
+        10.5rem;
+
+      width:
+        10.5rem;
+
+      height:
+        12rem;
+
+      padding:
+        1.25rem;
+    }
+  }
+
+  @media (
+    prefers-reduced-motion:
+    reduce
+  ) {
+    .tech-logos__track {
+      transform:
+        none !important;
+    }
+  }
+</style>

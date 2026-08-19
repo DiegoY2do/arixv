@@ -1,0 +1,2844 @@
+---
+import KineticObject
+  from "../ui/KineticObject.astro";
+
+import {
+  homeContent,
+  type HomeLocale,
+} from "../../data/home";
+
+interface Props {
+  lang?: HomeLocale;
+}
+
+const {
+  lang = "es",
+} = Astro.props;
+
+const content =
+  homeContent[lang].hero;
+---
+
+<section
+  class="hero"
+  data-hero
+>
+  <!--
+    INTRO / IDENT
+    Inspirado en la lógica de los showcases:
+    un gesto mínimo construye primero la identidad y
+    después cede el escenario al Hero real.
+  -->
+  <div
+    class="hero-ident"
+    data-hero-ident
+    aria-hidden="true"
+  >
+    <div
+      class="hero-ident__backdrop"
+      data-ident-backdrop
+    ></div>
+
+    <div class="hero-ident__center">
+      <svg
+        class="hero-ident__seed"
+        viewBox="0 0 52 52"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          data-ident-seed
+          d="
+            M12 11
+            L30 26
+            L12 41
+            M30 26
+            H42
+          "
+        />
+      </svg>
+
+      <div class="hero-ident__brand">
+        <div
+          class="hero-ident__word"
+          data-ident-word
+        >
+          ARIXV
+        </div>
+
+        <span
+          class="hero-ident__meta"
+          data-ident-meta
+        >
+          DIGITAL<br />
+          DEVELOPMENT<br />
+          STUDIO
+        </span>
+      </div>
+    </div>
+
+  </div>
+  <div
+    class="hero__ambient"
+    aria-hidden="true"
+  ></div>
+
+  <div
+    class="hero__visual"
+    data-hero-visual
+  >
+    <KineticObject variant="hero" />
+  </div>
+
+  <div class="hero__meta container">
+    <div class="hero__meta-left">
+      <span class="hero__eyebrow">
+        {content.meta.eyebrow}
+      </span>
+
+      <span>
+        {content.meta.services}
+      </span>
+    </div>
+
+    <div class="hero__meta-right">
+      <span>{content.meta.location}</span>
+      <span>{content.meta.year}</span>
+    </div>
+  </div>
+
+  <div class="hero__title container">
+    <div class="hero__line">
+      <span
+        class="hero__line-inner"
+        data-hero-line
+      >
+        {content.title.lineOne}
+      </span>
+    </div>
+
+    <div
+      class="
+        hero__line
+        hero__line--second
+      "
+    >
+      <span
+        class="hero__line-inner"
+        data-hero-line
+      >
+        {content.title.lineTwo}
+      </span>
+    </div>
+
+    <div
+      class="
+        hero__line
+        hero__line--statement
+      "
+      data-hero-statement
+    >
+      <span class="hero__statement-static">
+        {content.statement.prefix}
+      </span>
+
+      <span
+        class="hero__statement-rotator"
+        data-hero-rotator
+        data-hero-words={JSON.stringify(
+          content.statement.words
+        )}
+      >
+        <span data-hero-word>
+          {content.statement.words[0]}
+        </span>
+      </span>
+    </div>
+
+    <a
+      href={content.cta.href}
+      class="hero__cta"
+      data-hero-cta
+    >
+      <span
+        class="hero__cta-dot"
+        aria-hidden="true"
+      ></span>
+
+      <span class="hero__cta-label">
+        {content.cta.label}
+      </span>
+
+      <span
+        class="hero__cta-arrow"
+        data-hero-cta-arrow
+        aria-hidden="true"
+      >
+        ↗
+      </span>
+
+      <span
+        class="hero__cta-line"
+        aria-hidden="true"
+      >
+        <span data-hero-cta-line></span>
+      </span>
+    </a>
+  </div>
+
+  <div class="hero__footer container">
+    <div class="hero__intro">
+      <span class="hero__accent"></span>
+
+      <p>
+        {content.intro}
+      </p>
+    </div>
+
+    <a
+      href="#intro"
+      class="hero__scroll"
+    >
+      <span>
+        {content.scrollLabel}
+      </span>
+
+      <span class="hero__scroll-line">
+        <span></span>
+      </span>
+    </a>
+  </div>
+</section>
+
+<script>
+  import {
+    gsap,
+    ScrollTrigger,
+    SplitText,
+    Flip,
+  } from "../../scripts/gsap";
+
+  const hero =
+    document.querySelector<HTMLElement>(
+      "[data-hero]"
+    );
+
+  if (hero) {
+    const lines =
+      hero.querySelectorAll<HTMLElement>(
+        "[data-hero-line]"
+      );
+
+    const statement =
+      hero.querySelector<HTMLElement>(
+        "[data-hero-statement]"
+      );
+
+    const rotator =
+      hero.querySelector<HTMLElement>(
+        "[data-hero-rotator]"
+      );
+
+    const rotatingWord =
+      hero.querySelector<HTMLElement>(
+        "[data-hero-word]"
+      );
+
+    const statementWords:
+      string[] =
+        (() => {
+          if (
+            !rotator
+          ) {
+            return [];
+          }
+
+          try {
+            return JSON.parse(
+              rotator.dataset.heroWords ??
+                "[]"
+            );
+          } catch {
+            return [];
+          }
+        })();
+
+    const ident =
+      hero.querySelector<HTMLElement>(
+        "[data-hero-ident]"
+      );
+
+    const identBackdrop =
+      hero.querySelector<HTMLElement>(
+        "[data-ident-backdrop]"
+      );
+
+    const identWord =
+      hero.querySelector<HTMLElement>(
+        "[data-ident-word]"
+      );
+
+    const identMeta =
+      hero.querySelector<HTMLElement>(
+        "[data-ident-meta]"
+      );
+
+    const identSeed =
+      hero.querySelector<SVGPathElement>(
+        "[data-ident-seed]"
+      );
+
+    const header =
+      document.querySelector<HTMLElement>(
+        ".header"
+      );
+
+    const headerBrand =
+      document.querySelector<HTMLElement>(
+        ".header__brand"
+      );
+
+    const visual =
+      hero.querySelector<HTMLElement>(
+        "[data-hero-visual]"
+      );
+
+    const kinetic =
+      visual?.querySelector<HTMLElement>(
+        "[data-kinetic-object]"
+      );
+
+    const mainPath =
+      visual?.querySelector<SVGPathElement>(
+        "[data-kinetic-main-path]"
+      );
+
+    const signalPath =
+      visual?.querySelector<SVGPathElement>(
+        "[data-kinetic-signal-path]"
+      );
+
+    const targetDesign =
+      visual?.querySelector<SVGPathElement>(
+        "[data-kinetic-target-design]"
+      );
+
+    const targetCode =
+      visual?.querySelector<SVGPathElement>(
+        "[data-kinetic-target-code]"
+      );
+
+    const targetImpact =
+      visual?.querySelector<SVGPathElement>(
+        "[data-kinetic-target-impact]"
+      );
+
+    const targetOpen =
+      visual?.querySelector<SVGPathElement>(
+        "[data-kinetic-target-open]"
+      );
+
+    const tracer =
+      visual?.querySelector<SVGCircleElement>(
+        "[data-kinetic-tracer]"
+      );
+
+    const kineticFrame =
+      visual?.querySelector<SVGGElement>(
+        "[data-kinetic-frame]"
+      );
+
+    /*
+     * Targets seguros para los tweens de scroll.
+     *
+     * Las consultas con optional chaining devuelven
+     * SVGPathElement | undefined. Fuera del bloque donde
+     * comprobamos su existencia, TypeScript vuelve a
+     * considerar posible undefined.
+     *
+     * Filtramos los paths una sola vez y usamos datos "d"
+     * como shapes del MorphSVG para que el timeline de
+     * ScrollTrigger quede completamente tipado.
+     */
+    const scrollMorphPaths =
+      [
+        mainPath,
+        signalPath,
+      ].filter(
+        (
+          path
+        ): path is SVGPathElement =>
+          Boolean(
+            path
+          )
+      );
+
+    const impactShape =
+      targetImpact?.getAttribute(
+        "d"
+      ) ?? "";
+
+    const openShape =
+      targetOpen?.getAttribute(
+        "d"
+      ) ?? "";
+
+    const meta =
+      hero.querySelectorAll<HTMLElement>(
+        ".hero__meta > *"
+      );
+
+    const footer =
+      hero.querySelectorAll<HTMLElement>(
+        ".hero__footer > *"
+      );
+
+    const accent =
+      hero.querySelector<HTMLElement>(
+        ".hero__accent"
+      );
+
+    const scrollLine =
+      hero.querySelector<HTMLElement>(
+        ".hero__scroll-line span"
+      );
+
+    const cta =
+      hero.querySelector<HTMLElement>(
+        "[data-hero-cta]"
+      );
+
+    const ctaArrow =
+      hero.querySelector<HTMLElement>(
+        "[data-hero-cta-arrow]"
+      );
+
+    const ctaLine =
+      hero.querySelector<HTMLElement>(
+        "[data-hero-cta-line]"
+      );
+
+    const reducedMotion =
+      window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches;
+
+    let kineticStory:
+      gsap.core.Timeline |
+      null =
+        null;
+
+    let signalSweep:
+      gsap.core.Tween |
+      null =
+        null;
+
+
+    if (reducedMotion) {
+      gsap.set(lines, {
+        yPercent: 0,
+      });
+
+      gsap.set(
+        [
+          ...meta,
+          ...footer,
+          ...(cta ? [cta] : []),
+        ],
+        {
+          autoAlpha: 1,
+        }
+      );
+
+      if (
+        rotatingWord
+      ) {
+        gsap.set(
+          rotatingWord,
+          {
+            autoAlpha:
+              1,
+          }
+        );
+      }
+
+      if (
+        ident
+      ) {
+        gsap.set(
+          ident,
+          {
+            display:
+              "none",
+          }
+        );
+      }
+
+      if (
+        mainPath
+      ) {
+        gsap.set(
+          mainPath,
+          {
+            drawSVG:
+              "0% 100%",
+          }
+        );
+      }
+
+      if (
+        signalPath
+      ) {
+        gsap.set(
+          signalPath,
+          {
+            drawSVG:
+              "42% 54%",
+          }
+        );
+      }
+
+      if (
+        tracer
+      ) {
+        gsap.set(
+          tracer,
+          {
+            autoAlpha:
+              0,
+          }
+        );
+      }
+
+    } else {
+      /*
+       * Entrada principal
+       */
+
+      const intro =
+        gsap.timeline({
+          delay:
+            2.04,
+
+          defaults: {
+            ease:
+              "arixvReveal",
+          },
+        });
+
+      intro
+        .fromTo(
+          visual,
+          {
+            scale: 0.82,
+
+            autoAlpha: 0,
+          },
+          {
+            scale: 1,
+
+            autoAlpha: 1,
+
+            duration: 1.5,
+
+            ease: "power3.out",
+          },
+          "-=1.15"
+        )
+
+        .fromTo(
+          meta,
+          {
+            y: 14,
+
+            autoAlpha: 0,
+          },
+          {
+            y: 0,
+
+            autoAlpha: 1,
+
+            duration: 0.7,
+
+            stagger: 0.06,
+          },
+          "-=0.8"
+        )
+
+        .fromTo(
+          footer,
+          {
+            y: 20,
+
+            autoAlpha: 0,
+          },
+          {
+            y: 0,
+
+            autoAlpha: 1,
+
+            duration: 0.7,
+
+            stagger: 0.08,
+          },
+          "-=0.6"
+        );
+
+      if (cta) {
+        intro.fromTo(
+          cta,
+          {
+            x: -18,
+            autoAlpha: 0,
+          },
+          {
+            x: 0,
+            autoAlpha: 1,
+            duration: 0.72,
+            ease: "power3.out",
+          },
+          "-=0.72"
+        );
+      }
+
+      if (accent) {
+        intro.fromTo(
+          accent,
+          {
+            scaleX: 0,
+          },
+          {
+            scaleX: 1,
+
+            duration: 0.7,
+          },
+          "-=0.6"
+        );
+      }
+
+      if (scrollLine) {
+        intro.fromTo(
+          scrollLine,
+          {
+            scaleX: 0,
+          },
+          {
+            scaleX: 1,
+
+            duration: 0.8,
+          },
+          "-=0.7"
+        );
+      }
+
+      /*
+       * =====================================
+       * IDENT + TIPOGRAFÍA
+       * =====================================
+       *
+       * El inicio ahora funciona como una pieza corta
+       * de motion design:
+       * 1. DrawSVG construye una señal mínima.
+       * 2. SplitText ensambla ARIXV desde el centro.
+       * 3. ScrambleText resuelve el descriptor.
+       * 4. El ident se abre y revela el Hero.
+       * 5. DIGITAL / EXPERIENCES entran por caracteres,
+       *    con ritmos diferentes.
+       */
+
+      const titleSplits =
+        Array.from(
+          lines
+        ).map(
+          (
+            line
+          ) =>
+            SplitText.create(
+              line,
+              {
+                type:
+                  "chars",
+
+                mask:
+                  "chars",
+              }
+            )
+        );
+
+      const titleCharsOne =
+        titleSplits[0]?.chars ??
+        [];
+
+      const titleCharsTwo =
+        titleSplits[1]?.chars ??
+        [];
+
+      const identSplit =
+        identWord
+          ? SplitText.create(
+              identWord,
+              {
+                type:
+                  "chars",
+
+                mask:
+                  "chars",
+              }
+            )
+          : null;
+
+      gsap.set(
+        [
+          ...titleCharsOne,
+          ...titleCharsTwo,
+        ],
+        {
+          yPercent:
+            118,
+
+          scaleX:
+            0.72,
+
+          rotate:
+            1.5,
+
+          autoAlpha:
+            0,
+
+          transformOrigin:
+            "50% 100%",
+        }
+      );
+
+      gsap.set(
+        statement,
+        {
+          yPercent:
+            45,
+
+          autoAlpha:
+            0,
+        }
+      );
+
+      const introMaster =
+        gsap.timeline({
+          defaults: {
+            ease:
+              "arixvReveal",
+          },
+        });
+
+      if (
+        ident &&
+        identBackdrop &&
+        identWord &&
+        identSeed
+      ) {
+        /*
+         * El intro queda por encima de todo.
+         * El Header existe detrás, pero no aparece hasta
+         * que la marca central empieza a convertirse en UI.
+         */
+        if (
+          header
+        ) {
+          gsap.set(
+            header,
+            {
+              autoAlpha:
+                0,
+            }
+          );
+        }
+
+        if (
+          headerBrand
+        ) {
+          gsap.set(
+            headerBrand,
+            {
+              autoAlpha:
+                0,
+            }
+          );
+        }
+
+        gsap.set(
+          ident,
+          {
+            autoAlpha:
+              1,
+          }
+        );
+
+        gsap.set(
+          identBackdrop,
+          {
+            autoAlpha:
+              1,
+          }
+        );
+
+        gsap.set(
+          identSeed,
+          {
+            drawSVG:
+              "0% 0%",
+
+            scale:
+              0.7,
+
+            autoAlpha:
+              1,
+
+            transformOrigin:
+              "50% 50%",
+          }
+        );
+
+        if (
+          identSplit
+        ) {
+          gsap.set(
+            identSplit.chars,
+            {
+              scaleX:
+                0.02,
+
+              xPercent:
+                -18,
+
+              autoAlpha:
+                0,
+
+              transformOrigin:
+                "left center",
+            }
+          );
+
+          gsap.set(
+            identWord,
+            {
+              visibility:
+                "visible",
+            }
+          );
+        }
+
+        gsap.set(
+          identMeta,
+          {
+            x:
+              -12,
+
+            autoAlpha:
+              0,
+
+            visibility:
+              "visible",
+          }
+        );
+
+        /*
+         * 00 — gesto inicial.
+         * Un fragmento pequeño, como en la referencia.
+         */
+        introMaster
+          .to(
+            identSeed,
+            {
+              drawSVG:
+                "0% 100%",
+
+              scale:
+                1,
+
+              duration:
+                0.5,
+
+              ease:
+                "arixvInOut",
+            },
+            0.08
+          )
+
+          .to(
+            identSeed,
+            {
+              scale:
+                1.16,
+
+              duration:
+                0.2,
+
+              yoyo:
+                true,
+
+              repeat:
+                1,
+
+              ease:
+                "power2.inOut",
+            },
+            0.48
+          );
+
+        /*
+         * 01 — ARIXV se construye por fragmentos.
+         */
+        if (
+          identSplit
+        ) {
+          introMaster
+            .to(
+              identSeed,
+              {
+                autoAlpha:
+                  0,
+
+                scale:
+                  0.8,
+
+                duration:
+                  0.25,
+              },
+              0.7
+            )
+
+            .to(
+              identSplit.chars,
+              {
+                scaleX:
+                  1,
+
+                xPercent:
+                  0,
+
+                autoAlpha:
+                  1,
+
+                duration:
+                  0.48,
+
+                stagger: {
+                  each:
+                    0.12,
+
+                  from:
+                    "start",
+                },
+
+                ease:
+                  "arixvReveal",
+              },
+              0.72
+            );
+        }
+
+        /*
+         * 02 — descriptor pequeño.
+         */
+        if (
+          identMeta
+        ) {
+          introMaster.to(
+            identMeta,
+            {
+              x:
+                0,
+
+              autoAlpha:
+                0.72,
+
+              duration:
+                0.38,
+
+              ease:
+                "arixvReveal",
+            },
+            1.38
+          );
+        }
+
+        /*
+         * 03 — dejamos ver el sitio DETRÁS de la marca.
+         * No existe una segunda pantalla negra ni una cortina.
+         */
+        introMaster.to(
+          identBackdrop,
+          {
+            autoAlpha:
+              0,
+
+            duration:
+              0.72,
+
+            ease:
+              "power2.inOut",
+          },
+          1.78
+        );
+
+        if (
+          header
+        ) {
+          introMaster.to(
+            header,
+            {
+              autoAlpha:
+                1,
+
+              duration:
+                0.5,
+
+              ease:
+                "power2.out",
+            },
+            1.9
+          );
+        }
+
+        /*
+         * 04 — la palabra ARIXV viaja hacia el logo REAL
+         * del Header. Flip.fit calcula automáticamente
+         * posición y escala para cualquier viewport.
+         */
+        if (
+          headerBrand
+        ) {
+          introMaster
+            .to(
+              identMeta,
+              {
+                x:
+                  -8,
+
+                autoAlpha:
+                  0,
+
+                duration:
+                  0.25,
+              },
+              1.92
+            )
+
+            .call(
+              () => {
+                Flip.fit(
+                  identWord,
+                  headerBrand,
+                  {
+                    duration:
+                      0.86,
+
+                    scale:
+                      true,
+
+                    simple:
+                      true,
+
+                    ease:
+                      "arixvInOut",
+                  }
+                );
+              },
+              [],
+              2.02
+            )
+
+            .to(
+              headerBrand,
+              {
+                autoAlpha:
+                  1,
+
+                duration:
+                  0.2,
+              },
+              2.72
+            )
+
+            .to(
+              identWord,
+              {
+                autoAlpha:
+                  0,
+
+                duration:
+                  0.18,
+              },
+              2.7
+            );
+        } else {
+          introMaster.to(
+            identWord,
+            {
+              scale:
+                0.72,
+
+              y:
+                -20,
+
+              autoAlpha:
+                0,
+
+              duration:
+                0.76,
+
+              ease:
+                "arixvInOut",
+            },
+            2.02
+          );
+        }
+
+        introMaster
+          .set(
+            ident,
+            {
+              display:
+                "none",
+            },
+            2.94
+          );
+      }
+
+      /*
+       * Entrada del Hero real.
+       * Empieza mientras el ident se está retirando
+       * para que no exista un corte muerto.
+       */
+
+      introMaster
+        .to(
+          titleCharsOne,
+          {
+            yPercent:
+              0,
+
+            scaleX:
+              1,
+
+            rotate:
+              0,
+
+            autoAlpha:
+              1,
+
+            duration:
+              0.82,
+
+            stagger: {
+              each:
+                0.022,
+
+              from:
+                "start",
+            },
+
+            ease:
+              "arixvReveal",
+          },
+          1.94
+        )
+
+        .to(
+          titleCharsTwo,
+          {
+            yPercent:
+              0,
+
+            scaleX:
+              1,
+
+            rotate:
+              0,
+
+            autoAlpha:
+              1,
+
+            duration:
+              0.9,
+
+            stagger: {
+              each:
+                0.021,
+
+              from:
+                "end",
+            },
+
+            ease:
+              "arixvReveal",
+          },
+          2.04
+        )
+
+        .to(
+          statement,
+          {
+            yPercent:
+              0,
+
+            autoAlpha:
+              1,
+
+            duration:
+              0.62,
+
+            ease:
+              "arixvReveal",
+          },
+          2.52
+        );
+
+      /*
+       * PERFORM / CONVERT / SCALE / EVOLVE.
+       * Un solo nodo: ScrambleText reemplaza las palabras
+       * sin saltos de layout.
+       */
+
+      if (
+        rotatingWord &&
+        statementWords.length >
+          0
+      ) {
+        rotatingWord.textContent =
+          statementWords[0];
+
+        const scrambleTimeline =
+          gsap.timeline({
+            repeat:
+              -1,
+
+            delay:
+              3.1,
+          });
+
+        statementWords.forEach(
+          (
+            word,
+            index
+          ) => {
+            scrambleTimeline.to(
+              rotatingWord,
+              {
+                scrambleText: {
+                  text:
+                    word,
+
+                  chars:
+                    "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+
+                  speed:
+                    0.38,
+
+                  revealDelay:
+                    0.06,
+
+                  tweenLength:
+                    false,
+                },
+
+                duration:
+                  0.62,
+
+                ease:
+                  "none",
+              },
+              index *
+                1.85
+            );
+          }
+        );
+      }
+
+      /*
+       * Narrativa del objeto:
+       *
+       * DESIGN -> CODE -> IMPACT.
+       *
+       * Visualmente es una sola línea.
+       * Técnicamente usamos:
+       * - DrawSVG para construirla.
+       * - MotionPath para el punto rojo.
+       * - MorphSVG para cambiar de estado.
+       */
+
+      if (
+        mainPath &&
+        signalPath &&
+        targetDesign &&
+        targetCode &&
+        targetImpact
+      ) {
+        gsap.set(
+          mainPath,
+          {
+            drawSVG:
+              "0% 0%",
+          }
+        );
+
+        gsap.set(
+          signalPath,
+          {
+            drawSVG:
+              "0% 8%",
+
+            autoAlpha:
+              0,
+          }
+        );
+
+        if (
+          kineticFrame
+        ) {
+          gsap.set(
+            kineticFrame,
+            {
+              autoAlpha:
+                0,
+            }
+          );
+        }
+
+        if (
+          tracer
+        ) {
+          gsap.set(
+            tracer,
+            {
+              autoAlpha:
+                0,
+            }
+          );
+        }
+
+        kineticStory =
+          gsap.timeline({
+            paused:
+              true,
+
+            defaults: {
+              ease:
+                "power3.inOut",
+            },
+          });
+
+        if (
+          kineticFrame
+        ) {
+          kineticStory.to(
+            kineticFrame,
+            {
+              autoAlpha:
+                1,
+
+              duration:
+                0.85,
+            },
+            0
+          );
+        }
+
+        kineticStory
+          .to(
+            mainPath,
+            {
+              drawSVG:
+                "0% 100%",
+
+              duration:
+                1.2,
+
+              ease:
+                "power2.inOut",
+            },
+            0
+          )
+
+          .to(
+            signalPath,
+            {
+              autoAlpha:
+                1,
+
+              duration:
+                0.2,
+            },
+            0.38
+          );
+
+        if (
+          tracer
+        ) {
+          kineticStory
+            .set(
+              tracer,
+              {
+                autoAlpha:
+                  1,
+              },
+              0.08
+            )
+
+            .to(
+              tracer,
+              {
+                motionPath: {
+                  path:
+                    mainPath,
+
+                  align:
+                    mainPath,
+
+                  alignOrigin:
+                    [
+                      0.5,
+                      0.5,
+                    ],
+
+                  start:
+                    0,
+
+                  end:
+                    1,
+                },
+
+                duration:
+                  1.15,
+
+                ease:
+                  "power2.inOut",
+              },
+              0.08
+            )
+
+            .to(
+              tracer,
+              {
+                autoAlpha:
+                  0,
+
+                duration:
+                  0.22,
+              },
+              1.02
+            );
+        }
+
+        kineticStory
+
+          .to(
+            [
+              mainPath,
+              signalPath,
+            ],
+            {
+              morphSVG:
+                targetCode,
+
+              duration:
+                0.92,
+            },
+            1.45
+          )
+
+          .to(
+            [
+              mainPath,
+              signalPath,
+            ],
+            {
+              morphSVG:
+                targetImpact,
+
+              duration:
+                0.98,
+            },
+            2.72
+          );
+
+        signalSweep =
+          gsap.fromTo(
+            signalPath,
+            {
+              drawSVG:
+                "0% 9%",
+            },
+            {
+              drawSVG:
+                "91% 100%",
+
+              duration:
+                3.5,
+
+              repeat:
+                -1,
+
+              ease:
+                "none",
+
+              paused:
+                true,
+            }
+          );
+
+        intro.call(
+          () => {
+            kineticStory?.play();
+            signalSweep?.play();
+          },
+          [],
+          "-=0.12"
+        );
+      }
+
+      /*
+       * Mouse parallax.
+       */
+
+      if (
+        visual &&
+        kinetic &&
+        window.matchMedia(
+          "(pointer: fine)"
+        ).matches
+      ) {
+        const moveX =
+          gsap.quickTo(
+            kinetic,
+            "x",
+            {
+              duration: 0.9,
+
+              ease:
+                "power3.out",
+            }
+          );
+
+        const moveY =
+          gsap.quickTo(
+            kinetic,
+            "y",
+            {
+              duration: 0.9,
+
+              ease:
+                "power3.out",
+            }
+          );
+
+        const rotate =
+          gsap.quickTo(
+            kinetic,
+            "rotation",
+            {
+              duration: 1.1,
+
+              ease:
+                "power3.out",
+            }
+          );
+
+        hero.addEventListener(
+          "pointermove",
+          (event) => {
+            const rect =
+              hero.getBoundingClientRect();
+
+            const x =
+              (
+                event.clientX -
+                rect.left
+              ) /
+                rect.width -
+              0.5;
+
+            const y =
+              (
+                event.clientY -
+                rect.top
+              ) /
+                rect.height -
+              0.5;
+
+            moveX(x * 18);
+
+            moveY(y * 12);
+
+            rotate(x * 2.5);
+          }
+        );
+
+        hero.addEventListener(
+          "pointerleave",
+          () => {
+            moveX(0);
+            moveY(0);
+            rotate(0);
+          }
+        );
+      }
+
+      /*
+       * CTA HABLEMOS:
+       * microinteracción editorial.
+       */
+
+      if (
+        cta &&
+        ctaArrow &&
+        ctaLine &&
+        window.matchMedia(
+          "(pointer: fine)"
+        ).matches
+      ) {
+        gsap.set(ctaLine, {
+          scaleX: 0.42,
+          transformOrigin: "left center",
+        });
+
+        cta.addEventListener(
+          "mouseenter",
+          () => {
+            gsap.to(
+              ctaArrow,
+              {
+                x: 4,
+                y: -4,
+                duration: 0.28,
+                ease: "power3.out",
+              }
+            );
+
+            gsap.to(
+              ctaLine,
+              {
+                scaleX: 1,
+                duration: 0.42,
+                ease: "power4.out",
+              }
+            );
+          }
+        );
+
+        cta.addEventListener(
+          "mouseleave",
+          () => {
+            gsap.to(
+              ctaArrow,
+              {
+                x: 0,
+                y: 0,
+                duration: 0.32,
+                ease: "power3.out",
+              }
+            );
+
+            gsap.to(
+              ctaLine,
+              {
+                scaleX: 0.42,
+                duration: 0.38,
+                ease: "power4.out",
+              }
+            );
+          }
+        );
+      }
+
+      /*
+       * Scroll:
+       * texto se abre y el objeto
+       * empieza a tomar control.
+       */
+
+      const media =
+        gsap.matchMedia();
+
+      media.add(
+        "(min-width: 768px)",
+        () => {
+          gsap
+            .timeline({
+              scrollTrigger: {
+                trigger: hero,
+
+                start:
+                  "35% top",
+
+                end:
+                  "bottom top",
+
+                scrub: 0.18,
+
+                onEnter:
+                  () => {
+                    if (
+                      kineticStory &&
+                      kineticStory.progress() <
+                        1
+                    ) {
+                      kineticStory
+                        .progress(1)
+                        .pause();
+                    }
+                  },
+              },
+            })
+
+            /*
+             * Usamos fromTo con estados explícitos.
+             * Así, al hacer scroll hacia arriba,
+             * TODOS los elementos recuperan su
+             * estado completo del Hero.
+             */
+
+            .fromTo(
+              lines[0],
+              {
+                xPercent: 0,
+              },
+              {
+                xPercent: -8,
+
+                ease: "none",
+
+                immediateRender: false,
+              },
+              0
+            )
+
+            .fromTo(
+              lines[1],
+              {
+                xPercent: 0,
+              },
+              {
+                xPercent: 8,
+
+                ease: "none",
+
+                immediateRender: false,
+              },
+              0
+            )
+
+            .fromTo(
+              statement,
+              {
+                xPercent: 0,
+
+                autoAlpha: 1,
+              },
+              {
+                xPercent: -6,
+
+                autoAlpha: 0.25,
+
+                ease: "none",
+
+                immediateRender: false,
+              },
+              0
+            )
+
+            .fromTo(
+              visual,
+              {
+                scale: 1,
+
+                xPercent: 0,
+
+                yPercent: 0,
+
+                autoAlpha: 1,
+              },
+              {
+                scale: 1.34,
+
+                xPercent: -6,
+
+                yPercent: 9,
+
+                autoAlpha: 0.32,
+
+                ease: "none",
+
+                immediateRender: false,
+              },
+              0
+            )
+
+            .fromTo(
+              scrollMorphPaths,
+              {
+                morphSVG: {
+                  shape:
+                    impactShape,
+                },
+              },
+              {
+                morphSVG: {
+                  shape:
+                    openShape,
+                },
+
+                ease:
+                  "none",
+
+                immediateRender:
+                  false,
+              },
+              0
+            )
+
+            .fromTo(
+              meta,
+              {
+                autoAlpha: 1,
+
+                y: 0,
+              },
+              {
+                autoAlpha: 0,
+
+                y: -30,
+
+                ease: "none",
+
+                immediateRender: false,
+              },
+              0
+            )
+
+            .fromTo(
+              footer,
+              {
+                autoAlpha: 1,
+
+                y: 0,
+              },
+              {
+                autoAlpha: 0,
+
+                y: 25,
+
+                ease: "none",
+
+                immediateRender: false,
+              },
+              0
+            )
+
+            .fromTo(
+              cta,
+              {
+                autoAlpha: 1,
+
+                y: 0,
+              },
+              {
+                autoAlpha: 0,
+
+                y: 18,
+
+                ease: "none",
+
+                immediateRender: false,
+              },
+              0
+            );
+        }
+      );
+
+      /*
+       * Mobile:
+       * sólo vertical.
+       */
+
+      media.add(
+        "(max-width: 767px)",
+        () => {
+          gsap
+            .timeline({
+              scrollTrigger: {
+                trigger: hero,
+
+                start:
+                  "55% top",
+
+                end:
+                  "bottom top",
+
+                scrub: 0.18,
+              },
+            })
+
+            .fromTo(
+              lines,
+              {
+                yPercent: 0,
+
+                autoAlpha: 1,
+              },
+              {
+                yPercent: -4,
+
+                autoAlpha: 0.45,
+
+                ease: "none",
+
+                immediateRender: false,
+              },
+              0
+            )
+
+            .fromTo(
+              visual,
+              {
+                scale: 1,
+
+                yPercent: 0,
+
+                autoAlpha: 1,
+              },
+              {
+                scale: 1.1,
+
+                yPercent: 6,
+
+                autoAlpha: 0.26,
+
+                ease: "none",
+
+                immediateRender: false,
+              },
+              0
+            );
+        }
+      );
+    }
+  }
+</script>
+
+<style>
+  /*
+   * =====================================
+   * IDENT / INTRO
+   * =====================================
+   */
+
+  .hero-ident {
+    position:
+      absolute;
+
+    z-index:
+      120;
+
+    inset:
+      0;
+
+    display:
+      grid;
+
+    place-items:
+      center;
+
+    overflow:
+      hidden;
+
+    background:
+      transparent;
+
+    color:
+      #ffffff;
+
+    will-change:
+      opacity;
+  }
+
+  .hero-ident__backdrop {
+    position:
+      absolute;
+
+    inset:
+      0;
+
+    background:
+      #000000;
+
+    will-change:
+      opacity;
+  }
+
+  .hero-ident__center {
+    display:
+      flex;
+
+    flex-direction:
+      column;
+
+    align-items:
+      center;
+
+    gap:
+      0;
+
+    will-change:
+      transform,
+      opacity;
+  }
+
+  .hero-ident__brand {
+    display:
+      flex;
+
+    align-items:
+      center;
+
+    gap:
+      clamp(
+        1.1rem,
+        1.55vw,
+        1.8rem
+      );
+  }
+
+  .hero-ident__seed {
+    position:
+      absolute;
+
+    opacity:
+      0;
+
+    width:
+      clamp(
+        1.8rem,
+        2.8vw,
+        3rem
+      );
+
+    overflow:
+      visible;
+  }
+
+  .hero-ident__seed path {
+    stroke:
+      var(--color-white);
+
+    stroke-width:
+      2;
+
+    stroke-linecap:
+      square;
+
+    stroke-linejoin:
+      miter;
+
+    vector-effect:
+      non-scaling-stroke;
+  }
+
+  .hero-ident__word {
+    visibility:
+      hidden;
+
+    overflow:
+      hidden;
+
+    font-family:
+      var(
+        --font-display
+      );
+
+    font-size:
+      clamp(
+        3.8rem,
+        6.2vw,
+        7.1rem
+      );
+
+    font-weight:
+      500;
+
+    line-height:
+      0.82;
+
+    letter-spacing:
+      -0.08em;
+
+    white-space:
+      nowrap;
+
+    will-change:
+      transform,
+      opacity;
+  }
+
+  .hero-ident__meta {
+    font-family:
+      var(
+        --font-body
+      );
+
+    font-size:
+      0.48rem;
+
+    font-weight:
+      600;
+
+    letter-spacing:
+      0.13em;
+
+    text-transform:
+      uppercase;
+  }
+
+  .hero-ident__meta {
+    visibility:
+      hidden;
+
+    min-width:
+      0;
+
+    color:
+      var(
+        --color-gray
+      );
+
+    font-size:
+      clamp(
+        0.52rem,
+        0.7vw,
+        0.78rem
+      );
+
+    font-weight:
+      600;
+
+    line-height:
+      1.25;
+
+    letter-spacing:
+      0.08em;
+
+    text-align:
+      left;
+
+    opacity:
+      0;
+
+    transform:
+      translateX(
+        -12px
+      );
+  }
+
+  .hero {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
+    min-height: 100svh;
+
+    overflow: hidden;
+
+    background:
+      var(--color-black);
+
+    color:
+      var(--color-white);
+  }
+
+  /*
+   * Fondo
+   */
+
+  .hero__ambient {
+    position: absolute;
+
+    inset: 0;
+
+    pointer-events: none;
+  }
+
+  .hero__ambient::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    bottom: 0;
+    left: 66.666%;
+
+    width: 1px;
+
+    background:
+      rgba(
+        255,
+        255,
+        255,
+        0.045
+      );
+
+    mask-image:
+      linear-gradient(
+        to bottom,
+        transparent,
+        black 14%,
+        black 82%,
+        transparent
+      );
+  }
+
+  .hero__ambient::after {
+    content: none;
+  }
+
+  /*
+   * Objeto gráfico.
+   */
+
+  .hero__visual {
+    position: absolute;
+
+    z-index: 1;
+
+    top: 13%;
+    right: 1.5%;
+
+    width:
+      clamp(
+        29rem,
+        46vw,
+        54rem
+      );
+
+    color:
+      rgba(
+        255,
+        255,
+        255,
+        0.42
+      );
+
+    pointer-events: none;
+
+    will-change:
+      transform,
+      opacity;
+  }
+
+  /*
+   * Contenido.
+   */
+
+  .hero__meta,
+  .hero__title,
+  .hero__footer {
+    position: relative;
+
+    z-index: 2;
+  }
+
+  .hero__meta {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    padding-top:
+      clamp(
+        5.5rem,
+        8vw,
+        7rem
+      );
+
+    color:
+      var(--color-gray);
+
+    font-size: 0.6rem;
+
+    font-weight: 600;
+
+    line-height: 1.45;
+
+    letter-spacing: 0.1em;
+
+    text-transform: uppercase;
+  }
+
+  .hero__meta-left,
+  .hero__meta-right {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .hero__meta-right {
+    align-items: flex-end;
+  }
+
+  .hero__eyebrow {
+    color:
+      var(--color-white);
+  }
+
+  .hero__title {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+  }
+
+  .hero__line {
+    overflow: hidden;
+
+    font-family:
+      var(--font-display);
+
+    font-size:
+      clamp(
+        4rem,
+        11.3vw,
+        12rem
+      );
+
+    font-weight: 500;
+
+    line-height: 0.79;
+
+    letter-spacing:
+      -0.075em;
+
+    text-transform: uppercase;
+  }
+
+  .hero__line-inner {
+    display: block;
+
+    width: max-content;
+
+    will-change:
+      transform,
+      opacity;
+  }
+
+  .hero__line-inner
+  :global(.char) {
+    will-change:
+      transform,
+      opacity;
+  }
+
+  .hero__line--second {
+    padding-left:
+      clamp(
+        2rem,
+        8vw,
+        9rem
+      );
+  }
+
+  /*
+   * BUILT TO ...
+   */
+
+  .hero__line--statement {
+    display: flex;
+    align-items: baseline;
+    justify-content: flex-end;
+
+    gap: 0.22em;
+
+    margin-top:
+      clamp(
+        1.2rem,
+        2vw,
+        2rem
+      );
+
+    overflow: visible;
+
+    font-size:
+      clamp(
+        2rem,
+        5.5vw,
+        6rem
+      );
+
+    line-height: 0.92;
+
+    letter-spacing:
+      -0.06em;
+  }
+
+  .hero__statement-static {
+    white-space: nowrap;
+  }
+
+  .hero__statement-rotator {
+    position: relative;
+
+    display: inline-block;
+
+    width: 8.3ch;
+    height: 1em;
+  }
+
+  .hero__statement-rotator
+  > span {
+    position:
+      absolute;
+
+    top:
+      0;
+
+    left:
+      0;
+
+    visibility:
+      visible;
+
+    white-space:
+      nowrap;
+  }
+
+  /*
+   * CTA principal.
+   */
+
+  .hero__cta {
+    position: relative;
+
+    display: inline-grid;
+
+    grid-template-columns:
+      auto
+      1fr
+      auto;
+
+    align-items: center;
+
+    align-self: flex-end;
+
+    column-gap: 0.7rem;
+    row-gap: 0.7rem;
+
+    min-width:
+      clamp(
+        10.5rem,
+        12vw,
+        12.5rem
+      );
+
+    margin-top:
+      clamp(
+        1.8rem,
+        3vw,
+        3rem
+      );
+
+    color:
+      var(--color-white);
+
+    font-size:
+      clamp(
+        0.78rem,
+        0.85vw,
+        0.92rem
+      );
+
+    font-weight: 600;
+
+    letter-spacing: 0.11em;
+
+    text-transform: uppercase;
+
+    text-decoration: none;
+
+    will-change:
+      transform,
+      opacity;
+  }
+
+  .hero__cta-dot {
+    display: block;
+
+    width: 0.38rem;
+    height: 0.38rem;
+
+    border-radius: 50%;
+
+    background:
+      var(--color-accent);
+  }
+
+  .hero__cta-arrow {
+    display: inline-block;
+
+    font-size: 1.05rem;
+
+    line-height: 1;
+
+    will-change: transform;
+  }
+
+  .hero__cta-line {
+    position: relative;
+
+    grid-column: 1 / -1;
+
+    display: block;
+
+    width: 100%;
+    height: 1px;
+
+    overflow: hidden;
+
+    background:
+      var(--color-line-dark);
+  }
+
+  .hero__cta-line > span {
+    position: absolute;
+
+    inset: 0;
+
+    background:
+      var(--color-white);
+
+    transform-origin:
+      left center;
+
+    will-change: transform;
+  }
+
+  .hero__footer {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+
+    gap: 2rem;
+
+    padding-bottom:
+      clamp(
+        1.5rem,
+        2.5vw,
+        2.5rem
+      );
+  }
+
+  .hero__intro {
+    display: flex;
+
+    gap: 1rem;
+
+    max-width: 25rem;
+  }
+
+  .hero__intro p {
+    margin: 0;
+
+    font-size:
+      clamp(
+        0.72rem,
+        0.9vw,
+        0.85rem
+      );
+
+    line-height: 1.55;
+
+    color:
+      var(--color-gray-light);
+  }
+
+  .hero__accent {
+    display: block;
+
+    flex-shrink: 0;
+
+    width: 2.5rem;
+    height: 2px;
+
+    margin-top: 0.5rem;
+
+    background:
+      var(--color-accent);
+
+    transform-origin:
+      left center;
+  }
+
+  .hero__scroll {
+    display: flex;
+    flex-direction: column;
+
+    gap: 0.7rem;
+
+    width:
+      clamp(
+        8rem,
+        12vw,
+        11rem
+      );
+
+    font-size: 0.58rem;
+
+    font-weight: 600;
+
+    letter-spacing: 0.11em;
+
+    text-transform: uppercase;
+  }
+
+  .hero__scroll-line {
+    position: relative;
+
+    display: block;
+
+    width: 100%;
+    height: 1px;
+
+    overflow: hidden;
+
+    background:
+      var(--color-line-dark);
+  }
+
+  .hero__scroll-line span {
+    position: absolute;
+
+    inset: 0;
+
+    background:
+      var(--color-white);
+
+    transform-origin:
+      left center;
+  }
+
+  @media (
+    max-width: 767px
+  ) {
+    .hero__visual {
+      top: 18%;
+      right: -31%;
+
+      width: 96vw;
+
+      opacity: 0.58;
+    }
+
+    .hero-ident__brand {
+      align-items:
+        center;
+
+      gap:
+        clamp(
+          0.8rem,
+          3.5vw,
+          1.1rem
+        );
+    }
+
+    .hero-ident__word {
+      font-size:
+        clamp(
+          3rem,
+          15.5vw,
+          4.5rem
+        );
+    }
+
+    .hero-ident__meta {
+      display:
+        inline-block;
+
+      max-width:
+        6.8rem;
+
+      font-size:
+        clamp(
+          0.4rem,
+          1.9vw,
+          0.52rem
+        );
+
+      font-weight:
+        600;
+
+      line-height:
+        1.2;
+
+      letter-spacing:
+        0.065em;
+    }
+
+    .hero-ident__seed {
+      width:
+        2.1rem;
+    }
+
+    .hero-ident__index {
+      right:
+        var(
+          --page-padding
+        );
+
+      bottom:
+        1.5rem;
+    }
+
+    .hero__meta {
+      padding-top: 5.25rem;
+    }
+
+    .hero__meta-left
+    span:last-child {
+      display: none;
+    }
+
+    .hero__title {
+      padding-top: 5rem;
+      padding-bottom: 3rem;
+    }
+
+    .hero__line {
+      width: 100%;
+
+      font-size:
+        clamp(
+          3.2rem,
+          14.2vw,
+          5.7rem
+        );
+
+      line-height: 0.85;
+    }
+
+    .hero__line-inner {
+      max-width: 100%;
+    }
+
+    .hero__line--second {
+      padding-left: 0;
+    }
+
+    .hero__line--second
+    .hero__line-inner {
+      margin-left: auto;
+    }
+
+    .hero__line--statement {
+      flex-direction:
+        column;
+
+      align-items:
+        flex-start;
+
+      justify-content:
+        flex-start;
+
+      gap:
+        0.08em;
+
+      margin-top:
+        1.6rem;
+
+      overflow:
+        visible;
+
+      font-size:
+        clamp(
+          1.65rem,
+          7.7vw,
+          3.15rem
+        );
+
+      line-height:
+        0.9;
+    }
+
+    .hero__statement-static {
+      display:
+        block;
+
+      width:
+        100%;
+
+      white-space:
+        nowrap;
+    }
+
+    .hero__statement-rotator {
+      display:
+        block;
+
+      width:
+        100%;
+
+      height:
+        1.05em;
+
+      overflow:
+        visible;
+    }
+
+    .hero__statement-rotator
+    > span {
+      top:
+        0;
+
+      left:
+        0;
+
+      width:
+        max-content;
+
+      max-width:
+        none;
+    }
+
+    .hero__cta {
+      align-self: stretch;
+
+      width: min(100%, 19rem);
+      min-width: 0;
+
+      margin-top: 1.6rem;
+
+      font-size: 0.72rem;
+    }
+
+    .hero__footer {
+      gap: 1.25rem;
+    }
+
+    .hero__intro {
+      max-width: 13rem;
+
+      gap: 0.7rem;
+    }
+
+    .hero__accent {
+      width: 1.5rem;
+    }
+
+    .hero__scroll {
+      width: 5rem;
+    }
+
+    .hero__scroll
+    > span:first-child {
+      display: none;
+    }
+  }
+</style>

@@ -10,7 +10,7 @@ html {
   background: var(--color-black);
   color: var(--color-white);
 
-  scroll-behavior: auto;
+  scroll-behavior: smooth;
 }
 
 body {
@@ -86,4 +86,15 @@ svg {
 
     animation-iteration-count: 1 !important;
   }
+}
+
+html,
+body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
 }

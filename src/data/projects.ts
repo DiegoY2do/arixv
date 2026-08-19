@@ -654,7 +654,7 @@ export const projects = [
       "flow-supplements",
 
     title:
-      "FLOW SUPPLEMENTS",
+      "FLOW",
 
     category:
       "ecommerce",
